@@ -1,0 +1,35 @@
+hi
+
+---
+
+<pasted_content id="da97">
+Change of plan: replace any existing code. Build "Haq" — an AI agent that finds Indian government schemes a whole family is eligible for. Python + FastAPI backend, single-page HTML frontend.
+
+SCOPE for the hackathon: central government schemes + Uttar Pradesh state schemes only. Depth over breadth.
+
+FRONTEND (must work for people who can't read):
+- Big mic button using the browser Web Speech API in Hindi (hi-IN), with a text box fallback.
+- Agent questions and answers are shown AND read aloud with speechSynthesis (Hindi).
+- Results as big cards: emoji icon per scheme, scheme name, ₹ benefit per year, which family member, documents needed, where to apply, and a link to the OFFICIAL government source.
+- Headline: total ₹/year the family is missing. Mobile-friendly, large text, very simple.
+
+AGENT (Anthropic Python SDK, real agent loop):
+1. INTERVIEW: short simple questions in Hindi to build a household profile (members, ages, gender, occupation, land, income band, widow/disability/student status, caste category only if user offers it). Stop when enough info.
+2. PLAN: list candidate schemes per member.
+3. RESEARCH: Claude web search tool. Prefer official domains (gov.in, nic.in, myscheme.gov.in).
+4. VERIFY: confirm each eligibility rule on an official page and store that URL. If an unofficial source conflicts with an official one, trust official and log the conflict with a reason. Drop anything that can't be verified officially.
+5. RECOVER: retry failed lookups with backoff, then fall back to another official source. SIMULATE_FAILURE=1 env var makes the first official lookup fail on purpose for the demo.
+6. WRITE: JSON for the cards + a short spoken Hindi summary.
+
+STATE: save each household profile and run progress to a JSON file so families can come back with follow-ups and a crashed run can resume.
+
+EVALS (critical for judging):
+- Create evals/families.json with 20 realistic test households across UP (farmers, widows, students, elderly, disabled members, daily-wage workers, mixed families).
+- For each, research the expected schemes from OFFICIAL sources only, store the source URL per expected scheme, and mark every expected answer "needs_human_check": true so I can spot-check.
+- run_evals.py: runs Haq on all 20 households (no voice, direct profile input), scores precision and recall vs expected schemes, reports overall accuracy, avg cost and avg time, and saves results to evals/results-<timestamp>.json so I can compare before vs after.
+
+TRACING: instrument everything with neatlogs (read https://docs.neatlogs.com for the Python SDK). Every agent step, tool call and LLM call must show up as a trace.
+
+Keys from .env (ANTHROPIC_API_KEY, NEATLOGS_API_KEY). Create .env.example, add .env to .gitignore, never hardcode keys.
+README with how to run the app and the evals. Commit .entire/settings.json too. Commit and push after each working piece with clear messages.
+</pasted_content id="da97">
