@@ -1,0 +1,1 @@
+Yes — make run_evals.py and the app save each run's neatlogs trace/session ID into the results files from now on. Don't run anything. Commit and push.
