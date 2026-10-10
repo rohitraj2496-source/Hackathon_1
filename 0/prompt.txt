@@ -1,0 +1,6 @@
+<pasted_content id="da97">
+Yes, apply both changes (batch members per scheme into one call; lower Sonnet effort where safe). Separate commits.
+Then run ONE household only (pick one that had an error in the baseline) as a smoke test. Confirm Haiku structured outputs and prompt caching work, and report its actual cost.
+If it works and costs under $0.30, run the remaining households that had errors and give me the final table: baseline vs after — accuracy, precision, recall, wrong schemes, missed schemes, cost per household (USD and ₹), time per household. Report likely-eligible separately from confirmed.
+Also report cost both with warm cache and cold cache (HAQ_NO_CACHE=1 for one household only).
+</pasted_content id="da97">
