@@ -221,8 +221,11 @@ Method:
    page that appears in your web_search results also counts as read. Portal home pages often lack the rules:
    then read the scheme's official rule documents (guidelines / niyamawali / shasanadesh PDFs on .gov.in or
    .nic.in; fetch_official_page extracts PDF text) or search for them before giving up.
-3. If a non-official source (news, blogs, coaching sites) disagrees with an official source, trust the
-   official one and call log_conflict with the reason.
+3. Non-government sources (news, blogs, banks, coaching/scholarship sites) may only guide you. In your final
+   call, list in unofficial_sources every non-government page from your searches whose claim you looked at,
+   with verdict: "agrees" (the official page says the same), "conflicts" (the official page says something
+   different; the official one is trusted) or "not_on_official_source" (no official page states it, so it is
+   NOT used as a confirmed rule). You may also call log_conflict as soon as you notice a conflict.
 4. Finish by calling exactly ONE of:
    - record_verified with verification="confirmed": the member qualifies and you confirmed EVERY rule you rely
      on (including any income limit) on an official page.
@@ -239,6 +242,17 @@ Facts that are unknown in the profile do not disqualify by themselves; judge on 
 assumption in assumptions_hi. annual_value_inr: yearly cash or cash-equivalent value for this member
 (pension 1000/month -> 12000; one-time grants: the amount; insurance/health cover or contributory schemes: 0
 with counts_toward_total=false). Write all *_hi fields in simple Hindi (Devanagari) for a non-literate family."""
+
+UNOFFICIAL_SOURCES_SCHEMA = {"type": "array", "items": {
+    "type": "object", "additionalProperties": False,
+    "required": ["url", "claim", "official_says", "official_url", "verdict"],
+    "properties": {
+        "url": {"type": "string"},
+        "claim": {"type": "string"},
+        "official_says": {"type": "string", "description": "empty if no official page states it"},
+        "official_url": {"type": "string"},
+        "verdict": {"type": "string", "enum": ["agrees", "conflicts", "not_on_official_source"]},
+    }}}
 
 TOOLS = [
     {"type": "web_search_20260209", "name": "web_search", "max_uses": 4,
@@ -271,7 +285,7 @@ TOOLS = [
             "type": "object", "additionalProperties": False,
             "required": ["scheme_id", "scheme_name_hi", "member", "official_url", "verification", "rules_checked",
                          "unconfirmed_rules", "benefit_hi", "annual_value_inr", "counts_toward_total", "documents_hi",
-                         "where_to_apply_hi", "apply_url", "assumptions_hi"],
+                         "where_to_apply_hi", "apply_url", "assumptions_hi", "unofficial_sources"],
             "properties": {
                 "scheme_id": {"type": "string"},
                 "scheme_name_hi": {"type": "string"},
@@ -292,6 +306,7 @@ TOOLS = [
                 "where_to_apply_hi": {"type": "string"},
                 "apply_url": {"type": "string"},
                 "assumptions_hi": {"type": "string"},
+                "unofficial_sources": UNOFFICIAL_SOURCES_SCHEMA,
             },
         },
     },
@@ -300,10 +315,11 @@ TOOLS = [
         "description": "Final answer: not eligible, or could not be verified on an official source.",
         "strict": True,
         "input_schema": {"type": "object", "additionalProperties": False,
-                         "required": ["scheme_id", "member", "reason", "official_url"],
+                         "required": ["scheme_id", "member", "reason", "official_url", "unofficial_sources"],
                          "properties": {"scheme_id": {"type": "string"}, "member": {"type": "string"},
                                         "reason": {"type": "string"},
-                                        "official_url": {"type": "string", "description": "official page used, or empty"}}},
+                                        "official_url": {"type": "string", "description": "official page used, or empty"},
+                                        "unofficial_sources": UNOFFICIAL_SOURCES_SCHEMA}},
     },
 ]
 
@@ -334,22 +350,26 @@ def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str)
     user = (f"Scheme to verify: {cand['scheme_id']}\nMember: {cand['member']}\nWhy planned: {cand['why']}\n{seed_txt}\n\n"
             f"Household profile:\n{json.dumps(profile, ensure_ascii=False)}")
     messages = [{"role": "user", "content": user}]
-    read_official: set[str] = set()      # official URLs successfully read (fetch or search result)
-    conflicts, recovery = [], []
-
-    def log_recovery(entry):
-        recovery.append(entry)
+    ctx = {
+        "read_official": set(),     # official URLs successfully read (fetch or search result)
+        "unofficial_seen": set(),   # non-government URLs that came back in web_search results
+        "conflicts": [],            # official vs unofficial disagreements (official trusted)
+        "unofficial_claims": [],    # claims found only on non-government pages (not used as rules)
+        "recovery": [],
+        "asked_for_sources": False,
+    }
 
     with neatlogs.trace(f"research:{cand['key']}", kind="AGENT", session_id=hid):
         for turn in range(MAX_RESEARCH_TURNS):
             resp = create(usage, effort="medium", system=RESEARCH_SYSTEM, tools=TOOLS, messages=messages)
             messages.append({"role": "assistant", "content": resp.content})
-            read_official.update(_norm(u) for u in _search_result_urls(resp.content) if catalog.is_official(u))
+            for u in _search_result_urls(resp.content):
+                (ctx["read_official"] if catalog.is_official(u) else ctx["unofficial_seen"]).add(_norm(u))
 
             if resp.stop_reason == "pause_turn":
                 continue  # server tool still working; resend to let it finish
             if resp.stop_reason == "refusal":
-                return _dropped(cand, "model declined", "", conflicts, recovery)
+                return {**_dropped(cand, "model declined", ""), **_logs(ctx)}
             tool_uses = [b for b in resp.content if b.type == "tool_use"]
             if not tool_uses:
                 messages.append({"role": "user", "content": "Finish by calling record_verified or drop_scheme."})
@@ -357,50 +377,85 @@ def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str)
 
             results, final = [], None
             for tu in tool_uses:
-                out, is_err, fin = _run_tool(tu.name, tu.input, cand, read_official, conflicts, log_recovery)
+                out, is_err, fin = _run_tool(tu.name, tu.input, cand, ctx)
                 results.append({"type": "tool_result", "tool_use_id": tu.id,
                                 "content": out, **({"is_error": True} if is_err else {})})
                 final = final or fin
             messages.append({"role": "user", "content": results})
             if final:
-                final.update(conflicts=conflicts, recovery_log=recovery, turns=turn + 1)
+                final.update(**_logs(ctx), turns=turn + 1)
                 return final
 
-    return _dropped(cand, "verification budget exhausted without official confirmation", "", conflicts, recovery)
+    return {**_dropped(cand, "verification budget exhausted without official confirmation", ""), **_logs(ctx)}
 
 
-def _dropped(cand, reason, url, conflicts, recovery):
+def _dropped(cand, reason, url):
     return {"status": "dropped", "scheme_id": cand["scheme_id"], "member": cand["member"],
-            "reason": reason, "official_url": url, "conflicts": conflicts, "recovery_log": recovery}
+            "reason": reason, "official_url": url}
 
 
-def _run_tool(name, args, cand, read_official, conflicts, log_recovery):
+def _logs(ctx):
+    return {"conflicts": ctx["conflicts"], "unofficial_claims": ctx["unofficial_claims"],
+            "recovery_log": ctx["recovery"]}
+
+
+def _account_for_unofficial(args, cand, ctx):
+    """Turn the agent's unofficial_sources list into conflict / unofficial-claim records.
+
+    Returns a rejection message if non-government pages came back in search but none were
+    accounted for (asked once per loop, so a stubborn model cannot stall the run)."""
+    listed = [s for s in args.get("unofficial_sources", []) if s["url"] and not catalog.is_official(s["url"])]
+    if ctx["unofficial_seen"] and not listed and not ctx["asked_for_sources"]:
+        ctx["asked_for_sources"] = True
+        seen = sorted(ctx["unofficial_seen"])[:12]
+        return ("REJECTED: your searches returned non-government pages "
+                f"{seen}. List in unofficial_sources each one whose claim you looked at, with verdict "
+                "agrees / conflicts / not_on_official_source, then call this tool again.")
+    for src in listed:
+        if src["verdict"] == "conflicts":
+            ctx["conflicts"].append({
+                "topic": cand["scheme_id"], "unofficial_url": src["url"], "unofficial_says": src["claim"],
+                "official_url": src["official_url"], "official_says": src["official_says"],
+                "reason": "official government source trusted over non-government source"})
+        elif src["verdict"] == "not_on_official_source":
+            ctx["unofficial_claims"].append({
+                "topic": cand["scheme_id"], "unofficial_url": src["url"], "claim": src["claim"],
+                "reason": "not stated on any official page read; not used as a confirmed rule"})
+    return None
+
+
+def _run_tool(name, args, cand, ctx):
     """Execute a client tool. Returns (content_str, is_error, final_record_or_None)."""
     with neatlogs.trace(f"tool:{name}", kind="TOOL", tool_name=name, input=json.dumps(args, ensure_ascii=False)[:2000]):
         if name == "fetch_official_page":
             r = fetcher.fetch_official(args["url"], cand["scheme_id"], args.get("query"))
             failed = [a for a in r["attempts"] if not a["ok"]]
             if failed or r.get("fell_back"):
-                log_recovery({"requested": args["url"], "served_by": r["url"] if r["ok"] else None,
+                ctx["recovery"].append({"requested": args["url"], "served_by": r["url"] if r["ok"] else None,
                               "ok": r["ok"], "attempts": r["attempts"]})
             if not r["ok"]:
                 return (f"FAILED: {r.get('error')}. Attempts: {json.dumps(r['attempts'], ensure_ascii=False)}. "
                         "Try another official URL (web_search for it) or drop the scheme."), True, None
-            read_official.add(_norm(r["url"]))
+            ctx["read_official"].add(_norm(r["url"]))
             note = f"(requested {args['url']} failed; served by official fallback {r['url']})\n" if r.get("fell_back") else ""
             return f"{note}SOURCE: {r['url']}\n\n{r['text']}", False, None
 
         if name == "log_conflict":
-            conflicts.append(dict(args))
+            ctx["conflicts"].append({**args, "topic": f"{cand['scheme_id']}: {args['topic']}"})
             return "conflict logged; continue using the official source", False, None
 
+        if name in ("drop_scheme", "record_verified"):
+            rejection = _account_for_unofficial(args, cand, ctx)
+            if rejection:
+                return rejection, True, None
+
         if name == "drop_scheme":
-            return "ok", False, _dropped(cand, args["reason"], args.get("official_url", ""), [], [])
+            return "ok", False, _dropped(cand, args["reason"], args.get("official_url", ""))
 
         if name == "record_verified":
             urls = [args["official_url"]] + [r["official_url"] for r in args["rules_checked"]]
             bad = [u for u in urls if not catalog.is_official(u)]
-            unread = [u for u in urls if catalog.is_official(u) and _norm(u) not in read_official]
+            unread = [u for u in urls if catalog.is_official(u) and _norm(u) not in ctx["read_official"]]
             if bad or unread or not args["rules_checked"]:
                 msg = ("REJECTED: every rule must cite an official URL you actually read in this session. "
                        f"Non-official: {bad}. Not read yet: {unread}. Read them with fetch_official_page "
@@ -528,6 +583,8 @@ def run(hid: str, resume: bool = True) -> dict:
                         r["research"][c["key"]] = rec
                         r["conflicts"].extend({**x, "scheme": c["key"]} for x in rec.get("conflicts", []))
                         r["recovery_log"].extend({**x, "scheme": c["key"]} for x in rec.get("recovery_log", []))
+                        r.setdefault("unofficial_claims", []).extend(
+                            {**x, "scheme": c["key"]} for x in rec.get("unofficial_claims", []))
                         r["usage"] = usage.snapshot()
                     state.update_run(hid, rid, _save)
             if errors:

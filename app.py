@@ -84,6 +84,7 @@ def get_household(hid: str):
             "verified": sum(1 for r in run["research"].values() if r.get("status") == "verified"),
             "likely": sum(1 for r in run["research"].values() if r.get("status") == "likely"),
             "recoveries": len(run["recovery_log"]), "conflicts": len(run["conflicts"]),
+            "unofficial_claims": len(run.get("unofficial_claims", [])),
             "cost_usd": run["usage"]["cost_usd"],
         }
     return {"id": hid, "profile": h["profile"], "interview": h["interview"], "run": progress,

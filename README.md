@@ -110,7 +110,10 @@ INTERVIEW ──► PLAN ──► RESEARCH ─► VERIFY ──► WRITE
    rule in `rules_checked` cites an official URL that the agent actually read in that loop, either fetched
    directly or returned in its own search results. Anything that can't be confirmed officially is dropped. When
    an unofficial source disagrees with an official one, the official source wins and the conflict is logged
-   with a reason.
+   with a reason. This is enforced: when web search returned non-government pages, the finishing tool must
+   list each one it looked at with a verdict (`agrees`, `conflicts` or `not_on_official_source`). Conflicts go
+   to `conflicts`, and claims found only off-government go to `unofficial_claims`. Neither is ever used as a
+   confirmed rule.
 5. **Recover** (`haq/fetcher.py`) retries each official URL 3 times with exponential backoff. Old state
    portals get one adaptation each, recorded in the log: legacy TLS renegotiation (scholarship.up.gov.in), and
    no certificate check for expired certificates (sspy-up.gov.in). Both are safe here because the pages are

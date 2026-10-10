@@ -79,7 +79,8 @@ def start_run(hid: str) -> dict:
         "finished_at": None,
         "candidates": [],          # from PLAN
         "research": {},            # scheme_key -> verified/dropped record
-        "conflicts": [],
+        "conflicts": [],           # official vs non-government disagreements (official trusted)
+        "unofficial_claims": [],   # claims seen only on non-government pages (never used as rules)
         "recovery_log": [],
         "result": None,            # from WRITE
         "usage": {"input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0,

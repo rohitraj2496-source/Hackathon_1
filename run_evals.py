@@ -76,6 +76,7 @@ def run_one(household: dict) -> dict:
                                      if c.get("verification") == "likely"},
         "dropped": {k: r.get("reason") for k, r in research.items() if r.get("status") == "dropped"},
         "conflicts": (run or {}).get("conflicts", []),
+        "unofficial_claims": (run or {}).get("unofficial_claims", []),
         "recoveries": len((run or {}).get("recovery_log", [])),
     }
 
@@ -100,6 +101,7 @@ def summarize(rows: list[dict], key: str = "score") -> dict:
         "recoveries": sum(r["recoveries"] for r in rows),
         "conflicts_logged": sum(len(r["conflicts"]) for r in rows),
         "likely_predictions": sum(len(r.get("predicted_likely", [])) for r in rows),
+        "unofficial_claims_logged": sum(len(r.get("unofficial_claims", [])) for r in rows),
     }
 
 
@@ -156,7 +158,7 @@ def main():
 
     print("\n=== Summary ===")
     for k in ("precision", "recall", "f1", "accuracy", "avg_cost_usd", "total_cost_usd", "avg_seconds",
-              "recoveries", "conflicts_logged", "likely_predictions", "errors"):
+              "recoveries", "conflicts_logged", "unofficial_claims_logged", "likely_predictions", "errors"):
         print(f"  {k:<18} {summary[k]}")
     print(f"  confirmed_only     {summary['confirmed_only']}")
     if previous:
