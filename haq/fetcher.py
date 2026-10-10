@@ -19,7 +19,7 @@ import httpx
 import neatlogs
 import pypdf
 
-from . import catalog
+from . import cache, catalog
 from .config import SIMULATE_FAILURE
 
 MAX_ATTEMPTS = 3
@@ -115,9 +115,14 @@ def _fetch_one(url: str, log: list) -> str:
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
             _maybe_simulate_failure(url)
+            cached = cache.get_page(url)
+            if cached is not None:
+                log.append({"url": url, "attempt": attempt, "ok": True, "cache": True})
+                return cached
             text = _get(url, legacy, verify)
             if len(text) < 1000:
                 raise LookupFailed("page returned almost no text (JS-only page or error page)")
+            cache.put_page(url, text)
             log.append({"url": url, "attempt": attempt, "ok": True,
                         "tls_legacy_renegotiation": legacy, "insecure_tls": not verify})
             return text

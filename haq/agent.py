@@ -13,7 +13,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import anthropic
 import neatlogs
 
-from . import catalog, fetcher, state
+from . import cache, catalog, fetcher, state
 from .llm import Usage, create, structured
 
 RESEARCH_WORKERS = 4
@@ -354,8 +354,10 @@ def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str,
                     + f"Catalog note (re-verify, may be outdated): {seed['hint']}")
     else:
         seed_txt = "Not in catalog."
+    cached_rules = cache.get_rules(cand["scheme_id"])
     user = (f"Scheme to verify: {cand['scheme_id']}\nMember: {cand['member']}\nWhy planned: {cand['why']}\n{seed_txt}\n\n"
-            f"Household profile:\n{json.dumps(profile, ensure_ascii=False)}")
+            + (rules_block(cached_rules) + "\n\n" if cached_rules else "")
+            + f"Household profile:\n{json.dumps(profile, ensure_ascii=False)}")
     messages = [{"role": "user", "content": user}]
     ctx = {
         "read_official": set(),     # official URLs successfully read (fetch or search result)
@@ -365,6 +367,10 @@ def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str,
         "recovery": [],
         "asked_for_sources": False,
     }
+    if cached_rules:
+        # Rules confirmed on these official pages by an earlier lookup count as read.
+        ctx["read_official"].update(_norm(r["official_url"]) for r in cached_rules["rules"])
+        ctx["read_official"].add(_norm(cached_rules["official_url"]))
 
     started = time.time()
     with neatlogs.trace(f"research:{cand['key']}", kind="AGENT", session_id=hid):
@@ -396,10 +402,29 @@ def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str,
                 final = final or fin
             messages.append({"role": "user", "content": results})
             if final:
-                final.update(**_logs(ctx), turns=turn + 1)
+                final.update(**_logs(ctx), turns=turn + 1, rules_from_cache=bool(cached_rules))
+                if final["status"] in ("verified", "likely"):
+                    cache.put_rules(final, source=f"{hid}:{run_id}:{cand['key']}")
                 return final
 
     return {**_dropped(cand, "verification budget exhausted without official confirmation", ""), **_logs(ctx)}
+
+
+def rules_block(cached: dict) -> str:
+    """Scheme rules confirmed on official pages by an earlier lookup, for the research prompt."""
+    when = time.strftime("%Y-%m-%d", time.localtime(cached["cached_at"]))
+    lines = [f"CACHED OFFICIAL RULES for {cached['scheme_id']} (confirmed on official pages on {when}; these "
+             "official URLs count as already read):"]
+    lines += [f"- {r['rule']}  [source: {r['official_url']}]" for r in cached["rules"]]
+    if cached.get("unconfirmed_rules"):
+        lines.append(f"Not confirmed on any official page yet: {'; '.join(cached['unconfirmed_rules'])}")
+    lines.append(f"Documents: {', '.join(cached.get('documents_hi', []))}")
+    lines.append(f"Where to apply: {cached.get('where_to_apply_hi', '')} {cached.get('apply_url', '')}")
+    lines.append(f"Benefit as described for another family: {cached.get('benefit_example_hi', '')}")
+    lines.append("Use these rules; do not search the web again for them. If a rule you need for this member is "
+                 "missing (e.g. an income limit), read the cited official page with fetch_official_page "
+                 "(cached pages are free) or use verification=likely.")
+    return "\n".join(lines)
 
 
 def _dropped(cand, reason, url):
@@ -598,30 +623,18 @@ def run(hid: str, resume: bool = True) -> dict:
             todo = [c for c in cands if c["key"] not in done]
             errors = []
             abort = threading.Event()
-            with ThreadPoolExecutor(RESEARCH_WORKERS) as pool:
-                futs = {pool.submit(contextvars.copy_context().run, research_one, profile, c, usage, hid, rid,
-                                    abort): c
-                        for c in todo}
-                for fut in as_completed(futs):
-                    c = futs[fut]
-                    try:
-                        rec = fut.result()
-                    except Exception as e:
-                        # Not saved: the candidate stays unfinished so a resume retries it.
-                        errors.append(f"{c['key']}: {type(e).__name__}: {e}"[:300])
-                        if isinstance(e, (anthropic.AuthenticationError, anthropic.PermissionDeniedError,
-                                          anthropic.BadRequestError)):
-                            abort.set()  # the same error will hit every call; other loops stop at their next turn
-                        continue
-
-                    def _save(r, c=c, rec=rec):
-                        r["research"][c["key"]] = rec
-                        r["conflicts"].extend({**x, "scheme": c["key"]} for x in rec.get("conflicts", []))
-                        r["recovery_log"].extend({**x, "scheme": c["key"]} for x in rec.get("recovery_log", []))
-                        r.setdefault("unofficial_claims", []).extend(
-                            {**x, "scheme": c["key"]} for x in rec.get("unofficial_claims", []))
-                        r["usage"] = usage.snapshot()
-                    state.update_run(hid, rid, _save)
+            # Wave 1 looks up each scheme once (filling the rules cache); wave 2 handles the other
+            # members of the same scheme from that cache instead of searching the web again.
+            first_of_scheme, wave1, wave2 = set(), [], []
+            for c in todo:
+                if c["scheme_id"] in first_of_scheme:
+                    wave2.append(c)
+                else:
+                    first_of_scheme.add(c["scheme_id"])
+                    wave1.append(c)
+            for wave in (wave1, wave2):
+                if wave and not abort.is_set():
+                    _research_wave(wave, profile, usage, hid, rid, abort, errors)
             if errors:
                 raise RuntimeError(f"{len(errors)} scheme lookups failed (resume to retry): {errors[0]}")
 
@@ -635,6 +648,34 @@ def run(hid: str, resume: bool = True) -> dict:
             state.update_run(hid, rid, lambda r: r.update(status="failed", error=f"{type(e).__name__}: {e}",
                                                           usage=usage.snapshot()))
             raise
+
+
+def _research_wave(wave, profile, usage, hid, rid, abort, errors):
+    """Research candidates in parallel; save each finished record as soon as it completes."""
+    with ThreadPoolExecutor(RESEARCH_WORKERS) as pool:
+        futs = {pool.submit(contextvars.copy_context().run, research_one, profile, c, usage, hid, rid,
+                            abort): c
+                for c in wave}
+        for fut in as_completed(futs):
+            c = futs[fut]
+            try:
+                rec = fut.result()
+            except Exception as e:
+                # Not saved: the candidate stays unfinished so a resume retries it.
+                errors.append(f"{c['key']}: {type(e).__name__}: {e}"[:300])
+                if isinstance(e, (anthropic.AuthenticationError, anthropic.PermissionDeniedError,
+                                  anthropic.BadRequestError)):
+                    abort.set()  # the same error will hit every call; other loops stop at their next turn
+                continue
+
+            def _save(r, c=c, rec=rec):
+                r["research"][c["key"]] = rec
+                r["conflicts"].extend({**x, "scheme": c["key"]} for x in rec.get("conflicts", []))
+                r["recovery_log"].extend({**x, "scheme": c["key"]} for x in rec.get("recovery_log", []))
+                r.setdefault("unofficial_claims", []).extend(
+                    {**x, "scheme": c["key"]} for x in rec.get("unofficial_claims", []))
+                r["usage"] = usage.snapshot()
+            state.update_run(hid, rid, _save)
 
 
 # --------------------------------------------------------------------------

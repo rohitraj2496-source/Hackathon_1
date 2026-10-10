@@ -128,6 +128,22 @@ INTERVIEW ──► PLAN ──► RESEARCH ─► VERIFY ──► WRITE
 ask a question by voice. If they report a change, such as a new baby, a death or new land, Haq updates the
 profile and runs the search again.
 
+## Cache (cost control)
+
+`haq/cache.py` keeps two on-disk caches under `data/cache/` (gitignored):
+
+- **pages/**: the text of every official page or PDF Haq has fetched, kept for 7 days
+  (`HAQ_PAGE_CACHE_DAYS`). A repeat fetch costs nothing and takes milliseconds.
+- **rules/**: each scheme's eligibility rules as confirmed on official pages, with their source URLs, kept
+  for 30 days (`HAQ_RULES_CACHE_DAYS`). The next lookup of that scheme, for any member of any family, starts
+  from these rules and does not search the web again. Its cited official URLs count as already read. Only
+  scheme-level rules are stored, never family data. A confirmed record is never replaced by a "likely" one.
+
+Research runs in two waves: one lookup per distinct scheme first, which fills the cache, then the other
+members of the same scheme, which are served from the cache. `python -m haq.cache seed data/eval-state.json`
+imports rules from runs that have already been paid for. Set `HAQ_NO_CACHE=1` to bypass both caches, for
+example to demo `SIMULATE_FAILURE` on a cold start.
+
 ## State and resume
 
 `data/state.json` (or `HAQ_STATE_FILE`) holds every household's profile, interview transcript and runs. Each
