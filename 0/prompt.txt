@@ -1,0 +1,1 @@
+Create EVIDENCE.md in the repo with the before/after table, the warm vs cold cache numbers, the likely-eligible vs confirmed breakdown, the list of fixes with their commit links and the neatlogs trace IDs that revealed each bug. Commit and push.
