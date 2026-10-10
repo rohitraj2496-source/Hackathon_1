@@ -52,7 +52,7 @@ PROFILE_SCHEMA = {
     "additionalProperties": False,
     "required": ["district", "area", "annual_family_income_inr", "ration_card", "house_type",
                  "has_lpg_connection", "has_bank_account", "caste_category", "land_acres",
-                 "land_owner_relation", "already_receiving", "members"],
+                 "land_owner_relation", "already_receiving", "upcoming_events", "members"],
     "properties": {
         "district": NULL_STR,
         "area": {"type": "string", "enum": ["rural", "urban", "unknown"]},
@@ -65,6 +65,8 @@ PROFILE_SCHEMA = {
         "land_acres": NULL_NUM,
         "land_owner_relation": NULL_STR,
         "already_receiving": {"type": "array", "items": {"type": "string"}},
+        "upcoming_events": {"type": "array", "items": {"type": "string"},
+                            "description": "e.g. 'daughter (19) marriage in 3 months', 'baby due'"},
         "members": {"type": "array", "items": MEMBER_SCHEMA},
     },
 }
@@ -81,7 +83,8 @@ Rules for questions:
 - Ask in this rough order, skipping anything already known: who lives in the house (ages, men/women),
   work of each adult, farm land and whose name it is in, rough yearly income, village or city + district,
   ration card type, pucca/kutcha house, gas connection, any widow, any disabled member (and %),
-  children studying (class), anyone pregnant, govt job / income-tax payer, schemes already received.
+  children studying (class), anyone pregnant, any marriage coming up in the family (record in upcoming_events),
+  govt job / income-tax payer, schemes already received.
 - NEVER ask about caste. Record caste_category only if the user volunteers it; otherwise "not_shared".
 - Stop (done=true) once you know members with ages/gender/occupation, area, income band, land, ration card,
   house type, and widow/disability/student/pregnancy status. Usually 6-10 questions. Do not over-ask.
@@ -106,7 +109,7 @@ def empty_profile() -> dict:
     return {"district": None, "area": "unknown", "annual_family_income_inr": None,
             "ration_card": "unknown", "house_type": "unknown", "has_lpg_connection": None,
             "has_bank_account": None, "caste_category": "not_shared", "land_acres": None,
-            "land_owner_relation": None, "already_receiving": [], "members": []}
+            "land_owner_relation": None, "already_receiving": [], "upcoming_events": [], "members": []}
 
 
 def interview_turn(hid: str, user_text: str) -> dict:
@@ -147,7 +150,18 @@ income-tax payer -> most welfare schemes out). Household-level schemes (ration c
 get member "household" (Ujjwala: the adult woman). Use catalog ids; only invent a new snake_case id for a
 clearly relevant central/UP scheme that is missing from the catalog. Skip schemes listed in already_receiving
 unless the profile suggests another member also qualifies. A family whose ration_card is "eligible_household" or
-"antyodaya" already gets NFSA ration: do not plan nfsa_ration for them. At most 14 candidates."""
+"antyodaya" already gets NFSA ration: do not plan nfsa_ration for them.
+Event-triggered one-time grants (up_shadi_anudan, up_samuhik_vivah) are only for a marriage that is actually
+coming up: plan them only if the profile says a daughter (18+) or a widow is getting married soon. Never plan
+them for children or just because there is a daughter in the family. At most 14 candidates."""
+
+MARRIAGE_GRANTS = {"up_shadi_anudan", "up_samuhik_vivah"}
+
+
+def marriage_planned(profile: dict) -> bool:
+    """True only if the profile mentions an upcoming marriage of an adult member."""
+    text = json.dumps(profile.get("upcoming_events", []), ensure_ascii=False).lower()
+    return any(w in text for w in ("marriage", "wedding", "शादी", "विवाह", "byah", "ब्याह"))
 
 
 HOUSEHOLD_SCHEMES = {"nfsa_ration", "pmjay", "pmay_g"}
@@ -185,6 +199,8 @@ def plan(profile: dict, usage: Usage, hid: str) -> list[dict]:
         c["scheme_id"] = catalog.canonical_id(c["scheme_id"])
         if c["scheme_id"] in have and c["scheme_id"] in HOUSEHOLD_SCHEMES:
             continue  # one per family, and this family already gets it
+        if c["scheme_id"] in MARRIAGE_GRANTS and not marriage_planned(profile):
+            continue  # one-time grant for a wedding nobody mentioned
         key = f"{c['scheme_id']}:{c['member'].strip().lower()}"
         if key not in seen:
             seen.add(key)
