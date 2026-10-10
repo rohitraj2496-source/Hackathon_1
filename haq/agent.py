@@ -398,7 +398,9 @@ def research_scheme(profile: dict, cands: list[dict], usage: Usage, hid: str, ru
 
     started = time.time()
     tools = TOOLS_NO_SEARCH if cached_rules else TOOLS
-    effort = "medium"
+    # Where safe, think less: with fully confirmed cached rules Sonnet only applies known official rules to
+    # the profile. Real research (no cache) or an unconfirmed income limit (may need reading) stays medium.
+    effort = "low" if cached_rules and not cached_rules.get("unconfirmed_rules") else "medium"
     searches, budget_noted, over_budget_turn = 0, False, None
     decided: dict[str, dict] = {}
 

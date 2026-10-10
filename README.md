@@ -154,7 +154,8 @@ summary) cache only their system prompt.
 **Models.** Sonnet is used only for eligibility verification (`HAQ_VERIFY_MODEL`). Haiku handles the
 interview, planning, the summary and follow-ups (`HAQ_FAST_MODEL`). Each scheme lookup gets at most 2 web
 searches, and none when cached rules exist. The lookup stops as soon as an official page confirms the
-rules.
+rules. Sonnet runs at `low` effort when it only has to apply fully confirmed cached rules, and at
+`medium` when it has to research, or when an income limit is still unconfirmed.
 
 ## State and resume
 
