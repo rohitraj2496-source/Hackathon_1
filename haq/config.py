@@ -20,7 +20,7 @@ neatlogs.init(
 
 from anthropic import Anthropic  # noqa: E402
 
-MODEL = os.environ.get("HAQ_MODEL", "claude-opus-5-5")
+MODEL = os.environ.get("HAQ_MODEL", "claude-sonnet-5-5")
 EFFORT = os.environ.get("HAQ_EFFORT", "medium")
 SIMULATE_FAILURE = os.environ.get("SIMULATE_FAILURE") == "1"
 STATE_FILE = os.environ.get("HAQ_STATE_FILE", "data/state.json")

@@ -9,6 +9,7 @@ import json
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+import anthropic
 import neatlogs
 
 from . import catalog, fetcher, state
@@ -435,6 +436,7 @@ def run(hid: str, resume: bool = True) -> dict:
             # RESEARCH + VERIFY + RECOVER (skip candidates finished before a crash)
             done = set(state.get(hid)["runs"][-1]["research"])
             todo = [c for c in cands if c["key"] not in done]
+            errors = []
             with ThreadPoolExecutor(RESEARCH_WORKERS) as pool:
                 futs = {pool.submit(contextvars.copy_context().run, research_one, profile, c, usage, hid, rid): c
                         for c in todo}
@@ -442,8 +444,13 @@ def run(hid: str, resume: bool = True) -> dict:
                     c = futs[fut]
                     try:
                         rec = fut.result()
-                    except Exception as e:  # one broken lookup must not sink the family's run
-                        rec = _dropped(c, f"error: {type(e).__name__}: {e}"[:300], "", [], [])
+                    except Exception as e:
+                        # Not saved: the candidate stays unfinished so a resume retries it.
+                        errors.append(f"{c['key']}: {type(e).__name__}: {e}"[:300])
+                        if isinstance(e, (anthropic.AuthenticationError, anthropic.PermissionDeniedError,
+                                          anthropic.BadRequestError)):
+                            pool.shutdown(wait=False, cancel_futures=True)  # same error will hit every call
+                        continue
 
                     def _save(r, c=c, rec=rec):
                         r["research"][c["key"]] = rec
@@ -451,6 +458,8 @@ def run(hid: str, resume: bool = True) -> dict:
                         r["recovery_log"].extend({**x, "scheme": c["key"]} for x in rec.get("recovery_log", []))
                         r["usage"] = usage.snapshot()
                     state.update_run(hid, rid, _save)
+            if errors:
+                raise RuntimeError(f"{len(errors)} scheme lookups failed (resume to retry): {errors[0]}")
 
             # WRITE
             state.update_run(hid, rid, lambda r: r.update(stage="write"))

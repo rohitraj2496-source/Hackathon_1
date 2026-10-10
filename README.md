@@ -59,7 +59,7 @@ Scoring compares schemes per household.
 - **precision** = matched predictions / (matched + FP)
 - **recall** = TP / (TP + FN)
 - **accuracy** = TP / (TP + FP + FN), a Jaccard score across all households
-- **cost** is computed from token usage (Claude Opus 5.5 rates, including cache reads and writes) plus web-search requests
+- **cost** is computed from token usage (per-model rates in `haq/config.py`, including cache reads and writes) plus web-search requests
 
 `acceptable_extra` holds schemes that are plausible but optional: insurance and contributory products
 (PMJJBY, PMSBY, PM-SYM, e-Shram, PMFBY), and schemes whose eligibility depends on facts the profile doesn't
@@ -157,7 +157,7 @@ All spans for one family share `session_id = household id`. Eval runs are traced
 |---|---|---|
 | `ANTHROPIC_API_KEY` | — | required |
 | `NEATLOGS_API_KEY` | — | required for traces to be exported |
-| `HAQ_MODEL` | `claude-opus-5-5` | Claude model |
+| `HAQ_MODEL` | `claude-sonnet-5-5` | Claude model (`claude-opus-5-5` for higher accuracy, ~2x cost) |
 | `HAQ_EFFORT` | `medium` | default effort (the interview and summary use `low`) |
 | `SIMULATE_FAILURE` | off | `1` makes the first official lookup fail |
 | `HAQ_STATE_FILE` | `data/state.json` | where profiles and runs are stored |
