@@ -1,0 +1,9 @@
+<pasted_content id="da97">
+Make the fixes and re-run the same 10 households. Rules:
+1. Keep the current results file untouched as the "before" baseline.
+2. Make each fix a separate commit, and in each commit message cite the neatlogs eval trace (e.g. eval:h03) that showed the bug. This links neatlogs evidence to Entire checkpoints.
+3. For fix 3: label those schemes in the output and cards as "Likely eligible — confirm income limit", not as confirmed.
+4. Fix the conflict log so it actually records conflicts when non-government sources are read.
+5. Do NOT change any expected answers in evals/families.json to raise the score.
+After the re-run, give me a before vs after table: precision, recall, accuracy, wrong schemes, missed schemes, cost per household, time per household.
+</pasted_content id="da97">
