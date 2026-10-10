@@ -86,8 +86,9 @@ def get_household(hid: str):
             "recoveries": len(run["recovery_log"]), "conflicts": len(run["conflicts"]),
             "unofficial_claims": len(run.get("unofficial_claims", [])),
             "cost_usd": run["usage"]["cost_usd"],
+            "traces": run.get("traces", []),
         }
-    return {"id": hid, "profile": h["profile"], "interview": h["interview"], "run": progress,
+    return {"id": hid, "neatlogs_session_id": hid, "profile": h["profile"], "interview": h["interview"], "run": progress,
             "result": run["result"] if run else None, "running": hid in _running}
 
 

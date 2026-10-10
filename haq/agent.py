@@ -14,7 +14,7 @@ import anthropic
 import neatlogs
 
 from . import cache, catalog, fetcher, state
-from .config import FAST_MODEL, VERIFY_MODEL
+from .config import FAST_MODEL, VERIFY_MODEL, trace_ref
 from .llm import Usage, create, structured, system_blocks
 
 RESEARCH_WORKERS = 4
@@ -125,7 +125,8 @@ def empty_profile() -> dict:
 def interview_turn(hid: str, user_text: str) -> dict:
     """Record the user's answer, update the profile, return the next question."""
     h = state.get(hid)
-    with neatlogs.trace("interview_turn", kind="AGENT", session_id=hid, end_user_id=hid):
+    with neatlogs.trace("interview_turn", kind="AGENT", session_id=hid, end_user_id=hid) as span:
+        ref = trace_ref(span, "interview_turn", hid)
         msgs = h["interview"]["messages"] + [{"role": "user", "text": user_text}]
         transcript = "\n".join(f"{'Family' if m['role'] == 'user' else 'Haq'}: {m['text']}" for m in msgs)
         profile = h["profile"] or empty_profile()
@@ -136,7 +137,8 @@ def interview_turn(hid: str, user_text: str) -> dict:
         )
 
     def _save(hh):
-        hh["interview"]["messages"] = msgs + [{"role": "assistant", "text": out["next_question_hi"]}]
+        hh["interview"]["messages"] = msgs + [{"role": "assistant", "text": out["next_question_hi"],
+                                                "trace": ref}]
         hh["interview"]["done"] = out["done"]
         hh["profile"] = out["profile"]
 
@@ -679,7 +681,10 @@ def run(hid: str, resume: bool = True) -> dict:
     profile = h["profile"]
 
     with neatlogs.trace("haq_run", kind="WORKFLOW", session_id=hid, end_user_id=hid,
-                        run_id=rid, resumed=bool(run_["candidates"])):
+                        run_id=rid, resumed=bool(run_["candidates"])) as span:
+        # A resumed run gets a new trace per attempt; keep them all, newest last.
+        ref = trace_ref(span, "haq_run", hid, run_id=rid, started_at=time.time())
+        state.update_run(hid, rid, lambda r: r.setdefault("traces", []).append(ref))
         try:
             # PLAN
             cands = run_["candidates"]
@@ -755,7 +760,8 @@ def followup(hid: str, question: str) -> dict:
     h = state.get(hid)
     last = next((r for r in reversed(h["runs"]) if r["status"] == "done"), None)
     result = last["result"] if last else None
-    with neatlogs.trace("followup", kind="AGENT", session_id=hid, end_user_id=hid):
+    with neatlogs.trace("followup", kind="AGENT", session_id=hid, end_user_id=hid) as span:
+        ref = trace_ref(span, "followup", hid)
         out = structured(
             None, model=FAST_MODEL, effort="low", max_tokens=8000, schema=FOLLOWUP_SCHEMA,
             system="You are Haq. A family that already got scheme results is back with a question or new information. "
@@ -766,7 +772,8 @@ def followup(hid: str, question: str) -> dict:
         )
 
     def _save(hh):
-        hh["interview"]["messages"] += [{"role": "user", "text": question}, {"role": "assistant", "text": out["answer_hi"]}]
+        hh["interview"]["messages"] += [{"role": "user", "text": question},
+                                        {"role": "assistant", "text": out["answer_hi"], "trace": ref}]
         if out["profile_changed"]:
             hh["profile"] = out["profile"]
     state.update(hid, _save)

@@ -12,13 +12,23 @@ load_dotenv()  # must run before neatlogs.init() so NEATLOGS_API_KEY is visible
 
 import neatlogs  # noqa: E402
 
+WORKFLOW_NAME = os.environ.get("HAQ_WORKFLOW_NAME", "haq")
+
 neatlogs.init(
     api_key=os.environ.get("NEATLOGS_API_KEY"),
-    workflow_name=os.environ.get("HAQ_WORKFLOW_NAME", "haq"),
+    workflow_name=WORKFLOW_NAME,
     tags=["haq", "schemes", "uttar-pradesh"],
 )
 
 from anthropic import Anthropic  # noqa: E402
+
+
+def trace_ref(span, name: str, session_id: str | None = None, **extra) -> dict:
+    """IDs to find a run in the neatlogs dashboard: OpenTelemetry trace/span id (hex), span name,
+    workflow and session. Stored with every run so results link straight to their traces."""
+    ctx = span.get_span_context()
+    return {"trace_id": format(ctx.trace_id, "032x"), "span_id": format(ctx.span_id, "016x"),
+            "name": name, "workflow": WORKFLOW_NAME, "session_id": session_id, **extra}
 
 # Sonnet only where judgment matters (eligibility verification); Haiku for interview, planning, formatting.
 VERIFY_MODEL = os.environ.get("HAQ_VERIFY_MODEL", os.environ.get("HAQ_MODEL", "claude-sonnet-5-5"))

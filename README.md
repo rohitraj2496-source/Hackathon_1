@@ -181,7 +181,16 @@ call** is an LLM span. Agent steps are spans as well:
 | `tool:<name>` for each tool call | TOOL |
 | `fetch_official_page` / `fetch_url_with_retry` for every fetch attempt | TOOL |
 
-All spans for one family share `session_id = household id`. Eval runs are traced under the workflow name
+All spans for one family share `session_id = household id`.
+
+**Trace IDs are saved with every result.**
+
+- Each run records `traces` in the state file and in the API response (`GET /api/households/{id}` → `run.traces`).
+  Each entry holds the OpenTelemetry `trace_id` and `span_id` (hex), the span name, the workflow and the
+  `session_id`. A resumed run adds one entry per attempt.
+- Interview turns and follow-ups carry a `trace` entry on their message.
+- In eval results, every household is its own root trace. Its IDs are in `households[].neatlogs`, along with the
+  run traces inside it. The suite trace id is at the top level, under `neatlogs.suite_trace_id`. Eval runs are traced under the workflow name
 `haq-evals`, with one `eval:<id>` root per household.
 
 ## Configuration

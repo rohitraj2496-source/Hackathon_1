@@ -12,7 +12,6 @@ Scoring (household x scheme level):
   accuracy  = TP / (TP + FP + FN)  (Jaccard over all households)
 """
 import argparse
-import contextvars
 import glob
 import json
 import os
@@ -27,8 +26,10 @@ os.environ.setdefault("HAQ_WORKFLOW_NAME", "haq-evals")
 from haq import config  # noqa: E402,F401  (loads .env + neatlogs first)
 
 import neatlogs  # noqa: E402
+from opentelemetry import context as otel_context  # noqa: E402  (installed with neatlogs)
 
 from haq import agent, catalog, state  # noqa: E402
+from haq.config import trace_ref  # noqa: E402
 
 FAMILIES = "evals/families.json"
 
@@ -45,16 +46,24 @@ def score(household: dict, predicted: set[str]) -> dict:
             "missed": fn_items, "false_positives": fp, "ignored_extras": sorted(predicted & acceptable - expected_ids)}
 
 
-def run_one(household: dict) -> dict:
+def run_one(household: dict, suite_trace_id: str) -> dict:
     hid = state.new_household(household["profile"], source=f"eval:{household['id']}")
     t0 = time.time()
     err = None
+    name = f"eval:{household['id']}"
+    trace = None
+    root = otel_context.attach(otel_context.Context())  # always a new root trace, whatever thread we are on
     try:
-        with neatlogs.trace(f"eval:{household['id']}", kind="WORKFLOW", session_id=hid, eval_case=household["id"]):
+        # Each household is its own root trace (one trace id per household), linked to the suite by attribute.
+        with neatlogs.trace(name, kind="WORKFLOW", session_id=hid, eval_case=household["id"],
+                            suite_trace_id=suite_trace_id) as span:
+            trace = trace_ref(span, name, hid, eval_case=household["id"], suite_trace_id=suite_trace_id)
             run = agent.run(hid)
     except Exception as e:  # keep scoring the rest; a crash counts as predicting nothing
         err = f"{type(e).__name__}: {e}"
         run = state.latest_run(hid)
+    finally:
+        otel_context.detach(root)
     elapsed = time.time() - t0
     cards = (run or {}).get("result", {}) or {}
     cards = cards.get("cards", [])
@@ -63,6 +72,7 @@ def run_one(household: dict) -> dict:
     research = (run or {}).get("research", {})
     return {
         "id": household["id"], "description": household["description"], "household_state_id": hid,
+        "neatlogs": {**(trace or {}), "run_traces": (run or {}).get("traces", [])},
         "error": err, "seconds": round(elapsed, 1), "cost_usd": (run or {}).get("usage", {}).get("cost_usd", 0.0),
         "usage": (run or {}).get("usage"),
         "predicted": sorted(predicted),
@@ -128,9 +138,11 @@ def main():
     rows = []
     print(f"Running Haq on {len(households)} households (verify={config.VERIFY_MODEL}, fast={config.FAST_MODEL}, effort={config.EFFORT}, "
           f"simulate_failure={config.SIMULATE_FAILURE})\n")
-    with neatlogs.trace("eval_suite", kind="WORKFLOW", households=len(households)):
+    with neatlogs.trace("eval_suite", kind="WORKFLOW", households=len(households)) as suite_span:
+        suite = trace_ref(suite_span, "eval_suite")
         with ThreadPoolExecutor(args.workers) as pool:
-            futs = [pool.submit(contextvars.copy_context().run, run_one, h) for h in households]
+            # No context copy here: each household starts its own root trace (see run_one).
+            futs = [pool.submit(run_one, h, suite["trace_id"]) for h in households]
             for fut in as_completed(futs):
                 r = fut.result()
                 rows.append(r)
@@ -150,6 +162,8 @@ def main():
         "timestamp": ts, "git_commit": _git_commit(),
         "config": {"model": config.VERIFY_MODEL, "fast_model": config.FAST_MODEL, "effort": config.EFFORT, "simulate_failure": config.SIMULATE_FAILURE,
                    "only": args.only},
+        "neatlogs": {"workflow": config.WORKFLOW_NAME, "suite_trace_id": suite["trace_id"],
+                     "note": "each household has its own trace: households[].neatlogs.trace_id"},
         "summary": summary, "households": rows,
     }
     path = f"evals/results-{ts}.json"

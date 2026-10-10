@@ -86,6 +86,7 @@ def start_run(hid: str) -> dict:
         "usage": {"input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0,
                   "cache_creation_input_tokens": 0, "web_search_requests": 0, "cost_usd": 0.0},
         "error": None,
+        "traces": [],              # neatlogs trace refs, one per attempt (resume adds one)
     }
     update(hid, lambda h: h["runs"].append(run))
     return run

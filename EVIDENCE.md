@@ -94,7 +94,9 @@ What this shows:
 
 ### About the neatlogs trace identifiers
 
-The **neatlogs trace IDs (OpenTelemetry trace ids) were not recorded at run time**, so they are not listed here.
+The **neatlogs trace IDs (OpenTelemetry trace ids) were not recorded at run time for the runs below**, so they are
+not listed here. Runs from commit `trace-ids` onward record them: see `households[].neatlogs.trace_id` in the
+results files.
 Each bug below is identified instead by three things, which together are enough to find the trace in the neatlogs
 dashboard:
 
