@@ -1,0 +1,496 @@
+"""Haq agent: INTERVIEW -> PLAN -> RESEARCH -> VERIFY -> (RECOVER) -> WRITE.
+
+Every stage is a neatlogs span; every Claude call is an LLM span via the
+wrapped client; every tool execution is a TOOL span. Run progress is saved to
+the state file after each step so a crashed run resumes where it stopped.
+"""
+import contextvars
+import json
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+import neatlogs
+
+from . import catalog, fetcher, state
+from .llm import Usage, create, structured
+
+RESEARCH_WORKERS = 4
+MAX_RESEARCH_TURNS = 10
+
+# --------------------------------------------------------------------------
+# Profile schema (shared by the interview, the eval set and the planner)
+# --------------------------------------------------------------------------
+NULL_STR = {"type": ["string", "null"]}
+NULL_BOOL = {"type": ["boolean", "null"]}
+NULL_NUM = {"type": ["number", "null"]}
+
+MEMBER_SCHEMA = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["name", "relation", "age", "gender", "occupation", "is_widow",
+                 "disability_percent", "is_student", "student_class", "is_pregnant",
+                 "income_tax_payer", "govt_employee_or_pensioner"],
+    "properties": {
+        "name": NULL_STR,
+        "relation": {"type": "string", "description": "relation to the person answering, e.g. self, wife, son, mother"},
+        "age": NULL_NUM,
+        "gender": {"type": "string", "enum": ["male", "female", "other", "unknown"]},
+        "occupation": {"type": "string", "description": "farmer, daily_wage, construction_worker, artisan:<trade>, homemaker, student, unemployed, salaried, small_business, retired, child, unknown"},
+        "is_widow": NULL_BOOL,
+        "disability_percent": NULL_NUM,
+        "is_student": NULL_BOOL,
+        "student_class": NULL_STR,
+        "is_pregnant": NULL_BOOL,
+        "income_tax_payer": NULL_BOOL,
+        "govt_employee_or_pensioner": NULL_BOOL,
+    },
+}
+
+PROFILE_SCHEMA = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["district", "area", "annual_family_income_inr", "ration_card", "house_type",
+                 "has_lpg_connection", "has_bank_account", "caste_category", "land_acres",
+                 "land_owner_relation", "already_receiving", "members"],
+    "properties": {
+        "district": NULL_STR,
+        "area": {"type": "string", "enum": ["rural", "urban", "unknown"]},
+        "annual_family_income_inr": NULL_NUM,
+        "ration_card": {"type": "string", "enum": ["none", "eligible_household", "antyodaya", "unknown"]},
+        "house_type": {"type": "string", "enum": ["pucca", "kutcha", "homeless", "unknown"]},
+        "has_lpg_connection": NULL_BOOL,
+        "has_bank_account": NULL_BOOL,
+        "caste_category": {"type": "string", "enum": ["general", "obc", "sc", "st", "not_shared"]},
+        "land_acres": NULL_NUM,
+        "land_owner_relation": NULL_STR,
+        "already_receiving": {"type": "array", "items": {"type": "string"}},
+        "members": {"type": "array", "items": MEMBER_SCHEMA},
+    },
+}
+
+# --------------------------------------------------------------------------
+# 1. INTERVIEW
+# --------------------------------------------------------------------------
+INTERVIEW_SYSTEM = """You are Haq (हक़), a kind helper for poor and often non-literate families in Uttar Pradesh.
+You interview ONE family to find government schemes they are entitled to. Your words are read aloud.
+
+Rules for questions:
+- Hindi in Devanagari, very simple village Hindi, max 15 words, ONE question at a time.
+- Prefer yes/no or a number. Never use English jargon (say "ज़मीन" not "land holding").
+- Ask in this rough order, skipping anything already known: who lives in the house (ages, men/women),
+  work of each adult, farm land and whose name it is in, rough yearly income, village or city + district,
+  ration card type, pucca/kutcha house, gas connection, any widow, any disabled member (and %),
+  children studying (class), anyone pregnant, govt job / income-tax payer, schemes already received.
+- NEVER ask about caste. Record caste_category only if the user volunteers it; otherwise "not_shared".
+- Stop (done=true) once you know members with ages/gender/occupation, area, income band, land, ration card,
+  house type, and widow/disability/student/pregnancy status. Usually 6-10 questions. Do not over-ask.
+- Keep everything already learned in the profile; update it with each answer. Unknown values stay null/"unknown".
+- When done, next_question_hi is a short thank-you saying you will now search the schemes."""
+
+INTERVIEW_SCHEMA = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["profile", "done", "next_question_hi"],
+    "properties": {
+        "profile": PROFILE_SCHEMA,
+        "done": {"type": "boolean"},
+        "next_question_hi": {"type": "string"},
+    },
+}
+
+GREETING_HI = "नमस्ते! मैं हक़ हूँ। मैं आपके परिवार के लिए सरकारी योजनाएँ ढूँढूँगा। आपके घर में कुल कितने लोग रहते हैं?"
+
+
+def empty_profile() -> dict:
+    return {"district": None, "area": "unknown", "annual_family_income_inr": None,
+            "ration_card": "unknown", "house_type": "unknown", "has_lpg_connection": None,
+            "has_bank_account": None, "caste_category": "not_shared", "land_acres": None,
+            "land_owner_relation": None, "already_receiving": [], "members": []}
+
+
+def interview_turn(hid: str, user_text: str) -> dict:
+    """Record the user's answer, update the profile, return the next question."""
+    h = state.get(hid)
+    with neatlogs.trace("interview_turn", kind="AGENT", session_id=hid, end_user_id=hid):
+        msgs = h["interview"]["messages"] + [{"role": "user", "text": user_text}]
+        transcript = "\n".join(f"{'Family' if m['role'] == 'user' else 'Haq'}: {m['text']}" for m in msgs)
+        profile = h["profile"] or empty_profile()
+        out = structured(
+            None, system=INTERVIEW_SYSTEM, effort="low", max_tokens=8000, schema=INTERVIEW_SCHEMA,
+            user=f"Current profile JSON:\n{json.dumps(profile, ensure_ascii=False)}\n\n"
+                 f"Conversation so far:\n{transcript}\n\nUpdate the profile and give the next question.",
+        )
+
+    def _save(hh):
+        hh["interview"]["messages"] = msgs + [{"role": "assistant", "text": out["next_question_hi"]}]
+        hh["interview"]["done"] = out["done"]
+        hh["profile"] = out["profile"]
+
+    state.update(hid, _save)
+    return out
+
+
+# --------------------------------------------------------------------------
+# 2. PLAN
+# --------------------------------------------------------------------------
+PLAN_SYSTEM = f"""You plan research for Haq, which finds Indian government schemes for a family in Uttar Pradesh.
+Scope: central government schemes and Uttar Pradesh state schemes only.
+
+Known scheme catalog (ids you should use):
+{catalog.catalog_for_prompt()}
+
+From the household profile, list every scheme that each member (or the household as a whole) is
+PLAUSIBLY eligible for, so it can be verified on official sources. Be inclusive but not silly:
+skip a scheme only if the profile clearly rules it out (e.g. no farmland -> no PM-KISAN, nobody 60+ -> no old age pension,
+income-tax payer -> most welfare schemes out). Household-level schemes (ration card, PM-JAY, PMAY-G, Ujjwala)
+get member "household" (Ujjwala: the adult woman). Use catalog ids; only invent a new snake_case id for a
+clearly relevant central/UP scheme that is missing from the catalog. Skip schemes listed in already_receiving
+unless the profile suggests another member also qualifies. At most 14 candidates."""
+
+PLAN_SCHEMA = {
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["candidates"],
+    "properties": {"candidates": {"type": "array", "items": {
+        "type": "object", "additionalProperties": False,
+        "required": ["scheme_id", "member", "why"],
+        "properties": {
+            "scheme_id": {"type": "string"},
+            "member": {"type": "string", "description": "relation/name of the member, or 'household'"},
+            "why": {"type": "string"},
+        }}}},
+}
+
+
+def plan(profile: dict, usage: Usage, hid: str) -> list[dict]:
+    with neatlogs.trace("plan", kind="CHAIN", session_id=hid):
+        out = structured(usage, system=PLAN_SYSTEM, effort="medium", schema=PLAN_SCHEMA,
+                         user=f"Household profile:\n{json.dumps(profile, ensure_ascii=False, indent=1)}")
+    seen, cands = set(), []
+    for c in out["candidates"]:
+        c["scheme_id"] = catalog.canonical_id(c["scheme_id"])
+        key = f"{c['scheme_id']}:{c['member'].strip().lower()}"
+        if key not in seen:
+            seen.add(key)
+            cands.append({**c, "key": key})
+    return cands
+
+
+# --------------------------------------------------------------------------
+# 3-5. RESEARCH + VERIFY + RECOVER (one agent loop per candidate)
+# --------------------------------------------------------------------------
+RESEARCH_SYSTEM = """You are Haq's research agent. You verify ONE government scheme for ONE member of a family in Uttar Pradesh.
+
+Method:
+1. Use web_search to find the scheme's current eligibility rules and benefit. Prefer official domains:
+   *.gov.in, *.nic.in, myscheme.gov.in, the scheme's own portal.
+2. Confirm EVERY eligibility rule you rely on against an OFFICIAL page. Use fetch_official_page to read an
+   official URL directly (it retries and falls back to other official sources automatically). An official
+   page that appears in your web_search results also counts as read.
+3. If a non-official source (news, blogs, coaching sites) disagrees with an official source, trust the
+   official one and call log_conflict with the reason.
+4. Finish by calling exactly ONE of:
+   - record_verified: the member qualifies on the profile facts and you confirmed the rules on an official page.
+   - drop_scheme: the member does not qualify, or you could not confirm the rules on any official page.
+   Never record a scheme that you could only confirm on unofficial sites.
+
+Facts that are unknown in the profile do not disqualify by themselves; judge on what is known and note the
+assumption in assumptions_hi. annual_value_inr: yearly cash or cash-equivalent value for this member
+(pension 1000/month -> 12000; one-time grants: the amount; insurance/health cover or contributory schemes: 0
+with counts_toward_total=false). Write all *_hi fields in simple Hindi (Devanagari) for a non-literate family."""
+
+TOOLS = [
+    {"type": "web_search_20260209", "name": "web_search", "max_uses": 4,
+     "user_location": {"type": "approximate", "country": "IN", "region": "Uttar Pradesh", "timezone": "Asia/Kolkata"}},
+    {
+        "name": "fetch_official_page",
+        "description": "Fetch the text of an OFFICIAL government web page (.gov.in / .nic.in / scheme portal). "
+                       "Retries with backoff and falls back to other official URLs for the same scheme if it fails. "
+                       "Non-official URLs are refused.",
+        "strict": True,
+        "input_schema": {"type": "object", "additionalProperties": False, "required": ["url", "query"],
+                         "properties": {"url": {"type": "string"},
+                                        "query": {"type": "string", "description": "keywords to focus on, e.g. 'eligibility age income'"}}},
+    },
+    {
+        "name": "log_conflict",
+        "description": "Record that an unofficial source conflicts with an official one, and which you trusted.",
+        "strict": True,
+        "input_schema": {"type": "object", "additionalProperties": False,
+                         "required": ["topic", "official_url", "official_says", "unofficial_url", "unofficial_says", "reason"],
+                         "properties": {k: {"type": "string"} for k in
+                                        ["topic", "official_url", "official_says", "unofficial_url", "unofficial_says", "reason"]}},
+    },
+    {
+        "name": "record_verified",
+        "description": "Final answer: the member is eligible and the rules were confirmed on an official page.",
+        "strict": True,
+        "input_schema": {
+            "type": "object", "additionalProperties": False,
+            "required": ["scheme_id", "scheme_name_hi", "member", "official_url", "rules_checked",
+                         "benefit_hi", "annual_value_inr", "counts_toward_total", "documents_hi",
+                         "where_to_apply_hi", "apply_url", "assumptions_hi"],
+            "properties": {
+                "scheme_id": {"type": "string"},
+                "scheme_name_hi": {"type": "string"},
+                "member": {"type": "string"},
+                "official_url": {"type": "string", "description": "official page where the rules were confirmed"},
+                "rules_checked": {"type": "array", "items": {
+                    "type": "object", "additionalProperties": False,
+                    "required": ["rule", "member_fact", "official_url"],
+                    "properties": {"rule": {"type": "string"}, "member_fact": {"type": "string"},
+                                   "official_url": {"type": "string"}}}},
+                "benefit_hi": {"type": "string"},
+                "annual_value_inr": {"type": "integer"},
+                "counts_toward_total": {"type": "boolean"},
+                "documents_hi": {"type": "array", "items": {"type": "string"}},
+                "where_to_apply_hi": {"type": "string"},
+                "apply_url": {"type": "string"},
+                "assumptions_hi": {"type": "string"},
+            },
+        },
+    },
+    {
+        "name": "drop_scheme",
+        "description": "Final answer: not eligible, or could not be verified on an official source.",
+        "strict": True,
+        "input_schema": {"type": "object", "additionalProperties": False,
+                         "required": ["scheme_id", "member", "reason", "official_url"],
+                         "properties": {"scheme_id": {"type": "string"}, "member": {"type": "string"},
+                                        "reason": {"type": "string"},
+                                        "official_url": {"type": "string", "description": "official page used, or empty"}}},
+    },
+]
+
+
+def _search_result_urls(content) -> list[str]:
+    urls = []
+    for b in content:
+        if b.type == "web_search_tool_result" and isinstance(b.content, list):
+            urls.extend(r.url for r in b.content if getattr(r, "url", None))
+    return urls
+
+
+def _norm(url: str) -> str:
+    return url.strip().rstrip("/").lower().replace("http://", "https://").replace("://www.", "://")
+
+
+def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str) -> dict:
+    """Agent loop for a single (scheme, member). Returns a verified or dropped record."""
+    seed = catalog.BY_ID.get(cand["scheme_id"])
+    seed_txt = (f"Known official starting points: {', '.join(seed['official_urls'] + seed['fallback_urls'])}\n"
+                f"Catalog note (re-verify, may be outdated): {seed['hint']}") if seed else "Not in catalog."
+    user = (f"Scheme to verify: {cand['scheme_id']}\nMember: {cand['member']}\nWhy planned: {cand['why']}\n{seed_txt}\n\n"
+            f"Household profile:\n{json.dumps(profile, ensure_ascii=False)}")
+    messages = [{"role": "user", "content": user}]
+    read_official: set[str] = set()      # official URLs successfully read (fetch or search result)
+    conflicts, recovery = [], []
+
+    def log_recovery(entry):
+        recovery.append(entry)
+
+    with neatlogs.trace(f"research:{cand['key']}", kind="AGENT", session_id=hid):
+        for turn in range(MAX_RESEARCH_TURNS):
+            resp = create(usage, effort="medium", system=RESEARCH_SYSTEM, tools=TOOLS, messages=messages)
+            messages.append({"role": "assistant", "content": resp.content})
+            read_official.update(_norm(u) for u in _search_result_urls(resp.content) if catalog.is_official(u))
+
+            if resp.stop_reason == "pause_turn":
+                continue  # server tool still working; resend to let it finish
+            if resp.stop_reason == "refusal":
+                return _dropped(cand, "model declined", "", conflicts, recovery)
+            tool_uses = [b for b in resp.content if b.type == "tool_use"]
+            if not tool_uses:
+                messages.append({"role": "user", "content": "Finish by calling record_verified or drop_scheme."})
+                continue
+
+            results, final = [], None
+            for tu in tool_uses:
+                out, is_err, fin = _run_tool(tu.name, tu.input, cand, read_official, conflicts, log_recovery)
+                results.append({"type": "tool_result", "tool_use_id": tu.id,
+                                "content": out, **({"is_error": True} if is_err else {})})
+                final = final or fin
+            messages.append({"role": "user", "content": results})
+            if final:
+                final.update(conflicts=conflicts, recovery_log=recovery, turns=turn + 1)
+                return final
+
+    return _dropped(cand, "verification budget exhausted without official confirmation", "", conflicts, recovery)
+
+
+def _dropped(cand, reason, url, conflicts, recovery):
+    return {"status": "dropped", "scheme_id": cand["scheme_id"], "member": cand["member"],
+            "reason": reason, "official_url": url, "conflicts": conflicts, "recovery_log": recovery}
+
+
+def _run_tool(name, args, cand, read_official, conflicts, log_recovery):
+    """Execute a client tool. Returns (content_str, is_error, final_record_or_None)."""
+    with neatlogs.trace(f"tool:{name}", kind="TOOL", tool_name=name, input=json.dumps(args, ensure_ascii=False)[:2000]):
+        if name == "fetch_official_page":
+            r = fetcher.fetch_official(args["url"], cand["scheme_id"], args.get("query"))
+            failed = [a for a in r["attempts"] if not a["ok"]]
+            if failed or r.get("fell_back"):
+                log_recovery({"requested": args["url"], "served_by": r["url"] if r["ok"] else None,
+                              "ok": r["ok"], "attempts": r["attempts"]})
+            if not r["ok"]:
+                return (f"FAILED: {r.get('error')}. Attempts: {json.dumps(r['attempts'], ensure_ascii=False)}. "
+                        "Try another official URL (web_search for it) or drop the scheme."), True, None
+            read_official.add(_norm(r["url"]))
+            note = f"(requested {args['url']} failed; served by official fallback {r['url']})\n" if r.get("fell_back") else ""
+            return f"{note}SOURCE: {r['url']}\n\n{r['text']}", False, None
+
+        if name == "log_conflict":
+            conflicts.append(dict(args))
+            return "conflict logged; continue using the official source", False, None
+
+        if name == "drop_scheme":
+            return "ok", False, _dropped(cand, args["reason"], args.get("official_url", ""), [], [])
+
+        if name == "record_verified":
+            urls = [args["official_url"]] + [r["official_url"] for r in args["rules_checked"]]
+            bad = [u for u in urls if not catalog.is_official(u)]
+            unread = [u for u in urls if catalog.is_official(u) and _norm(u) not in read_official]
+            if bad or unread or not args["rules_checked"]:
+                msg = ("REJECTED: every rule must cite an official URL you actually read in this session. "
+                       f"Non-official: {bad}. Not read yet: {unread}. Read them with fetch_official_page "
+                       "(or cite an official URL from your search results), or call drop_scheme.")
+                return msg, True, None
+            rec = {"status": "verified", **args, "scheme_id": catalog.canonical_id(args["scheme_id"])}
+            return "recorded", False, rec
+
+        return f"unknown tool {name}", True, None
+
+
+# --------------------------------------------------------------------------
+# 6. WRITE
+# --------------------------------------------------------------------------
+SUMMARY_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["summary_hi"],
+                  "properties": {"summary_hi": {"type": "string"}}}
+
+
+def write(profile: dict, research: dict, usage: Usage, hid: str) -> dict:
+    with neatlogs.trace("write", kind="CHAIN", session_id=hid):
+        received = {catalog.canonical_id(s) for s in profile.get("already_receiving", [])}
+        cards = []
+        for rec in research.values():
+            if rec.get("status") != "verified":
+                continue
+            seed = catalog.BY_ID.get(rec["scheme_id"], {})
+            already = rec["scheme_id"] in received
+            cards.append({
+                "scheme_id": rec["scheme_id"],
+                "emoji": seed.get("emoji", "📄"),
+                "name_hi": rec["scheme_name_hi"],
+                "name_en": seed.get("name_en", rec["scheme_id"]),
+                "level": seed.get("level", "central"),
+                "member": rec["member"],
+                "benefit_hi": rec["benefit_hi"],
+                "annual_value_inr": rec["annual_value_inr"],
+                "counts_toward_total": rec["counts_toward_total"] and not already,
+                "already_receiving": already,
+                "documents_hi": rec["documents_hi"],
+                "where_to_apply_hi": rec["where_to_apply_hi"],
+                "apply_url": rec["apply_url"],
+                "official_url": rec["official_url"],
+                "rules_checked": rec["rules_checked"],
+                "assumptions_hi": rec["assumptions_hi"],
+            })
+        cards.sort(key=lambda c: (-int(c["counts_toward_total"]), -c["annual_value_inr"]))
+        total = sum(c["annual_value_inr"] for c in cards if c["counts_toward_total"])
+        brief = [{"name": c["name_hi"], "member": c["member"], "benefit": c["benefit_hi"],
+                  "value": c["annual_value_inr"], "counted": c["counts_toward_total"]} for c in cards]
+        summary = structured(
+            usage, effort="low", max_tokens=4000, schema=SUMMARY_SCHEMA,
+            system="Write a warm spoken summary in very simple Hindi (Devanagari) for a non-literate family. "
+                   "3-5 short sentences, max 70 words. Say the total rupees per year they are missing, name the top "
+                   "2-3 schemes and for whom, and say to take the listed documents to the CSC / Jan Seva Kendra. "
+                   "Write numbers as words a Hindi speaker would say (e.g. 'बारह हज़ार रुपये'). No English.",
+            user=json.dumps({"total_inr_per_year": total, "schemes": brief}, ensure_ascii=False),
+        )["summary_hi"]
+    return {"total_missing_inr_per_year": total, "cards": cards, "summary_hi": summary}
+
+
+# --------------------------------------------------------------------------
+# Orchestrator (resumable)
+# --------------------------------------------------------------------------
+def run(hid: str, resume: bool = True) -> dict:
+    """Run (or resume) the full pipeline for a household. Returns the finished run."""
+    h = state.get(hid)
+    last = h["runs"][-1] if h["runs"] else None
+    run_ = last if (resume and last and last["status"] != "done") else state.start_run(hid)
+    rid = run_["id"]
+    state.update_run(hid, rid, lambda r: r.update(status="running", error=None))
+    usage = Usage(run_["usage"])
+    profile = h["profile"]
+
+    with neatlogs.trace("haq_run", kind="WORKFLOW", session_id=hid, end_user_id=hid,
+                        run_id=rid, resumed=bool(run_["candidates"])):
+        try:
+            # PLAN
+            cands = run_["candidates"]
+            if not cands:
+                cands = plan(profile, usage, hid)
+                state.update_run(hid, rid, lambda r: r.update(candidates=cands, stage="research",
+                                                              usage=usage.snapshot()))
+            # RESEARCH + VERIFY + RECOVER (skip candidates finished before a crash)
+            done = set(state.get(hid)["runs"][-1]["research"])
+            todo = [c for c in cands if c["key"] not in done]
+            with ThreadPoolExecutor(RESEARCH_WORKERS) as pool:
+                futs = {pool.submit(contextvars.copy_context().run, research_one, profile, c, usage, hid, rid): c
+                        for c in todo}
+                for fut in as_completed(futs):
+                    c = futs[fut]
+                    try:
+                        rec = fut.result()
+                    except Exception as e:  # one broken lookup must not sink the family's run
+                        rec = _dropped(c, f"error: {type(e).__name__}: {e}"[:300], "", [], [])
+
+                    def _save(r, c=c, rec=rec):
+                        r["research"][c["key"]] = rec
+                        r["conflicts"].extend({**x, "scheme": c["key"]} for x in rec.get("conflicts", []))
+                        r["recovery_log"].extend({**x, "scheme": c["key"]} for x in rec.get("recovery_log", []))
+                        r["usage"] = usage.snapshot()
+                    state.update_run(hid, rid, _save)
+
+            # WRITE
+            state.update_run(hid, rid, lambda r: r.update(stage="write"))
+            research = state.get(hid)["runs"][-1]["research"]
+            result = write(profile, research, usage, hid)
+            return state.update_run(hid, rid, lambda r: r.update(
+                result=result, stage="done", status="done", finished_at=time.time(), usage=usage.snapshot()))
+        except Exception as e:
+            state.update_run(hid, rid, lambda r: r.update(status="failed", error=f"{type(e).__name__}: {e}",
+                                                          usage=usage.snapshot()))
+            raise
+
+
+# --------------------------------------------------------------------------
+# Follow-ups for families who come back
+# --------------------------------------------------------------------------
+FOLLOWUP_SCHEMA = {
+    "type": "object", "additionalProperties": False,
+    "required": ["answer_hi", "profile_changed", "profile"],
+    "properties": {"answer_hi": {"type": "string"}, "profile_changed": {"type": "boolean"}, "profile": PROFILE_SCHEMA},
+}
+
+
+def followup(hid: str, question: str) -> dict:
+    h = state.get(hid)
+    last = next((r for r in reversed(h["runs"]) if r["status"] == "done"), None)
+    result = last["result"] if last else None
+    with neatlogs.trace("followup", kind="AGENT", session_id=hid, end_user_id=hid):
+        out = structured(
+            None, effort="low", max_tokens=8000, schema=FOLLOWUP_SCHEMA,
+            system="You are Haq. A family that already got scheme results is back with a question or new information. "
+                   "Answer in very simple spoken Hindi (max 60 words) using ONLY their saved results and profile. "
+                   "If they report a change (new baby, death, new job, land, disability...), update the profile, set "
+                   "profile_changed=true and tell them you will check schemes again. Otherwise return the profile unchanged.",
+            user=json.dumps({"profile": h["profile"], "results": result, "question": question}, ensure_ascii=False),
+        )
+
+    def _save(hh):
+        hh["interview"]["messages"] += [{"role": "user", "text": question}, {"role": "assistant", "text": out["answer_hi"]}]
+        if out["profile_changed"]:
+            hh["profile"] = out["profile"]
+    state.update(hid, _save)
+    return out

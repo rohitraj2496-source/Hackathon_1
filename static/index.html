@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>हक़ — आपकी सरकारी योजनाएँ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fbf7f0; --surface: #ffffff; --ink: #1d1b16; --muted: #5d574b; --line: #e6dfd2;
+    --accent: #d2551b; --accent-ink: #ffffff; --ok: #1f7a4d; --ok-bg: #e5f4ec; --warn-bg: #fff3d6;
+    --money: #0f5c38; --shadow: 0 2px 10px rgba(40, 30, 10, .08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15130f; --surface: #211e18; --ink: #f4efe6; --muted: #b9b0a0; --line: #3a352c;
+      --accent: #ff7a3d; --accent-ink: #1a0d05; --ok: #5fd39a; --ok-bg: #173327; --warn-bg: #3a2f12;
+      --money: #7be3ad; --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15130f; --surface: #211e18; --ink: #f4efe6; --muted: #b9b0a0; --line: #3a352c;
+    --accent: #ff7a3d; --accent-ink: #1a0d05; --ok: #5fd39a; --ok-bg: #173327; --warn-bg: #3a2f12;
+    --money: #7be3ad; --shadow: none;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font-family: "Noto Sans Devanagari", system-ui, sans-serif; font-size: 22px; line-height: 1.5; }
+  main { max-width: 680px; margin: 0 auto; padding: 16px 16px 120px; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  h1 { font-size: 40px; margin: 8px 0; font-weight: 800; }
+  h1 small { display: block; font-size: 18px; font-weight: 400; color: var(--muted); }
+  button { font: inherit; cursor: pointer; }
+  .ghost { background: none; border: 2px solid var(--line); color: var(--ink); border-radius: 14px; padding: 8px 14px; font-size: 18px; }
+
+  .bubble { background: var(--surface); border: 2px solid var(--line); border-radius: 22px; padding: 18px 20px;
+            margin: 14px 0; box-shadow: var(--shadow); font-size: 26px; font-weight: 600; }
+  .bubble .speak { float: right; margin-left: 8px; }
+  .you { background: var(--warn-bg); font-weight: 400; font-size: 22px; text-align: right; }
+
+  .mic-wrap { display: flex; flex-direction: column; align-items: center; margin: 22px 0 8px; }
+  #mic { width: 150px; height: 150px; border-radius: 50%; border: none; background: var(--accent);
+         color: var(--accent-ink); font-size: 64px; box-shadow: 0 6px 20px rgba(210, 85, 27, .35); }
+  #mic.listening { animation: pulse 1.1s infinite; }
+  @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
+  .mic-label { margin-top: 10px; color: var(--muted); font-size: 20px; text-align: center; }
+
+  form { display: flex; gap: 10px; margin-top: 14px; }
+  input[type=text] { flex: 1; min-width: 0; font: inherit; font-size: 22px; padding: 14px 16px; border-radius: 16px;
+                     border: 2px solid var(--line); background: var(--surface); color: var(--ink); }
+  form button { border: none; background: var(--ink); color: var(--bg); border-radius: 16px; padding: 0 20px; font-size: 22px; }
+
+  .progress { background: var(--surface); border: 2px dashed var(--line); border-radius: 22px; padding: 18px 20px; margin: 18px 0; }
+  .bar { height: 16px; background: var(--line); border-radius: 10px; overflow: hidden; margin-top: 10px; }
+  .bar > div { height: 100%; background: var(--accent); width: 0; transition: width .4s; }
+
+  .total { background: var(--ok-bg); border-radius: 26px; padding: 22px; margin: 20px 0; text-align: center; }
+  .total .lbl { font-size: 22px; }
+  .total .amt { font-size: 56px; font-weight: 800; color: var(--money); line-height: 1.15; }
+  .total .sub { font-size: 20px; color: var(--muted); }
+
+  .card { background: var(--surface); border: 2px solid var(--line); border-radius: 24px; padding: 18px 18px 14px;
+          margin: 16px 0; box-shadow: var(--shadow); }
+  .card .top { display: flex; gap: 14px; align-items: flex-start; }
+  .card .icon { font-size: 54px; line-height: 1; }
+  .card h3 { margin: 0; font-size: 26px; line-height: 1.3; }
+  .card .who { color: var(--muted); font-size: 20px; }
+  .card .money { font-size: 30px; font-weight: 800; color: var(--money); margin: 10px 0 4px; }
+  .card .benefit { font-size: 20px; }
+  .card .row { margin-top: 12px; font-size: 20px; }
+  .card .row b { display: block; font-size: 18px; color: var(--muted); font-weight: 600; }
+  .card ul { margin: 4px 0 0; padding-left: 24px; }
+  .card .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+  .card a, .card .actions button { display: inline-block; border-radius: 14px; padding: 10px 14px; font-size: 18px;
+            text-decoration: none; border: 2px solid var(--line); color: var(--ink); background: none; }
+  .card a.official { border-color: var(--ok); color: var(--ok); font-weight: 600; }
+  .tag { display: inline-block; font-size: 15px; padding: 2px 10px; border-radius: 10px; background: var(--warn-bg); margin-top: 6px; }
+  .hidden { display: none !important; }
+  .muted { color: var(--muted); font-size: 18px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>हक़ <small>आपके परिवार की सरकारी योजनाएँ</small></h1>
+    <button class="ghost" id="restart" title="नया परिवार">🔄 नया</button>
+  </header>
+
+  <div id="chat"></div>
+
+  <section id="progress" class="progress hidden" aria-live="polite">
+    <div id="progressText">🔎 सरकारी वेबसाइटों पर जाँच हो रही है…</div>
+    <div class="bar"><div id="barFill"></div></div>
+    <div class="muted" id="progressSub"></div>
+  </section>
+
+  <section id="results" class="hidden">
+    <div class="total">
+      <div class="lbl">आपका परिवार हर साल इतना पैसा नहीं ले रहा:</div>
+      <div class="amt" id="totalAmt">₹0</div>
+      <div class="sub" id="totalSub"></div>
+      <button class="ghost" id="speakSummary" style="margin-top:12px">🔊 फिर से सुनें</button>
+    </div>
+    <div id="cards"></div>
+  </section>
+
+  <div class="mic-wrap">
+    <button id="mic" aria-label="बोलने के लिए दबाएँ">🎤</button>
+    <div class="mic-label" id="micLabel">दबाएँ और बोलें</div>
+  </div>
+  <form id="textForm">
+    <input id="textInput" type="text" placeholder="या यहाँ लिखें…" autocomplete="off">
+    <button type="submit" aria-label="भेजें">➤</button>
+  </form>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  del(k) { try { localStorage.removeItem(k); } catch {} },
+};
+let hid = store.get("haq_hid");
+let pollTimer = null;
+let lastSpokenStage = null;
+let busy = false;
+
+// ---------- Speech output (Hindi) ----------
+let hindiVoice = null;
+function pickVoice() {
+  const voices = speechSynthesis.getVoices();
+  hindiVoice = voices.find(v => v.lang === "hi-IN") || voices.find(v => v.lang.startsWith("hi")) || null;
+}
+if ("speechSynthesis" in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+function speak(text) {
+  if (!("speechSynthesis" in window) || !text) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "hi-IN"; u.rate = 0.9;
+  if (hindiVoice) u.voice = hindiVoice;
+  speechSynthesis.speak(u);
+}
+
+// ---------- Speech input (Hindi) ----------
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null;
+if (SR) {
+  rec = new SR();
+  rec.lang = "hi-IN"; rec.interimResults = false; rec.maxAlternatives = 1;
+  rec.onresult = (e) => send(e.results[0][0].transcript);
+  rec.onend = () => { $("mic").classList.remove("listening"); $("micLabel").textContent = "दबाएँ और बोलें"; };
+  rec.onerror = () => { $("micLabel").textContent = "सुनाई नहीं दिया — फिर दबाएँ या नीचे लिखें"; };
+} else {
+  $("micLabel").textContent = "इस ब्राउज़र में माइक नहीं चलता — नीचे लिखें";
+}
+$("mic").onclick = () => {
+  if (!rec) { $("textInput").focus(); return; }
+  speechSynthesis.cancel();
+  try { rec.start(); $("mic").classList.add("listening"); $("micLabel").textContent = "सुन रहा हूँ…"; } catch {}
+};
+$("textForm").onsubmit = (e) => {
+  e.preventDefault();
+  const t = $("textInput").value.trim();
+  if (t) { $("textInput").value = ""; send(t); }
+};
+
+// ---------- Chat ----------
+function bubble(text, who = "haq") {
+  const d = document.createElement("div");
+  d.className = "bubble" + (who === "you" ? " you" : "");
+  if (who === "haq") {
+    const b = document.createElement("button");
+    b.className = "ghost speak"; b.textContent = "🔊"; b.title = "सुनें"; b.onclick = () => speak(text);
+    d.appendChild(b);
+  }
+  d.appendChild(document.createTextNode(text));
+  $("chat").appendChild(d);
+  d.scrollIntoView({ behavior: "smooth", block: "end" });
+}
+function showLast(messages, n = 2) {
+  $("chat").innerHTML = "";
+  messages.slice(-n).forEach(m => bubble(m.text, m.role === "user" ? "you" : "haq"));
+}
+
+async function api(path, body) {
+  const r = await fetch(path, { method: body === undefined ? "GET" : "POST",
+    headers: { "Content-Type": "application/json" }, body: body === undefined ? undefined : JSON.stringify(body) });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+async function start() {
+  const d = await api("/api/households", {});
+  hid = d.id; store.set("haq_hid", hid);
+  $("chat").innerHTML = ""; bubble(d.question_hi); speak(d.question_hi);
+}
+
+async function send(text) {
+  if (busy) return;
+  busy = true;
+  bubble(text, "you");
+  const thinking = document.createElement("div");
+  thinking.className = "muted"; thinking.textContent = "⏳ …"; $("chat").appendChild(thinking);
+  try {
+    const d = await api(`/api/households/${hid}/answer`, { text });
+    thinking.remove();
+    bubble(d.question_hi); speak(d.question_hi);
+    // interview just finished, or a follow-up changed the profile -> a run is starting
+    if (d.rerun || (d.done && $("results").classList.contains("hidden"))) startPolling();
+  } catch (e) {
+    thinking.remove();
+    const msg = "माफ़ कीजिए, कुछ गड़बड़ हुई। फिर से बोलें।";
+    bubble(msg); speak(msg);
+  } finally { busy = false; }
+}
+
+// ---------- Progress + results ----------
+function startPolling() {
+  clearInterval(pollTimer);
+  $("progress").classList.remove("hidden");
+  pollTimer = setInterval(poll, 2500);
+  poll();
+}
+async function poll() {
+  let d;
+  try { d = await api(`/api/households/${hid}`); } catch { return; }
+  const run = d.run;
+  if (!run) return;
+  if (run.status === "done" && d.result) {
+    clearInterval(pollTimer);
+    $("progress").classList.add("hidden");
+    render(d.result, true);
+    return;
+  }
+  if (run.status === "failed" && !d.running) {
+    clearInterval(pollTimer);
+    $("progressText").textContent = "⚠️ जाँच बीच में रुक गई। फिर से कोशिश करें।";
+    const b = document.createElement("button"); b.className = "ghost"; b.textContent = "🔁 फिर से";
+    b.onclick = async () => { b.remove(); await api(`/api/households/${hid}/run`, {}); startPolling(); };
+    $("progress").appendChild(b);
+    return;
+  }
+  const pct = run.total ? Math.round(100 * run.done / run.total) : 5;
+  $("barFill").style.width = pct + "%";
+  const stageText = {
+    plan: "📝 आपके परिवार के लिए योजनाएँ चुन रहे हैं…",
+    research: `🔎 सरकारी वेबसाइटों पर जाँच: ${run.done} / ${run.total}`,
+    write: "✍️ नतीजे तैयार हो रहे हैं…",
+  }[run.stage] || "⏳ …";
+  $("progressText").textContent = stageText;
+  $("progressSub").textContent = run.verified ? `✅ ${run.verified} योजनाएँ पक्की हुईं` +
+    (run.recoveries ? ` · 🔁 ${run.recoveries} बार दूसरी सरकारी साइट से जाँचा` : "") : "";
+  if (run.stage !== lastSpokenStage) {
+    lastSpokenStage = run.stage;
+    if (run.stage === "research") speak("अब मैं सरकारी वेबसाइटों पर आपकी योजनाएँ जाँच रहा हूँ। थोड़ा इंतज़ार करें।");
+  }
+}
+
+const rupee = (n) => "₹" + Number(n || 0).toLocaleString("en-IN");
+let lastSummary = "";
+function render(result, speakIt) {
+  $("results").classList.remove("hidden");
+  $("totalAmt").textContent = rupee(result.total_missing_inr_per_year) + " / साल";
+  const extra = result.cards.filter(c => !c.counts_toward_total && !c.already_receiving).length;
+  $("totalSub").textContent = `${result.cards.length} योजनाएँ मिलीं` + (extra ? ` · ${extra} बीमा/इलाज वाली योजनाएँ अलग से` : "");
+  lastSummary = result.summary_hi;
+  const box = $("cards"); box.innerHTML = "";
+  for (const c of result.cards) {
+    const el = document.createElement("article");
+    el.className = "card";
+    const money = c.counts_toward_total ? `${rupee(c.annual_value_inr)} / साल` : "";
+    el.innerHTML = `
+      <div class="top"><div class="icon" aria-hidden="true"></div>
+        <div><h3></h3><div class="who"></div>${c.already_receiving ? '<span class="tag">पहले से मिल रही</span>' : ""}</div></div>
+      ${money ? `<div class="money">${money}</div>` : ""}
+      <div class="benefit"></div>
+      <div class="row"><b>📄 ज़रूरी कागज़</b><ul></ul></div>
+      <div class="row"><b>📍 कहाँ आवेदन करें</b><span class="where"></span></div>
+      <div class="actions">
+        <button class="say">🔊 सुनें</button>
+        <a class="official" target="_blank" rel="noopener">✅ सरकारी स्रोत</a>
+        <a class="apply" target="_blank" rel="noopener">📝 आवेदन</a>
+      </div>`;
+    el.querySelector(".icon").textContent = c.emoji;
+    el.querySelector("h3").textContent = c.name_hi;
+    el.querySelector(".who").textContent = "👤 " + c.member;
+    el.querySelector(".benefit").textContent = c.benefit_hi;
+    const ul = el.querySelector("ul");
+    c.documents_hi.forEach(doc => { const li = document.createElement("li"); li.textContent = doc; ul.appendChild(li); });
+    el.querySelector(".where").textContent = c.where_to_apply_hi;
+    const off = el.querySelector(".official"); off.href = c.official_url; off.title = c.official_url;
+    const ap = el.querySelector(".apply");
+    if (c.apply_url && c.apply_url.startsWith("http")) ap.href = c.apply_url; else ap.remove();
+    el.querySelector(".say").onclick = () => speak(
+      `${c.name_hi}. ${c.member} के लिए. ${c.benefit_hi}. ज़रूरी कागज़: ${c.documents_hi.join(", ")}. आवेदन: ${c.where_to_apply_hi}`);
+    box.appendChild(el);
+  }
+  if (speakIt) speak(result.summary_hi);
+}
+$("speakSummary").onclick = () => speak(lastSummary);
+
+$("restart").onclick = () => {
+  clearInterval(pollTimer); store.del("haq_hid"); hid = null;
+  $("results").classList.add("hidden"); $("progress").classList.add("hidden"); lastSpokenStage = null;
+  start();
+};
+
+// ---------- Boot: resume a returning family ----------
+(async function boot() {
+  if (hid) {
+    try {
+      const d = await api(`/api/households/${hid}`);
+      showLast(d.interview.messages);
+      if (d.result && d.run && d.run.status === "done") {
+        render(d.result, false);
+        const msg = "आपका स्वागत है! आपके नतीजे नीचे हैं। कोई सवाल हो तो माइक दबाकर पूछें।";
+        bubble(msg);
+      } else if (d.run) {
+        if (d.run.status !== "done" && !d.running) await api(`/api/households/${hid}/run`, {});
+        startPolling();
+      }
+      return;
+    } catch { store.del("haq_hid"); }
+  }
+  await start();
+})();
+</script>
+</body>
+</html>
