@@ -1,0 +1,1 @@
+.env is ready with both keys. Use Sonnet as the default model for the agent and evals to keep costs low. Test with one household first: a UP family where the mother is a widow and the father is a farmer with 2 acres. Then run the full evals and tell me the score. Confirm traces are showing in neatlogs.
