@@ -31,7 +31,8 @@ STATE_FILE = os.environ.get("HAQ_STATE_FILE", "data/state.json")
 FALLBACK_HEADERS = {"anthropic-beta": "server-side-fallback-2026-07-01"}
 FALLBACK_BODY = {"fallbacks": "default"}
 
-client = neatlogs.wrap(Anthropic(max_retries=4))
+# Bounded so one stalled request cannot hold a research loop for long (the SDK default is 10 min x retries).
+client = neatlogs.wrap(Anthropic(max_retries=3, timeout=180.0))
 
 # USD per million tokens (cache write = 1.25x input). Web search is billed per request.
 PRICES = {

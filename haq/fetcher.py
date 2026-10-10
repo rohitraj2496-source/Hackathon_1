@@ -27,6 +27,9 @@ BASE_DELAY = 1.0
 TIMEOUT = 12.0
 PDF_TIMEOUT = 60.0
 PDF_MAX_PAGES = 200
+PAGE_DEADLINE = 30.0
+PDF_DEADLINE = 90.0
+MAX_BYTES = 25_000_000
 MAX_CHARS = 12000
 UA = "Mozilla/5.0 (HaqBot; +https://github.com/rohitraj2496-source/Hackathon_1) welfare-eligibility-research"
 
@@ -74,11 +77,28 @@ def _tls(legacy: bool, verify: bool) -> ssl.SSLContext:
     return ctx
 
 
+def _get_with_deadline(http: httpx.Client, url: str, deadline_s: float) -> httpx.Response:
+    """GET with a total wall-clock deadline (httpx timeouts are per read, so a server trickling bytes
+    could otherwise hold a lookup open indefinitely) and a size cap."""
+    start = time.time()
+    with http.stream("GET", url) as resp:
+        chunks, size = [], 0
+        for chunk in resp.iter_bytes():
+            chunks.append(chunk)
+            size += len(chunk)
+            if time.time() - start > deadline_s:
+                raise LookupFailed(f"download exceeded {deadline_s:.0f}s deadline")
+            if size > MAX_BYTES:
+                raise LookupFailed(f"document larger than {MAX_BYTES // 1_000_000} MB")
+        resp._content = b"".join(chunks)
+        return resp
+
+
 def _get(url: str, legacy: bool, verify: bool) -> str:
     with httpx.Client(timeout=PDF_TIMEOUT if url.lower().endswith(".pdf") else TIMEOUT,
                       follow_redirects=True, verify=_tls(legacy, verify),
                       headers={"User-Agent": UA, "Accept-Language": "hi,en;q=0.8"}) as http:
-        resp = http.get(url)
+        resp = _get_with_deadline(http, url, PDF_DEADLINE if url.lower().endswith(".pdf") else PAGE_DEADLINE)
         resp.raise_for_status()
         if not catalog.is_official(str(resp.url)):
             raise LookupFailed(f"redirected off official domain to {resp.url}")
