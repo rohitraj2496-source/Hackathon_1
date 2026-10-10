@@ -221,7 +221,7 @@ def plan(profile: dict, usage: Usage, hid: str) -> list[dict]:
 # --------------------------------------------------------------------------
 # 3-5. RESEARCH + VERIFY + RECOVER (one agent loop per candidate)
 # --------------------------------------------------------------------------
-RESEARCH_SYSTEM = """You are Haq's research agent. You verify ONE government scheme for ONE member of a family in Uttar Pradesh.
+RESEARCH_SYSTEM = """You are Haq's research agent. You verify ONE government scheme for one or more members of a family in Uttar Pradesh.
 
 Method:
 1. You have AT MOST 2 web searches for this scheme (none if cached official rules are given). Use them to
@@ -238,7 +238,8 @@ Method:
    with verdict: "agrees" (the official page says the same), "conflicts" (the official page says something
    different; the official one is trusted) or "not_on_official_source" (no official page states it, so it is
    NOT used as a confirmed rule). You may also call log_conflict as soon as you notice a conflict.
-4. Finish by calling exactly ONE of:
+4. Finish with exactly ONE of these calls PER MEMBER listed (call them together in the same turn; the
+   member field must be the member value exactly as given):
    - record_verified with verification="confirmed": the member qualifies and you confirmed EVERY rule you rely
      on (including any income limit) on an official page.
    - record_verified with verification="likely": you confirmed the scheme's core eligibility on an official page
@@ -353,10 +354,19 @@ def _norm(url: str) -> str:
     return url.strip().rstrip("/").lower().replace("http://", "https://").replace("://www.", "://")
 
 
-def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str,
-                 abort: threading.Event | None = None) -> dict:
-    """Agent loop for a single (scheme, member). Returns a verified or dropped record."""
-    seed = catalog.BY_ID.get(cand["scheme_id"])
+def _member_key(name: str) -> str:
+    return " ".join((name or "").strip().lower().split())
+
+
+def research_scheme(profile: dict, cands: list[dict], usage: Usage, hid: str, run_id: str,
+                    abort: threading.Event | None = None) -> dict[str, dict]:
+    """One agent loop for one scheme, deciding every planned member of this family together.
+
+    Returns {candidate key: verified / likely / dropped record}. Members the loop could not decide
+    are dropped with a reason."""
+    scheme_id = cands[0]["scheme_id"]
+    by_member = {_member_key(c["member"]): c for c in cands}
+    seed = catalog.BY_ID.get(scheme_id)
     if seed:
         docs = seed.get("rules_docs", [])
         seed_txt = (f"Known official starting points: {', '.join(seed['official_urls'] + seed['fallback_urls'])}\n"
@@ -365,12 +375,13 @@ def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str,
                     + f"Catalog note (re-verify, may be outdated): {seed['hint']}")
     else:
         seed_txt = "Not in catalog."
-    cached_rules = cache.get_rules(cand["scheme_id"])
+    cached_rules = cache.get_rules(scheme_id)
     # Shared instructions, then this scheme's context (same for every member/family), then the family.
-    system = system_blocks(RESEARCH_SYSTEM, f"SCHEME: {cand['scheme_id']}\n{seed_txt}"
+    system = system_blocks(RESEARCH_SYSTEM, f"SCHEME: {scheme_id}\n{seed_txt}"
                            + ("\n\n" + rules_block(cached_rules) if cached_rules else ""))
-    user = (f"Scheme to verify: {cand['scheme_id']}\nMember: {cand['member']}\nWhy planned: {cand['why']}\n\n"
-            f"Household profile:\n{json.dumps(profile, ensure_ascii=False)}")
+    members_txt = "\n".join(f"- member \"{c['member']}\": {c['why']}" for c in cands)
+    user = (f"Scheme to verify: {scheme_id}\nDecide each of these members (use the member value exactly):\n"
+            f"{members_txt}\n\nHousehold profile:\n{json.dumps(profile, ensure_ascii=False)}")
     messages = [{"role": "user", "content": user}]
     ctx = {
         "read_official": set(),     # official URLs successfully read (fetch or search result)
@@ -387,18 +398,30 @@ def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str,
 
     started = time.time()
     tools = TOOLS_NO_SEARCH if cached_rules else TOOLS
+    effort = "medium"
     searches, budget_noted, over_budget_turn = 0, False, None
-    with neatlogs.trace(f"research:{cand['key']}", kind="AGENT", session_id=hid):
+    decided: dict[str, dict] = {}
+
+    def finish(reason: str) -> dict[str, dict]:
+        logs = _logs(ctx)
+        for k, c in by_member.items():
+            if c["key"] not in decided:
+                decided[c["key"]] = _dropped(c, reason, "")
+        for rec in decided.values():
+            rec.update(**logs, searches=searches, rules_from_cache=bool(cached_rules),
+                       batch_size=len(cands))
+        return decided
+
+    with neatlogs.trace(f"research:{scheme_id}", kind="AGENT", session_id=hid,
+                        members=[c["member"] for c in cands]):
         for turn in range(MAX_RESEARCH_TURNS):
             if abort is not None and abort.is_set():
                 raise RunAborted("run aborted after a fatal API error in another lookup")
             if time.time() - started > RESEARCH_DEADLINE_S:
-                return {**_dropped(cand, f"time budget ({RESEARCH_DEADLINE_S}s) exhausted without official "
-                                         "confirmation", ""), **_logs(ctx)}
+                return finish(f"time budget ({RESEARCH_DEADLINE_S}s) exhausted without official confirmation")
             if over_budget_turn is not None and turn > over_budget_turn:
-                return {**_dropped(cand, "search budget exceeded without official confirmation", ""),
-                        **_logs(ctx), "searches": searches}
-            resp = create(usage, model=VERIFY_MODEL, effort="medium", system=system, tools=tools,
+                return finish("search budget exceeded without official confirmation")
+            resp = create(usage, model=VERIFY_MODEL, effort=effort, system=system, tools=tools,
                           messages=messages, loop=True)
             messages.append({"role": "assistant", "content": resp.content})
             searches += getattr(getattr(resp.usage, "server_tool_use", None), "web_search_requests", 0) or 0
@@ -410,32 +433,47 @@ def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str,
             if resp.stop_reason == "pause_turn":
                 continue  # server tool still working; resend to let it finish
             if resp.stop_reason == "refusal":
-                return {**_dropped(cand, "model declined", ""), **_logs(ctx)}
+                return finish("model declined")
             note = []  # appended to the next user message, after any tool results
             if searches >= MAX_SEARCHES and not budget_noted:
                 budget_noted = True
                 note = [{"type": "text", "text": BUDGET_NOTE}]
             tool_uses = [b for b in resp.content if b.type == "tool_use"]
+            pending = [c["member"] for c in cands if c["key"] not in decided]
             if not tool_uses:
-                messages.append({"role": "user", "content": note + [
-                    {"type": "text", "text": "Finish by calling record_verified or drop_scheme."}]})
+                messages.append({"role": "user", "content": note + [{"type": "text", "text":
+                    f"Finish with one record_verified or drop_scheme call per member still open: {pending}."}]})
                 continue
 
-            results, final = [], None
+            results = []
             for tu in tool_uses:
-                out, is_err, fin = _run_tool(tu.name, tu.input, cand, ctx)
+                out, is_err, fin = _run_tool(tu.name, tu.input, cands[0], ctx)
+                if fin is not None:
+                    c = by_member.get(_member_key(fin.get("member", "")))
+                    if c is None and len(pending) == 1:
+                        c = by_member[_member_key(pending[0])]
+                    if c is None:
+                        open_now = [x["member"] for x in cands if x["key"] not in decided]
+                        out, is_err = (f"REJECTED: member must be one of {open_now} (exactly as given).", True)
+                    elif c["key"] in decided:
+                        out, is_err = (f"REJECTED: member {c['member']!r} is already decided.", True)
+                    else:
+                        fin.update(member=c["member"])
+                        decided[c["key"]] = fin
+                        if fin["status"] in ("verified", "likely"):
+                            cache.put_rules(fin, source=f"{hid}:{run_id}:{c['key']}")
                 results.append({"type": "tool_result", "tool_use_id": tu.id,
                                 "content": out, **({"is_error": True} if is_err else {})})
-                final = final or fin
+            still = [c["member"] for c in cands if c["key"] not in decided]
+            if not still:
+                messages.append({"role": "user", "content": results + note})
+                for rec in decided.values():
+                    rec["turns"] = turn + 1
+                return finish("")
+            note = note + [{"type": "text", "text": f"Still open, decide these members: {still}."}]
             messages.append({"role": "user", "content": results + note})
-            if final:
-                final.update(**_logs(ctx), turns=turn + 1, rules_from_cache=bool(cached_rules), searches=searches)
-                if final["status"] in ("verified", "likely"):
-                    cache.put_rules(final, source=f"{hid}:{run_id}:{cand['key']}")
-                return final
 
-    return {**_dropped(cand, "verification budget exhausted without official confirmation", ""), **_logs(ctx),
-            "searches": searches}
+    return finish("verification budget exhausted without official confirmation")
 
 
 def rules_block(cached: dict) -> str:
@@ -535,7 +573,8 @@ def _run_tool(name, args, cand, ctx):
                 return rejection, True, None
 
         if name == "drop_scheme":
-            return "ok", False, _dropped(cand, args["reason"], args.get("official_url", ""))
+            return "ok", False, {**_dropped(cand, args["reason"], args.get("official_url", "")),
+                                 "member": args.get("member", cand["member"])}
 
         if name == "record_verified":
             args["rules_checked"] = [r for r in _object_list(args.get("rules_checked", [])) if "official_url" in r]
@@ -651,18 +690,11 @@ def run(hid: str, resume: bool = True) -> dict:
             todo = [c for c in cands if c["key"] not in done]
             errors = []
             abort = threading.Event()
-            # Wave 1 looks up each scheme once (filling the rules cache); wave 2 handles the other
-            # members of the same scheme from that cache instead of searching the web again.
-            first_of_scheme, wave1, wave2 = set(), [], []
+            # One research loop per scheme, deciding all of this family's members for it together.
+            groups: dict[str, list[dict]] = {}
             for c in todo:
-                if c["scheme_id"] in first_of_scheme:
-                    wave2.append(c)
-                else:
-                    first_of_scheme.add(c["scheme_id"])
-                    wave1.append(c)
-            for wave in (wave1, wave2):
-                if wave and not abort.is_set():
-                    _research_wave(wave, profile, usage, hid, rid, abort, errors)
+                groups.setdefault(c["scheme_id"], []).append(c)
+            _research_groups(list(groups.values()), profile, usage, hid, rid, abort, errors)
             if errors:
                 raise RuntimeError(f"{len(errors)} scheme lookups failed (resume to retry): {errors[0]}")
 
@@ -678,30 +710,31 @@ def run(hid: str, resume: bool = True) -> dict:
             raise
 
 
-def _research_wave(wave, profile, usage, hid, rid, abort, errors):
-    """Research candidates in parallel; save each finished record as soon as it completes."""
+def _research_groups(groups, profile, usage, hid, rid, abort, errors):
+    """Research schemes in parallel; save each scheme's member records as soon as it completes."""
     with ThreadPoolExecutor(RESEARCH_WORKERS) as pool:
-        futs = {pool.submit(contextvars.copy_context().run, research_one, profile, c, usage, hid, rid,
-                            abort): c
-                for c in wave}
+        futs = {pool.submit(contextvars.copy_context().run, research_scheme, profile, g, usage, hid, rid,
+                            abort): g
+                for g in groups}
         for fut in as_completed(futs):
-            c = futs[fut]
+            g = futs[fut]
             try:
-                rec = fut.result()
+                recs = fut.result()
             except Exception as e:
-                # Not saved: the candidate stays unfinished so a resume retries it.
-                errors.append(f"{c['key']}: {type(e).__name__}: {e}"[:300])
+                # Not saved: the candidates stay unfinished so a resume retries them.
+                errors.append(f"{g[0]['scheme_id']}: {type(e).__name__}: {e}"[:300])
                 if isinstance(e, (anthropic.AuthenticationError, anthropic.PermissionDeniedError,
                                   anthropic.BadRequestError)):
                     abort.set()  # the same error will hit every call; other loops stop at their next turn
                 continue
 
-            def _save(r, c=c, rec=rec):
-                r["research"][c["key"]] = rec
-                r["conflicts"].extend({**x, "scheme": c["key"]} for x in rec.get("conflicts", []))
-                r["recovery_log"].extend({**x, "scheme": c["key"]} for x in rec.get("recovery_log", []))
+            def _save(r, recs=recs, scheme=g[0]["scheme_id"]):
+                r["research"].update(recs)
+                first = next(iter(recs.values()))   # loop-level logs are shared by the scheme's members
+                r["conflicts"].extend({**x, "scheme": scheme} for x in first.get("conflicts", []))
+                r["recovery_log"].extend({**x, "scheme": scheme} for x in first.get("recovery_log", []))
                 r.setdefault("unofficial_claims", []).extend(
-                    {**x, "scheme": c["key"]} for x in rec.get("unofficial_claims", []))
+                    {**x, "scheme": scheme} for x in first.get("unofficial_claims", []))
                 r["usage"] = usage.snapshot()
             state.update_run(hid, rid, _save)
 

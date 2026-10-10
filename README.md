@@ -139,8 +139,8 @@ profile and runs the search again.
   from these rules and does not search the web again. Its cited official URLs count as already read. Only
   scheme-level rules are stored, never family data. A confirmed record is never replaced by a "likely" one.
 
-Research runs in two waves: one lookup per distinct scheme first, which fills the cache, then the other
-members of the same scheme, which are served from the cache. `python -m haq.cache seed data/eval-state.json`
+Research runs one loop per scheme for each family, and that loop decides every planned member of the family
+together (for example, PMSBY for the father, mother and son in one loop, not three). `python -m haq.cache seed data/eval-state.json`
 imports rules from runs that have already been paid for. Set `HAQ_NO_CACHE=1` to bypass both caches, for
 example to demo `SIMULATE_FAILURE` on a cold start.
 
