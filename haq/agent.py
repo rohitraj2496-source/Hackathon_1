@@ -15,7 +15,7 @@ import neatlogs
 
 from . import cache, catalog, fetcher, state
 from .config import FAST_MODEL, VERIFY_MODEL
-from .llm import Usage, create, structured
+from .llm import Usage, create, structured, system_blocks
 
 RESEARCH_WORKERS = 4
 MAX_RESEARCH_TURNS = 6
@@ -366,9 +366,11 @@ def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str,
     else:
         seed_txt = "Not in catalog."
     cached_rules = cache.get_rules(cand["scheme_id"])
-    user = (f"Scheme to verify: {cand['scheme_id']}\nMember: {cand['member']}\nWhy planned: {cand['why']}\n{seed_txt}\n\n"
-            + (rules_block(cached_rules) + "\n\n" if cached_rules else "")
-            + f"Household profile:\n{json.dumps(profile, ensure_ascii=False)}")
+    # Shared instructions, then this scheme's context (same for every member/family), then the family.
+    system = system_blocks(RESEARCH_SYSTEM, f"SCHEME: {cand['scheme_id']}\n{seed_txt}"
+                           + ("\n\n" + rules_block(cached_rules) if cached_rules else ""))
+    user = (f"Scheme to verify: {cand['scheme_id']}\nMember: {cand['member']}\nWhy planned: {cand['why']}\n\n"
+            f"Household profile:\n{json.dumps(profile, ensure_ascii=False)}")
     messages = [{"role": "user", "content": user}]
     ctx = {
         "read_official": set(),     # official URLs successfully read (fetch or search result)
@@ -396,8 +398,8 @@ def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str,
             if over_budget_turn is not None and turn > over_budget_turn:
                 return {**_dropped(cand, "search budget exceeded without official confirmation", ""),
                         **_logs(ctx), "searches": searches}
-            resp = create(usage, model=VERIFY_MODEL, effort="medium", system=RESEARCH_SYSTEM, tools=tools,
-                          messages=messages)
+            resp = create(usage, model=VERIFY_MODEL, effort="medium", system=system, tools=tools,
+                          messages=messages, loop=True)
             messages.append({"role": "assistant", "content": resp.content})
             searches += getattr(getattr(resp.usage, "server_tool_use", None), "web_search_requests", 0) or 0
             if searches > MAX_SEARCHES and over_budget_turn is None:

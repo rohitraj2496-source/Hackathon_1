@@ -144,6 +144,18 @@ members of the same scheme, which are served from the cache. `python -m haq.cach
 imports rules from runs that have already been paid for. Set `HAQ_NO_CACHE=1` to bypass both caches, for
 example to demo `SIMULATE_FAILURE` on a cold start.
 
+**Prompt caching.** Each research request sends its system prompt as two cached blocks. The first holds the
+shared instructions; because tools render before system, the tools are cached together with them, and this
+block is shared by every scheme. The second holds the scheme's catalog note and cached official rules, and is
+shared by every member and every family checked for that scheme. The family profile goes last, after both
+breakpoints. Top-level automatic caching covers the growing tool loop. One-shot calls (interview, plan,
+summary) cache only their system prompt.
+
+**Models.** Sonnet is used only for eligibility verification (`HAQ_VERIFY_MODEL`). Haiku handles the
+interview, planning, the summary and follow-ups (`HAQ_FAST_MODEL`). Each scheme lookup gets at most 2 web
+searches, and none when cached rules exist. The lookup stops as soon as an official page confirms the
+rules.
+
 ## State and resume
 
 `data/state.json` (or `HAQ_STATE_FILE`) holds every household's profile, interview transcript and runs. Each

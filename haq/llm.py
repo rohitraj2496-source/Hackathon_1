@@ -46,16 +46,34 @@ class Usage:
             return dict(self.totals)
 
 
+CACHE = {"type": "ephemeral"}
+
+
+def system_blocks(*parts: str) -> list[dict]:
+    """System prompt as text blocks, each ending in a cache breakpoint.
+
+    Tools render before system, so the first breakpoint caches tools + the shared instructions; a
+    later part (e.g. one scheme's cached official rules) gets its own read point shared by every
+    request about that scheme. Byte-stable parts only: anything per-family goes in messages."""
+    return [{"type": "text", "text": p, "cache_control": CACHE} for p in parts if p]
+
+
 def create(usage: Usage | None, *, model: str = MODEL, effort: str | None = None, max_tokens: int = 16000,
-           **kwargs) -> Message:
-    """messages.create with Haq defaults: adaptive thinking, effort, caching, refusal fallback."""
+           system: str | list[dict], loop: bool = False, **kwargs) -> Message:
+    """messages.create with Haq defaults: adaptive thinking, effort, prompt caching, refusal fallback.
+
+    Prompt caching: explicit breakpoints on the system blocks always. loop=True also turns on
+    top-level automatic caching so a multi-turn tool loop re-reads its growing history from cache;
+    one-shot calls leave it off (it would only pay the write premium on a unique tail)."""
     fallback = model in FALLBACK_MODELS
+    if loop:
+        kwargs["cache_control"] = CACHE
     msg = client.messages.create(
         model=model,
         max_tokens=max_tokens,
+        system=system_blocks(system) if isinstance(system, str) else system,
         thinking={"type": "adaptive"},
         output_config={**kwargs.pop("output_config", {}), "effort": effort or EFFORT},
-        cache_control={"type": "ephemeral"},
         extra_headers=FALLBACK_HEADERS if fallback else None,
         extra_body=FALLBACK_BODY if fallback else None,
         **kwargs,
