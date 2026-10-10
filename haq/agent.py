@@ -146,7 +146,19 @@ skip a scheme only if the profile clearly rules it out (e.g. no farmland -> no P
 income-tax payer -> most welfare schemes out). Household-level schemes (ration card, PM-JAY, PMAY-G, Ujjwala)
 get member "household" (Ujjwala: the adult woman). Use catalog ids; only invent a new snake_case id for a
 clearly relevant central/UP scheme that is missing from the catalog. Skip schemes listed in already_receiving
-unless the profile suggests another member also qualifies. At most 14 candidates."""
+unless the profile suggests another member also qualifies. A family whose ration_card is "eligible_household" or
+"antyodaya" already gets NFSA ration: do not plan nfsa_ration for them. At most 14 candidates."""
+
+
+HOUSEHOLD_SCHEMES = {"nfsa_ration", "pmjay", "pmay_g"}
+
+
+def already_has(profile: dict) -> set[str]:
+    """Scheme ids the family already receives, from what they told us and from facts like a ration card."""
+    have = {catalog.canonical_id(s) for s in profile.get("already_receiving", [])}
+    if profile.get("ration_card") in ("eligible_household", "antyodaya"):
+        have.add("nfsa_ration")
+    return have
 
 PLAN_SCHEMA = {
     "type": "object",
@@ -168,8 +180,11 @@ def plan(profile: dict, usage: Usage, hid: str) -> list[dict]:
         out = structured(usage, system=PLAN_SYSTEM, effort="medium", schema=PLAN_SCHEMA,
                          user=f"Household profile:\n{json.dumps(profile, ensure_ascii=False, indent=1)}")
     seen, cands = set(), []
+    have = already_has(profile)
     for c in out["candidates"]:
         c["scheme_id"] = catalog.canonical_id(c["scheme_id"])
+        if c["scheme_id"] in have and c["scheme_id"] in HOUSEHOLD_SCHEMES:
+            continue  # one per family, and this family already gets it
         key = f"{c['scheme_id']}:{c['member'].strip().lower()}"
         if key not in seen:
             seen.add(key)
@@ -371,7 +386,7 @@ SUMMARY_SCHEMA = {"type": "object", "additionalProperties": False, "required": [
 
 def write(profile: dict, research: dict, usage: Usage, hid: str) -> dict:
     with neatlogs.trace("write", kind="CHAIN", session_id=hid):
-        received = {catalog.canonical_id(s) for s in profile.get("already_receiving", [])}
+        received = already_has(profile)
         cards = []
         for rec in research.values():
             if rec.get("status") != "verified":
