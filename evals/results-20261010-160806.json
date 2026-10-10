@@ -1,0 +1,730 @@
+{
+  "timestamp": "20261010-160806",
+  "git_commit": "4e86960",
+  "config": {
+    "model": "claude-sonnet-5-5",
+    "effort": "medium",
+    "simulate_failure": false,
+    "only": "h01,h02,h03,h04,h05,h06,h07,h08,h09,h10"
+  },
+  "summary": {
+    "households": 10,
+    "errors": 0,
+    "tp": 19,
+    "fp": 8,
+    "fn": 10,
+    "precision": 0.7241,
+    "recall": 0.6552,
+    "f1": 0.6879,
+    "accuracy": 0.5135,
+    "avg_cost_usd": 0.9227,
+    "total_cost_usd": 9.2271,
+    "avg_seconds": 142.1,
+    "recoveries": 253,
+    "conflicts_logged": 0
+  },
+  "households": [
+    {
+      "id": "h01",
+      "description": "Barabanki small farmer family, kutcha house, son in class 11, daughter in class 7",
+      "household_state_id": "1d89d89faa",
+      "error": null,
+      "seconds": 187.9,
+      "cost_usd": 1.162074,
+      "usage": {
+        "input_tokens": 168,
+        "output_tokens": 22582,
+        "cache_read_input_tokens": 544177,
+        "cache_creation_input_tokens": 274834,
+        "web_search_requests": 14,
+        "cost_usd": 1.162074
+      },
+      "predicted": [
+        "nfsa_ration",
+        "pm_kisan",
+        "pmay_g",
+        "pmfby",
+        "pmjjby",
+        "pmsby",
+        "up_kanya_sumangala",
+        "up_shadi_anudan"
+      ],
+      "expected": [
+        [
+          "pm_kisan"
+        ],
+        [
+          "pmay_g"
+        ],
+        [
+          "up_scholarship"
+        ],
+        [
+          "up_kanya_sumangala"
+        ]
+      ],
+      "score": {
+        "tp": 3,
+        "fn": 1,
+        "fp": 2,
+        "matched_predictions": 3,
+        "missed": [
+          [
+            "up_scholarship"
+          ]
+        ],
+        "false_positives": [
+          "nfsa_ration",
+          "up_shadi_anudan"
+        ],
+        "ignored_extras": [
+          "pmfby",
+          "pmjjby",
+          "pmsby"
+        ]
+      },
+      "total_missing_inr_per_year": 132000,
+      "verified_sources": {
+        "pmay_g": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2074713&reg=48&lang=2",
+        "pm_kisan": "https://pmkisan.gov.in/",
+        "nfsa_ration": "https://nfsa.gov.in/portal/nfsa-act",
+        "up_shadi_anudan": "https://shadianudan.upsdc.gov.in/",
+        "pmfby": "https://pmfby.gov.in/pdf/Revised_Operational_Guidelines.pdf",
+        "pmsby": "https://financialservices.gov.in/pmsby",
+        "pmjjby": "https://www.pib.gov.in/PressReleaseIframePage.aspx?PRID=1922622&reg=48&lang=2",
+        "up_kanya_sumangala": "https://mksy.up.gov.in/"
+      },
+      "dropped": {
+        "pm_kisan_maandhan:self": "सदस्य की उम्र 45 साल है। आधिकारिक मानधन पोर्टल पर पेंशन योजना में प्रवेश की उम्र 18 से 40 साल लिखी है, इसलिए वे पात्र नहीं हैं। यह पेज मानधन की श्रमिक योजना (PM-SYM) और व्यापारी योजना के बारे में है। किसान मानधन योजना का अलग पेज नहीं खुल सका। उसकी उम्र सीमा भी 18-40 साल बताई जाती है, पर वह मैंने आधिकारिक पेज पर नहीं देखी।",
+        "pmjjby:self": "उम्र 45 और बैंक खाते के हिसाब से सदस्य पात्र लगता है। लेकिन नियम (उम्र 18-50, प्रीमियम ₹436, ₹2 लाख कवर) किसी सरकारी पेज पर पढ़कर पुष्टि नहीं हो पाई। jansuraksha.gov.in, myscheme और financialservices.gov.in तीनों नहीं खुले। नियम केवल निजी साइटों (sudlife, bajajfinserv) पर मिले, इसलिए योजना दर्ज नहीं की गई। सरकारी पेज खुलने पर दोबारा जाँचें।",
+        "nsp_scholarship:son": "बेटा कक्षा 11 का छात्र है और परिवार की आय ₹90,000 है। लेकिन केंद्रीय पोस्ट-मैट्रिक छात्रवृत्तियाँ जाति/वर्ग (SC/ST/OBC/अल्पसंख्यक/दिव्यांग) पर निर्भर हैं, और यह जानकारी नहीं दी गई है। NSP के आधिकारिक पेज (scholarships.gov.in) से मुझे योजना-वार पात्रता नियम और आय सीमा नहीं मिली, इसलिए पात्रता पक्की नहीं हो सकी। वर्ग पता चलने पर दोबारा जाँचें। तब तक यह पात्रता का निष्कर्ष नहीं है। सामान्य वर्ग का गैर-अल्पसंख्यक छात्र इन योजनाओं में पात्र नहीं होता।",
+        "up_scholarship:son": "scholarship.up.gov.in could not be read; the fetch fell back to the NSP home page (scholarships.gov.in), which has no UP post-matric eligibility rules. The income limits (about Rs 2 lakh for General/OBC, Rs 2.5 lakh for SC/ST), the Class 11 coverage and the 50% marks rule appear only on unofficial sites (buddy4study). The household income of Rs 90,000 would be within those limits, but the rules are unconfirmed on an official page, and the caste category is not shared. Re-verify when the official UP scholarship pages are reachable.",
+        "pmjay:household": "आधिकारिक पेज (nha.gov.in, pmjay.gov.in, myscheme.gov.in) नहीं खुले या उनमें कोई पाठ नहीं मिला। नियम केवल एक गैर-सरकारी साइट पर मिले, इसलिए पुष्टि नहीं हो सकी। परिवार का पात्र होना SECC सूची या राशन कार्ड रिकॉर्ड पर निर्भर है। यह सूची में नाम देखकर ही पक्का होगा।"
+      },
+      "conflicts": [],
+      "recoveries": 28
+    },
+    {
+      "id": "h02",
+      "description": "Sitapur young widow, daily-wage worker, Antyodaya card, no gas, two children",
+      "household_state_id": "f7de572297",
+      "error": null,
+      "seconds": 185.0,
+      "cost_usd": 0.93197,
+      "usage": {
+        "input_tokens": 152,
+        "output_tokens": 20907,
+        "cache_read_input_tokens": 540974,
+        "cache_creation_input_tokens": 197760,
+        "web_search_requests": 12,
+        "cost_usd": 0.93197
+      },
+      "predicted": [
+        "eshram",
+        "nfsa_ration",
+        "pm_sym",
+        "pmjjby",
+        "pmsby",
+        "pmuy",
+        "up_kanya_sumangala",
+        "up_shadi_anudan"
+      ],
+      "expected": [
+        [
+          "up_widow_pension"
+        ],
+        [
+          "pmjay"
+        ],
+        [
+          "pmay_g"
+        ],
+        [
+          "pmuy"
+        ],
+        [
+          "up_kanya_sumangala"
+        ]
+      ],
+      "score": {
+        "tp": 2,
+        "fn": 3,
+        "fp": 1,
+        "matched_predictions": 2,
+        "missed": [
+          [
+            "up_widow_pension"
+          ],
+          [
+            "pmjay"
+          ],
+          [
+            "pmay_g"
+          ]
+        ],
+        "false_positives": [
+          "up_shadi_anudan"
+        ],
+        "ignored_extras": [
+          "eshram",
+          "nfsa_ration",
+          "pm_sym",
+          "pmjjby",
+          "pmsby"
+        ]
+      },
+      "total_missing_inr_per_year": 12550,
+      "verified_sources": {
+        "nfsa_ration": "https://nfsa.gov.in/portal/nfsa-act",
+        "pmuy": "https://pmuy.gov.in/",
+        "pm_sym": "https://maandhan.in/",
+        "pmsby": "https://financialservices.gov.in/pradhan-mantri-suraksha-bima-yojana-pmsby",
+        "eshram": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2086193&reg=48&lang=2",
+        "up_shadi_anudan": "https://shadianudan.upsdc.gov.in/",
+        "up_kanya_sumangala": "https://mksy.up.gov.in/",
+        "pmjjby": "https://www.pib.gov.in/PressNoteDetails.aspx?NoteId=154428&ModuleId=3&reg=3&lang=1"
+      },
+      "dropped": {
+        "pmay_g:household": "The official PMAY-G portal (pmayg.dord.gov.in) returned only the home page. It did not show the eligibility rules (kutcha house, exclusion criteria) or the benefit amount. The myscheme and pmayg.nic.in pages did not load and were served from this same home page. The Rs 1.2 lakh figure and the rules appeared only on unofficial finance sites, which I will not rely on. The household probably qualifies (rural, kutcha house, Antyodaya card, widow-headed, very low income), but this is not verified on an official page. Please check with the Gram Panchayat or Block office, or through the \"Am I Eligible?\" / Awaas+ survey on the portal.",
+        "up_widow_pension:self": "सरकारी पोर्टल sspy-up.gov.in पर सिर्फ़ यह पुष्टि हुई कि 18 साल या उससे अधिक उम्र की विधवा महिला, जो उत्तर प्रदेश में रहती है, इस योजना की पात्र है। इस सदस्य की उम्र 38 साल है और वह विधवा है। लेकिन आय सीमा और 1000 रुपये प्रति माह की राशि किसी सरकारी पेज पर नहीं मिली। mahilakalyan.up.nic.in और nsap.nic.in से भी यह जानकारी नहीं मिली। राशि सिर्फ़ गैर-सरकारी स्रोतों पर मिली, इसलिए पूरी पुष्टि नहीं हो पाई। परिवार की आय 40,000 रुपये है, जो संभवतः सीमा के भीतर है। आवेदन से पहले ब्लॉक या ज़िला महिला कल्याण कार्यालय से आय सीमा और राशि की जाँच करें।",
+        "up_bocw:self": "The official pages did not show the BOCW eligibility rules. upbocw.in and the myScheme scheme page failed to load. They returned only the myScheme home page, which has no BOCW details. The uplabour.gov.in home page loaded but has no BOCW eligibility text. The 18-60 age limit and the 90-days-in-12-months rule appear only on unofficial sites (corpbiz, compliancecalendar), so they are unverified. The profile also doesn't show whether she does construction work or has 90 days of it. She is 38, which fits the age range, but that is not enough on its own. She could check at the labour office or on upbocw.in.",
+        "pmjay:household": "आधिकारिक पेज (nha.gov.in, pmjay.gov.in, beneficiary.nha.gov.in, myscheme.gov.in) नहीं खुल सके। पात्रता नियम केवल निजी वेबसाइटों पर मिले, इसलिए पुष्टि नहीं हो सकी। परिवार संभवतः पात्र है (अंत्योदय कार्ड), पर आधिकारिक पुष्टि के बिना दर्ज नहीं किया। परिवार जन-सेवा केंद्र या आयुष्मान मित्र से जाँच करवा सकता है।"
+      },
+      "conflicts": [],
+      "recoveries": 24
+    },
+    {
+      "id": "h03",
+      "description": "Gorakhpur elderly couple (72 and 68), no land, very low income",
+      "household_state_id": "eee3110444",
+      "error": null,
+      "seconds": 148.5,
+      "cost_usd": 0.59829,
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 12290,
+        "cache_read_input_tokens": 390127,
+        "cache_creation_input_tokens": 122867,
+        "web_search_requests": 9,
+        "cost_usd": 0.59829
+      },
+      "predicted": [
+        "ayushman_vay_vandana",
+        "nfsa_ration",
+        "pmsby",
+        "up_old_age_pension"
+      ],
+      "expected": [
+        [
+          "up_old_age_pension"
+        ],
+        [
+          "ayushman_vay_vandana",
+          "pmjay"
+        ]
+      ],
+      "score": {
+        "tp": 2,
+        "fn": 0,
+        "fp": 1,
+        "matched_predictions": 2,
+        "missed": [],
+        "false_positives": [
+          "nfsa_ration"
+        ],
+        "ignored_extras": [
+          "pmsby"
+        ]
+      },
+      "total_missing_inr_per_year": 15000,
+      "verified_sources": {
+        "up_old_age_pension": "https://sspy-up.gov.in/",
+        "nfsa_ration": "https://nfsa.gov.in/portal/nfsa-act",
+        "ayushman_vay_vandana": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2082288&reg=48&lang=2",
+        "pmsby": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2127981&reg=48&lang=2"
+      },
+      "dropped": {
+        "up_old_age_pension:self": "आधिकारिक पेज (sspy-up.gov.in) से केवल यह पक्का हुआ कि योजना 60 वर्ष से ऊपर के गरीबी रेखा से नीचे वाले बुजुर्गों के लिए है। आय सीमा (गाँव में ₹46,080 सालाना) और ₹1,000 प्रति माह की राशि सिर्फ़ गैर-सरकारी साइटों (policybazaar, eligibilitytools) पर मिली। nsap.nic.in और myscheme का पेज खुला नहीं, इसलिए वहाँ से पुष्टि नहीं हो सकी। आयु 72 वर्ष और आय ₹30,000 सीमा के भीतर लगती है, पर नियमों की आधिकारिक पुष्टि नहीं हुई, इसलिए योजना हटाई गई। परिवार सीधे समाज कल्याण विभाग (टोल फ्री 18004190001) या ब्लॉक कार्यालय से पुष्टि कर सकता है।",
+        "ayushman_vay_vandana:wife": "उम्र 68 साल है, इसलिए वय वंदना (70+) में अभी पात्र नहीं। PM-JAY परिवार कवर (D2: 16-59 साल का कोई वयस्क नहीं) शायद लागू हो सकता है, पर कोई आधिकारिक पेज नहीं खुल सका। सिर्फ गैर-सरकारी पेज (mediassist FAQ) पर यह नियम मिला, इसलिए सत्यापित नहीं कर सके। परिवार SECC सूची में है या नहीं, यह जाँचना भी बाकी है।",
+        "pmjay:household": "आधिकारिक पेज (pmjay.gov.in, nha.gov.in, myscheme.gov.in, PIB) नहीं खुल सके, इसलिए नियम आधिकारिक स्रोत पर पुष्टि नहीं हो पाए। सिर्फ़ गैर-सरकारी साइटों पर पुष्टि हुई, जो मान्य नहीं है। संभावना है कि 70+ वर्ष के बुज़ुर्ग (आयुष्मान वय वंदना) पात्र हों, इसलिए परिवार सीधे जन सेवा केंद्र या pmjay.gov.in पर जाँच कर सकता है।"
+      },
+      "conflicts": [],
+      "recoveries": 19
+    },
+    {
+      "id": "h04",
+      "description": "Lucknow urban family, 22-year-old son with 60% locomotor disability",
+      "household_state_id": "531b815edb",
+      "error": null,
+      "seconds": 193.2,
+      "cost_usd": 1.127021,
+      "usage": {
+        "input_tokens": 204,
+        "output_tokens": 22302,
+        "cache_read_input_tokens": 751721,
+        "cache_creation_input_tokens": 217298,
+        "web_search_requests": 21,
+        "cost_usd": 1.127021
+      },
+      "predicted": [
+        "eshram",
+        "nfsa_ration",
+        "pmjjby",
+        "pmsby",
+        "up_divyang_pension"
+      ],
+      "expected": [
+        [
+          "up_divyang_pension"
+        ]
+      ],
+      "score": {
+        "tp": 1,
+        "fn": 0,
+        "fp": 1,
+        "matched_predictions": 1,
+        "missed": [],
+        "false_positives": [
+          "nfsa_ration"
+        ],
+        "ignored_extras": [
+          "eshram",
+          "pmjjby",
+          "pmsby"
+        ]
+      },
+      "total_missing_inr_per_year": 12000,
+      "verified_sources": {
+        "up_divyang_pension": "https://sspy-up.gov.in/",
+        "nfsa_ration": "https://nfsa.gov.in/portal/nfsa-act",
+        "pmsby": "https://financialservices.gov.in/pradhan-mantri-suraksha-bima-yojana-pmsby",
+        "eshram": "https://static.pib.gov.in/WriteReadData/userfiles/file/e-ShramPortal3NCD.pdf",
+        "pmjjby": "https://financialservices.gov.in/pradhan-mantri-jeevan-jyoti-bima-yojana-pmjjby"
+      },
+      "dropped": {
+        "up_bocw:self": "पात्रता नियम (उम्र 18-60, पिछले 12 महीनों में 90 दिन निर्माण कार्य) केवल निजी वेबसाइटों पर मिले। upbocw.in और myScheme के सरकारी पेज खुले नहीं या उनमें योजना की जानकारी नहीं थी, इसलिए किसी सरकारी पेज पर पुष्टि नहीं हो सकी। यह भी पता नहीं है कि वह निर्माण मज़दूर है या नहीं। उम्र 50 साल है, जो सीमा के भीतर है। सुझाव: परिवार से पूछें कि क्या 90 दिन निर्माण कार्य किया है, फिर श्रम विभाग कार्यालय में जाँच कराएँ।",
+        "pmjjby:self": "आधिकारिक पेज (jansuraksha.gov.in, myscheme.gov.in, financialservices.gov.in, PIB) नहीं खुल सके। नियम (आयु 18-50, बैंक खाता, 436 रुपये प्रीमियम) केवल निजी वेबसाइटों पर मिले, इसलिए आधिकारिक पुष्टि नहीं हो पाई। प्रोफ़ाइल के अनुसार सदस्य 50 वर्ष का है और उसका बैंक खाता है, इसलिए पात्र होने की संभावना है। लेकिन आयु सीमा का आखिरी दिन बैंक में पूछ लें।",
+        "up_digishakti:son": "आधिकारिक पेज पर पात्रता नियम की पुष्टि नहीं हो सकी। डिजीशक्ति पोर्टल पर सिर्फ 2021-22 सत्र की योजना का नाम मिला। बेटे की प्रोफ़ाइल में वह छात्र नहीं है और किसी ITI, डिप्लोमा या स्नातक में नामांकन की जानकारी नहीं है। इसलिए योजना नहीं जोड़ी गई।",
+        "pm_sym:self": "आधिकारिक मानधन पोर्टल के अनुसार PM-SYM में प्रवेश की उम्र 18 से 40 साल है। सदस्य की उम्र 50 साल है, इसलिए वह पात्र नहीं है।",
+        "eshram:son": "बेटा (22 साल, दिव्यांग 60%, इनकम टैक्स नहीं देता) प्रोफ़ाइल के हिसाब से पात्र लगता है। लेकिन eshram.gov.in, myscheme.gov.in और labour.gov.in के पन्ने नहीं खुले (खाली पन्ना, 404 या 403)। नियम (16-59 साल, EPFO/ESIC/NPS सदस्य नहीं, इनकम टैक्स दाता नहीं) सिर्फ़ गैर-सरकारी साइटों पर मिले। सरकारी पन्ने पर पुष्टि नहीं हो सकी, इसलिए योजना दर्ज नहीं की गई।",
+        "up_abhyudaya:son": "अभ्युदय योजना के पात्रता नियम किसी आधिकारिक पेज पर पढ़े नहीं जा सके। abhyuday.up.gov.in नहीं खुली और myScheme से सिर्फ सामान्य होमपेज मिला। नियम केवल ब्लॉग और निजी साइटों पर मिले, इसलिए सत्यापित नहीं माना। बेटा (22 वर्ष, UP निवासी, बेरोज़गार) संभवतः योग्य हो सकता है, पर पुष्टि नहीं हुई।",
+        "pmjay:household": "किसी भी सरकारी (official) पेज से नियम की पुष्टि नहीं हो सकी। nha.gov.in, pmjay.gov.in, beneficiary.nha.gov.in और myscheme.gov.in या तो खुले नहीं या उनमें पढ़ने लायक जानकारी नहीं थी। केवल निजी वेबसाइटों पर जानकारी मिली, इसलिए योजना को सत्यापित नहीं किया जा सका। परिवार शायद पात्र हो सकता है (शहरी दिहाड़ी मज़दूर, पात्र गृहस्थी राशन कार्ड), पर पुष्टि के बिना दर्ज नहीं कर रहे। परिवार को नज़दीकी आयुष्मान मित्र/CSC पर या pmjay.gov.in के 'Am I Eligible' पर जाँच करानी चाहिए।"
+      },
+      "conflicts": [],
+      "recoveries": 35
+    },
+    {
+      "id": "h05",
+      "description": "Ghaziabad construction worker, wife pregnant with first child, no ration card, no gas",
+      "household_state_id": "656e07dcc6",
+      "error": null,
+      "seconds": 138.3,
+      "cost_usd": 0.958106,
+      "usage": {
+        "input_tokens": 164,
+        "output_tokens": 18254,
+        "cache_read_input_tokens": 662854,
+        "cache_creation_input_tokens": 189068,
+        "web_search_requests": 17,
+        "cost_usd": 0.958106
+      },
+      "predicted": [
+        "eshram",
+        "pm_sym",
+        "pmjjby",
+        "pmmvy",
+        "pmuy"
+      ],
+      "expected": [
+        [
+          "up_bocw"
+        ],
+        [
+          "pmmvy"
+        ],
+        [
+          "nfsa_ration"
+        ],
+        [
+          "pmuy"
+        ]
+      ],
+      "score": {
+        "tp": 2,
+        "fn": 2,
+        "fp": 0,
+        "matched_predictions": 2,
+        "missed": [
+          [
+            "up_bocw"
+          ],
+          [
+            "nfsa_ration"
+          ]
+        ],
+        "false_positives": [],
+        "ignored_extras": [
+          "eshram",
+          "pm_sym",
+          "pmjjby"
+        ]
+      },
+      "total_missing_inr_per_year": 7050,
+      "verified_sources": {
+        "pmmvy": "https://wcd.gov.in/women/pradhan-mantri-matru-vandana-yojna",
+        "pmuy": "https://pmuy.gov.in/",
+        "pm_sym": "https://maandhan.in/",
+        "eshram": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2086193&reg=48&lang=2",
+        "pmjjby": "https://financialservices.gov.in/pradhan-mantri-jeevan-jyoti-bima-yojana-pmjjby"
+      },
+      "dropped": {
+        "pmjjby:self": "आयु 32 वर्ष और बैंक खाता है, इसलिए प्रोफ़ाइल के हिसाब से पात्र लगता है। पर किसी सरकारी पेज (jansuraksha.gov.in, myscheme.gov.in, financialservices.gov.in) से नियम पढ़े नहीं जा सके। पेज खुले नहीं या उनमें कोई टेक्स्ट नहीं मिला। नियम सिर्फ़ निजी साइटों पर मिले (आयु 18-50, प्रीमियम 436 रुपये), इसलिए सत्यापित दर्ज नहीं किया।",
+        "pmsby:self": "आयु 32 वर्ष और बैंक खाता होने से सदस्य पात्र लगता है। लेकिन कोई भी सरकारी पेज (jansuraksha.gov.in, myscheme.gov.in, PIB, financialservices.gov.in) खुल नहीं पाया। नियम सिर्फ़ गैर-सरकारी साइटों (विकिपीडिया, joinditto) पर मिले, इसलिए सरकारी पेज पर पुष्टि नहीं हो सकी।",
+        "up_bocw:self": "The profile fits the rules as reported (age 32, construction worker). I could not confirm the rules on any official page. upbocw.in and the myScheme scheme page both failed to load and returned only the myScheme homepage. The uplabour.gov.in homepage loaded but has no eligibility details. The 18-60 age band and the 90-days-in-12-months rule appear only on unofficial sites, such as compliance and labour-card sites. Under the verification rules I can't record the scheme on that basis. Retry later against upbocw.in. The worker can also ask at the Ghaziabad Labour Office.",
+        "nfsa_ration:household": "NFSA की केंद्रीय बातें nfsa.gov.in पर पक्की हुईं: प्राथमिकता परिवार को 5 किलो अनाज प्रति व्यक्ति प्रति माह, अंत्योदय को 35 किलो प्रति परिवार। पात्र परिवार कौन है, यह तय करना राज्य का काम है। उत्तर प्रदेश की पात्रता और अपात्रता की शर्तें (आय सीमा, मकान, वाहन आदि) fcs.up.gov.in पर \"राशन कार्ड हेतु पात्रता के नियम\" लिंक के पीछे हैं। वह पेज खुल नहीं सका और कोई दूसरा आधिकारिक पेज भी नहीं मिला। etah.nic.in का पेज पुराना (2018) है और उसमें आय सीमा नहीं है। निजी वेबसाइटों पर मिली जानकारी पर भरोसा नहीं किया जा सकता। इसलिए 1.4 लाख रुपये सालाना आय पर पात्रता आधिकारिक पेज से पक्की नहीं हो पाई। परिवार को सलाह: गाज़ियाबाद के जिला पूर्ति कार्यालय या जन सेवा केंद्र में पात्रता पूछें, या e-district पोर्टल से राशन कार्ड के लिए आवेदन करें।",
+        "eshram:wife": "e-Shram की आधिकारिक FAQ के अनुसार पंजीकरण उसी का हो सकता है जो असंगठित क्षेत्र में काम करता हो (घर-आधारित, स्वरोज़गार या मज़दूरी), उम्र 16-59, और EPFO/ESIC सदस्य न हो। पत्नी की उम्र 28 है और वह EPFO/ESIC में नहीं है, पर वह केवल गृहिणी है और कोई कमाई वाला असंगठित काम नहीं करती। आधिकारिक पेज पर गृहिणी को शामिल बताने वाली कोई बात नहीं मिली, इसलिए पात्रता पक्की नहीं हो सकी। आय की कोई सीमा नहीं है। अगर वह घर से सिलाई जैसा कोई कमाई वाला काम करती है, तो CSC पर दोबारा देखा जा सकता है। पंजीकरण मुफ़्त है और इसमें सीधा नकद लाभ नहीं है।",
+        "pmsby:wife": "पात्रता के नियम किसी सरकारी (official) पेज पर पक्के नहीं हो सके। myscheme.gov.in, jansuraksha.gov.in और financialservices.gov.in तीनों नहीं खुले। केवल निजी वेबसाइटों (bankbazaar, godigit) पर जानकारी मिली, इसलिए योजना दर्ज नहीं की गई। प्रोफ़ाइल के हिसाब से पत्नी (28 वर्ष, बैंक खाता है) शायद पात्र है, पर सरकारी पुष्टि नहीं हुई।",
+        "pmjay:household": "आधिकारिक पेज (nha.gov.in, pmjay.gov.in, myscheme) नहीं खुले या खाली मिले, इसलिए नियम आधिकारिक स्रोत पर पक्के नहीं हो सके। सिर्फ़ गैर-सरकारी साइट पर निर्माण मज़दूर शहरी श्रेणी दिखी, जो मान्य नहीं है। परिवार के पास राशन कार्ड नहीं है और SECC सूची में नाम अज्ञात है। सुझाव: परिवार mera.pmjay.gov.in पर या नज़दीकी आयुष्मान केंद्र/CSC पर नाम जाँचे।"
+      },
+      "conflicts": [],
+      "recoveries": 25
+    },
+    {
+      "id": "h06",
+      "description": "Varanasi OBC shopkeeper family (caste volunteered), daughter in BA 1st year, son in class 10",
+      "household_state_id": "819b1ae51c",
+      "error": null,
+      "seconds": 118.5,
+      "cost_usd": 0.995997,
+      "usage": {
+        "input_tokens": 180,
+        "output_tokens": 18284,
+        "cache_read_input_tokens": 623102,
+        "cache_creation_input_tokens": 215271,
+        "web_search_requests": 15,
+        "cost_usd": 0.995997
+      },
+      "predicted": [
+        "nfsa_ration",
+        "pmsby",
+        "up_kanya_sumangala"
+      ],
+      "expected": [
+        [
+          "up_scholarship"
+        ],
+        [
+          "up_kanya_sumangala"
+        ]
+      ],
+      "score": {
+        "tp": 1,
+        "fn": 1,
+        "fp": 1,
+        "matched_predictions": 1,
+        "missed": [
+          [
+            "up_scholarship"
+          ]
+        ],
+        "false_positives": [
+          "nfsa_ration"
+        ],
+        "ignored_extras": [
+          "pmsby"
+        ]
+      },
+      "total_missing_inr_per_year": 13000,
+      "verified_sources": {
+        "up_kanya_sumangala": "https://mksy.up.gov.in/",
+        "nfsa_ration": "https://nfsa.gov.in/portal/nfsa-act",
+        "pmsby": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2127981&reg=48&lang=2"
+      },
+      "dropped": {
+        "pm_sym:self": "आधिकारिक मानधन पोर्टल के अनुसार प्रवेश की आयु 18 से 40 वर्ष है। सदस्य की आयु 48 वर्ष है, इसलिए पात्र नहीं।",
+        "pmjjby:self": "मैं किसी भी सरकारी (official) पेज पर नियम पक्के नहीं कर पाया। myscheme.gov.in, jansuraksha.gov.in और financialservices.gov.in तीनों नहीं खुले (खाली पेज, TLS गड़बड़ी या 404)। उम्र 18-50 साल और ₹436 सालाना प्रीमियम की जानकारी सिर्फ निजी वेबसाइटों पर मिली, इसलिए इसे सत्यापित नहीं माना जा सकता। प्रोफ़ाइल के हिसाब से सदस्य (48 साल, बैंक खाता) पात्र दिखता है। बाद में आधिकारिक पेज खुलने पर दोबारा जाँचा जा सकता है।",
+        "pmjjby:wife": "पत्नी (45 वर्ष, बैंक खाता) प्रोफ़ाइल के अनुसार पात्र लगती है, लेकिन किसी भी सरकारी पेज (jansuraksha.gov.in, myscheme.gov.in, financialservices.gov.in) से नियम पढ़े नहीं जा सके। पेज नहीं खुले। सिर्फ़ निजी वेबसाइटों पर नियम मिले, इसलिए सत्यापित नहीं किया जा सका।",
+        "nsp_scholarship:daughter": "NSP के आधिकारिक पेज पर OBC छात्रों के लिए कॉलेज स्तर की केवल PM YASASVI (College) योजना दिखी। यह मेरिट-आधारित है और केवल अधिसूचित टॉप-क्लास संस्थानों (IIT, IIM, NIT आदि) के छात्रों के लिए है। इसमें सीमित सीटें होती हैं। ये संस्थान-शर्तें मुझे केवल गैर-आधिकारिक साइटों पर मिलीं, आधिकारिक पेज पर नहीं। बेटी BA 1st year में है और कॉलेज की जानकारी नहीं है। आय 1.8 लाख सीमा (2.5 लाख) के अंदर है। फिर भी आधिकारिक पेज से पात्रता पक्की नहीं हो सकी। सामान्य OBC पोस्ट-मैट्रिक छात्रवृत्ति केंद्र सरकार की NSP पर नहीं मिली। उत्तर प्रदेश की राज्य छात्रवृत्ति (SC/ST/OBC कल्याण पोर्टल) अलग योजना है और उसे अलग से जाँचना चाहिए। यदि बेटी किसी अधिसूचित टॉप-क्लास संस्थान में है, तो NSP पर दोबारा जाँचें।",
+        "eshram:self": "प्रोफ़ाइल के हिसाब से पात्र लगता है (48 वर्ष, छोटा व्यापारी, आयकर दाता नहीं), लेकिन किसी सरकारी पेज पर नियम पुष्टि नहीं हो सके। eshram.gov.in पर कोई टेक्स्ट नहीं मिला, labour.gov.in, PIB और myscheme नहीं खुले। नियम केवल निजी वेबसाइट पर मिले, इसलिए सत्यापित नहीं किया।",
+        "up_scholarship:daughter": "आधिकारिक पेज (scholarship.up.gov.in, scholarships.gov.in) पर OBC की आय सीमा और पात्रता नियम नहीं मिले। पोर्टल केवल योजनाओं की सूची दिखाता है। आय सीमा केवल buddy4study (गैर-सरकारी) पर मिली, जिसमें OBC/सामान्य के लिए 2 लाख रुपये लिखा है। परिवार की आय 1.8 लाख रुपये है, इसलिए वह सीमा के भीतर लगती है। फिर भी नियम किसी आधिकारिक पेज पर पक्के नहीं हुए, इसलिए योजना सत्यापित नहीं की जा सकती। परिवार को सुझाव है कि वे scholarship.up.gov.in पर \"Post Matric Other than Inter (OBC)\" के लिए सीधे जाँच करें।",
+        "up_digishakti:daughter": "सरकारी DigiShakti पेज (digishakti.up.gov.in) पर केवल 2021-22 की योजना का शीर्षक और रखरखाव की सूचनाएँ मिलीं। वहाँ पात्रता के नियम या मौजूदा बैच की जानकारी नहीं थी। myScheme पर योजना का पेज नहीं खुला। पात्रता के नियम (आय सीमा, कोर्स, कॉलेज द्वारा सत्यापित डेटा) केवल गैर-सरकारी साइटों (buddy4study, labhgrow) पर मिले, और वे आपस में मेल नहीं खाते। एक में आय सीमा 2 लाख रुपये बताई गई, दूसरे में कोई आय सीमा नहीं। इसलिए सरकारी स्रोत से पुष्टि नहीं हो सकी। बेटी BA प्रथम वर्ष में पढ़ती है और परिवार की आय 1.8 लाख रुपये है, इसलिए वह संभवतः पात्र हो सकती है। फिर भी परिवार को कॉलेज में पूछना चाहिए और digishakti.up.gov.in पर पंजीकरण देखना चाहिए।",
+        "up_scholarship:son": "बेटा कक्षा 10, OBC, आय ₹1.8 लाख है, और निजी वेबसाइटों के अनुसार शायद पात्र है। लेकिन किसी सरकारी पेज पर आय सीमा और पात्रता नियम पढ़कर पुष्टि नहीं हो सकी। scholarship.up.gov.in नहीं खुला। उसकी जगह scholarships.gov.in का मुख्य पेज मिला, और उसमें इस योजना के नियम नहीं थे। निजी साइटों के आँकड़े आपस में भी अलग थे। इसलिए बिना सरकारी पुष्टि के इसे दर्ज नहीं किया गया। परिवार scholarship.up.gov.in पर या जन सेवा केंद्र / स्कूल में जाकर जाँच कर सकता है।",
+        "pmjay:household": "मैं आधिकारिक पेज से नियम पक्के नहीं कर पाया। nha.gov.in, pmjay.gov.in, beneficiary.nha.gov.in और myscheme.gov.in न खुले या उनमें कोई पाठ नहीं मिला। खोज में केवल गैर-सरकारी साइट मिली, इसलिए परिवार को योजना में दर्ज नहीं किया। PM-JAY में पात्रता SECC 2011 के अभाव वाले ग्रामीण परिवारों और शहरी व्यावसायिक श्रेणियों से तय होती है। राशन कार्ड केवल परिवार का प्रमाण है और आय सीमा नहीं मानी जाती। इस परिवार का SECC में नाम होना अज्ञात है। इसे नज़दीकी आयुष्मान केंद्र या mera.pmjay.gov.in पर जाँचा जा सकता है।",
+        "up_abhyudaya:daughter": "अभ्युदय योजना के नियम किसी आधिकारिक पेज पर पढ़े नहीं जा सके। abhyuday.up.gov.in नहीं खुला और myScheme ने सिर्फ़ होमपेज दिखाया। नियम केवल एक गैर-सरकारी साइट पर मिले, इसलिए पुष्टि नहीं हो सकी। उस साइट के अनुसार IAS/PCS कोचिंग के लिए स्नातक का अंतिम वर्ष या स्नातक पास होना ज़रूरी है। बेटी अभी BA पहले वर्ष में है, इसलिए अभी पात्र नहीं लगती। JEE/NEET के लिए भी वह कक्षा 11-12 में नहीं है।"
+      },
+      "conflicts": [],
+      "recoveries": 28
+    },
+    {
+      "id": "h07",
+      "description": "Banda SC landless labourers (caste volunteered), three young children, no ration card",
+      "household_state_id": "cf70fbe6c8",
+      "error": null,
+      "seconds": 124.5,
+      "cost_usd": 1.044252,
+      "usage": {
+        "input_tokens": 352,
+        "output_tokens": 20582,
+        "cache_read_input_tokens": 615236,
+        "cache_creation_input_tokens": 229873,
+        "web_search_requests": 14,
+        "cost_usd": 1.044252
+      },
+      "predicted": [
+        "eshram",
+        "pm_sym",
+        "pmjay",
+        "pmsby",
+        "pmuy"
+      ],
+      "expected": [
+        [
+          "nfsa_ration"
+        ],
+        [
+          "pmay_g"
+        ],
+        [
+          "pmuy"
+        ]
+      ],
+      "score": {
+        "tp": 1,
+        "fn": 2,
+        "fp": 0,
+        "matched_predictions": 1,
+        "missed": [
+          [
+            "nfsa_ration"
+          ],
+          [
+            "pmay_g"
+          ]
+        ],
+        "false_positives": [],
+        "ignored_extras": [
+          "eshram",
+          "pm_sym",
+          "pmjay",
+          "pmsby"
+        ]
+      },
+      "total_missing_inr_per_year": 2050,
+      "verified_sources": {
+        "pmuy": "https://pmuy.gov.in/",
+        "pm_sym": "https://maandhan.in/",
+        "eshram": "https://eshram.gov.in/faqs",
+        "pmjay": "https://nha.gov.in/PM-JAY",
+        "pmsby": "https://www.financialservices.gov.in/beta/index.php/en/pmsby"
+      },
+      "dropped": {
+        "pmay_g:household": "आधिकारिक पेज (pmayg.dord.gov.in) पर पात्रता नियम और सहायता राशि का विवरण नहीं मिला; वह केवल होमपेज था। नियम सिर्फ़ गैर-सरकारी साइटों (kotak811, bajajfinserv) पर मिले, इसलिए सत्यापित नहीं कर सके। परिवार कच्चे मकान में रहता है और आय कम है, इसलिए संभावित रूप से पात्र हो सकता है। परिवार ग्राम पंचायत/ब्लॉक में AwaasPlus सर्वे में नाम जाँच करा सकता है।",
+        "nfsa_ration:household": "The central NFSA page (nfsa.gov.in) confirms the entitlements: 5 kg per person per month for priority households and 35 kg per family per month for Antyodaya. It also says each State sets its own criteria for choosing priority households. I could not open the UP \"राशन कार्ड हेतु पात्रता के नियम\" page on fcs.up.gov.in. Only the homepage loaded, and it carries a link to that page but not its contents. The UP income and exclusion limits are therefore unconfirmed. The family's income of Rs 60,000 a year may be above UP's rural income limit, so I cannot confirm eligibility. The family has no ration card, is SC, lives in a kutcha house and does daily-wage work. These facts point towards eligibility but are not enough without the UP rules. The family should ask at the Banda block or tehsil office, or apply on the e-district portal, to check eligibility.",
+        "pmsby:self": "आधिकारिक पेज (jansuraksha.gov.in, myscheme.gov.in, financialservices.gov.in) नहीं खुले, इसलिए नियम किसी सरकारी साइट पर पुष्ट नहीं हो सके। केवल विकिपीडिया पर आयु 18-70, बैंक खाता और 20 रुपये प्रीमियम मिला, जो आधिकारिक स्रोत नहीं है। प्रोफ़ाइल (35 वर्ष, बैंक खाता) से यह व्यक्ति शायद पात्र है, पर सत्यापन नहीं हुआ। बैंक शाखा में पूछ सकते हैं।",
+        "pmjjby:self": "आधिकारिक पेज (jansuraksha.gov.in, myscheme.gov.in) नहीं खुले, इसलिए नियम आधिकारिक स्रोत पर पक्के नहीं हो सके। केवल Kotak जैसी गैर-सरकारी साइट पर उम्र 18-50 और प्रीमियम Rs 436 मिला। प्रोफ़ाइल (35 साल, बैंक खाता) से लगता है कि पात्रता बन सकती है, पर पुष्टि नहीं हुई। इसलिए रिकॉर्ड नहीं किया।",
+        "up_kanya_sumangala:daughter": "सरकारी पोर्टल (mksy.up.gov.in) के अनुसार परिवार में अधिकतम दो बच्चे होने चाहिए। केवल जुड़वा बच्चों या गोद ली गई अनाथ बालिका के मामले में छूट है। इस परिवार में तीन बच्चे हैं (बेटा 8 साल, बेटी 5 साल, बेटा 3 साल), और इनमें जुड़वा या गोद लेने का कोई उल्लेख नहीं है। आय (₹60,000, सीमा ₹3 लाख) और यूपी निवास की शर्तें पूरी होती हैं। फिर भी \"अधिकतम दो बच्चे\" की शर्त पूरी नहीं होती। इसलिए बेटी पात्र नहीं है। यदि बच्चों में कोई जुड़वा है, तो जिला महिला कल्याण/बाल विकास कार्यालय में पूछ लें।",
+        "nsp_scholarship:son (age 8)": "बेटा कक्षा 3 में है। एनएसपी पर SC छात्रों की केंद्रीय छात्रवृत्तियाँ कक्षा 9-10 (प्री-मैट्रिक) और उसके बाद (पोस्ट-मैट्रिक) के लिए हैं, यह मेरी जानकारी है। एनएसपी का होमपेज देखा, पर उस पर कक्षा की पात्रता के नियम नहीं मिले, इसलिए किसी आधिकारिक पेज से इसकी पुष्टि नहीं हो सकी। कक्षा 3 के लिए कोई केंद्रीय NSP छात्रवृत्ति नहीं मिली। बेटा कक्षा 9 में पहुँचे तब दोबारा जाँचें। तब आय 60,000 रुपये सालाना होने से आय सीमा में आने की संभावना है।",
+        "up_bocw:self": "UPBOCW के नियम (आयु 18-60, पिछले 12 महीनों में 90 दिन निर्माण कार्य) केवल गैर-सरकारी साइटों (digivill.in, factorylicence.in) पर मिले। upbocw.in, labour.up.gov.in और myscheme की योजना वाले पन्ने नहीं खुले। हर बार सिर्फ़ myScheme का होमपेज मिला, जिसमें योजना की जानकारी नहीं है। आधिकारिक पुष्टि के बिना योजना दर्ज नहीं की जा सकती। प्रोफ़ाइल में आयु 35 और दिहाड़ी मज़दूरी है, पर 90 दिन के निर्माण कार्य का तथ्य अज्ञात है। बाद में upbocw.in पर दोबारा जाँच करें।"
+      },
+      "conflicts": [],
+      "recoveries": 32
+    },
+    {
+      "id": "h08",
+      "description": "Meerut farmer aged 58 owning 3 acres; adult son is a govt teacher (separate PM-KISAN family)",
+      "household_state_id": "b45c4ae89e",
+      "error": null,
+      "seconds": 102.6,
+      "cost_usd": 0.877823,
+      "usage": {
+        "input_tokens": 13806,
+        "output_tokens": 16709,
+        "cache_read_input_tokens": 570627,
+        "cache_creation_input_tokens": 171598,
+        "web_search_requests": 14,
+        "cost_usd": 0.877823
+      },
+      "predicted": [
+        "pm_kisan",
+        "pmjjby",
+        "pmsby"
+      ],
+      "expected": [
+        [
+          "pm_kisan"
+        ]
+      ],
+      "score": {
+        "tp": 1,
+        "fn": 0,
+        "fp": 0,
+        "matched_predictions": 1,
+        "missed": [],
+        "false_positives": [],
+        "ignored_extras": [
+          "pmjjby",
+          "pmsby"
+        ]
+      },
+      "total_missing_inr_per_year": 6000,
+      "verified_sources": {
+        "pm_kisan": "https://pmkisan.gov.in/",
+        "pmsby": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2259251&reg=3&lang=1",
+        "pmjjby": "https://financialservices.gov.in/pradhan-mantri-jeevan-jyoti-bima-yojana-pmjjby"
+      },
+      "dropped": {
+        "pm_kisan_maandhan:self": "सदस्य की उम्र 58 साल है। मानधन पेंशन योजनाओं में आधिकारिक पेज maandhan.in पर प्रवेश की उम्र 18 से 40 साल लिखी है, और 60 साल की उम्र पर 3000 रुपये महीना पेंशन मिलती है। myscheme का PM-KMY पेज नहीं खुला और फॉलबैक में PM-SYM का पेज मिला, पर किसान मानधन में भी 18-40 की उम्र सीमा है। इसलिए 58 साल की उम्र में पात्रता नहीं है।",
+        "pmjjby:self": "Member is 58. PMJJBY allows new enrolment only at ages 18-50, and cover can be renewed only up to age 55. At 58 the member is above both limits, so there is no new enrolment and no continuation. I could not open the official pages (jansuraksha.gov.in and myscheme.gov.in both failed to load). The age limits come only from a non-official source, which matches the catalog note. I am dropping the scheme as ineligible and not verified on an official page.",
+        "pmfby:self": "पात्रता नियम किसी सरकारी पेज पर पढ़ नहीं पाए। pmfby.gov.in और myscheme.gov.in के पेज खुले नहीं (सिर्फ JavaScript वाले पेज), और agriwelfare.gov.in पर त्रुटि आई। नियम सिर्फ बीमा कंपनियों की निजी वेबसाइटों पर मिले, इसलिए सत्यापित नहीं माना। किसान की 3 एकड़ अपनी ज़मीन के हिसाब से योजना शायद लागू होगी, पर पुष्टि के लिए बाद में दोबारा जाँचें।",
+        "up_kanya_sumangala:granddaughter": "आधिकारिक पोर्टल (mksy.up.gov.in) के अनुसार परिवार की सालाना आय अधिकतम 3 लाख रुपये होनी चाहिए। इस परिवार की आय 7 लाख रुपये है, इसलिए बच्ची पात्र नहीं है। बेटा आयकर दाता और सरकारी कर्मचारी भी है।",
+        "pmjjby:son": "आधिकारिक पेज (jansuraksha.gov.in, myscheme.gov.in, financialservices.gov.in) नहीं खुल सके, इसलिए नियम आधिकारिक स्रोत पर पुष्टि नहीं हुए। सिर्फ़ निजी वेबसाइटों पर पुष्टि हुई (उम्र 18-50, ₹436 सालाना, ₹2 लाख कवर), जो मान्य नहीं है। बेटे की उम्र 30 और बैंक खाता है, इसलिए वह संभवतः पात्र है। बैंक शाखा में जाकर पुष्टि की जा सकती है।",
+        "nfsa_ration:household": "आधिकारिक पेज पर पात्रता नियम नहीं पढ़े जा सके (fcs.up.gov.in और nfsa.gov.in पर केवल सामान्य पेज मिले)। केवल गैर-सरकारी साइट पर नियम मिले, इसलिए सत्यापित नहीं कर सकते। परिवार के प्रोफ़ाइल से भी पात्रता कमज़ोर है: बेटा सरकारी कर्मचारी और आयकर दाता है, आय ₹7 लाख है, पक्का मकान और 3 एकड़ ज़मीन है। फिर भी परिवार चाहे तो ज़िला पूर्ति कार्यालय, मेरठ में पूछ सकता है।",
+        "pmjay:household": "PM-JAY पात्रता SECC 2011 की सूची पर आधारित है (NHA की आधिकारिक नीति रिपोर्ट के अनुसार)। इसमें संपत्ति के आधार पर स्वतः बहिष्करण भी है। इस परिवार के पास राशन कार्ड नहीं है, इसलिए NFSA/UP राशन कार्ड वाला रास्ता बंद है। पक्का मकान है और 7 लाख रुपये आय है। बेटा सरकारी कर्मचारी और आयकर दाता है, जो ग्रामीण बहिष्करण मानदंड में आता है। परिवार के SECC सूची में होने का कोई प्रमाण नहीं है। आधिकारिक पोर्टल (pmjay.gov.in, myscheme) इस सत्र में खुले नहीं, इसलिए सटीक बहिष्करण नियम पूरी तरह से पढ़कर पुष्टि नहीं हो सके। सलाह: परिवार चाहें तो beneficiary.nha.gov.in या नज़दीकी CSC पर नाम जाँच सकता है।"
+      },
+      "conflicts": [],
+      "recoveries": 26
+    },
+    {
+      "id": "h09",
+      "description": "Prayagraj widow aged 74 living alone, Antyodaya card, kutcha house, no gas",
+      "household_state_id": "f4980ec823",
+      "error": null,
+      "seconds": 110.2,
+      "cost_usd": 0.545345,
+      "usage": {
+        "input_tokens": 84,
+        "output_tokens": 12994,
+        "cache_read_input_tokens": 223953,
+        "cache_creation_input_tokens": 132179,
+        "web_search_requests": 4,
+        "cost_usd": 0.545345
+      },
+      "predicted": [
+        "ayushman_vay_vandana",
+        "nfsa_ration",
+        "pmay_g",
+        "pmjay",
+        "pmuy",
+        "up_old_age_pension",
+        "up_widow_pension"
+      ],
+      "expected": [
+        [
+          "up_widow_pension",
+          "up_old_age_pension"
+        ],
+        [
+          "pmjay",
+          "ayushman_vay_vandana"
+        ],
+        [
+          "pmay_g"
+        ],
+        [
+          "pmuy"
+        ]
+      ],
+      "score": {
+        "tp": 4,
+        "fn": 0,
+        "fp": 1,
+        "matched_predictions": 6,
+        "missed": [],
+        "false_positives": [
+          "nfsa_ration"
+        ],
+        "ignored_extras": []
+      },
+      "total_missing_inr_per_year": 146050,
+      "verified_sources": {
+        "pmay_g": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2074713&reg=48&lang=2",
+        "up_old_age_pension": "https://sspy-up.gov.in/",
+        "up_widow_pension": "https://sspy-up.gov.in/",
+        "pmuy": "https://pmuy.gov.in/",
+        "ayushman_vay_vandana": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2082288&reg=48&lang=2",
+        "nfsa_ration": "https://nfsa.gov.in/portal/nfsa-act",
+        "pmjay": "https://nha.gov.in/PM-JAY"
+      },
+      "dropped": {
+        "pmsby:self": "महिला की उम्र 74 साल है। PMSBY में उम्र 18 से 70 साल के बीच होनी चाहिए, इसलिए नया बीमा नहीं मिलेगा। आयु सीमा की जानकारी गैर-सरकारी साइटों से मिली। सरकारी पेज (myscheme, jansuraksha) खुल नहीं सके, इसलिए सरकारी पेज पर पुष्टि नहीं हो पाई। अगर पहले से पॉलिसी है, तो बैंक से पूछें कि 70 साल के बाद नवीनीकरण होगा या नहीं। उम्र 70 पार होने पर कवर आम तौर पर आगे नहीं बढ़ता।"
+      },
+      "conflicts": [],
+      "recoveries": 15
+    },
+    {
+      "id": "h10",
+      "description": "Moradabad tailor (darzi), two daughters aged 14 (class 9) and 10",
+      "household_state_id": "391532689f",
+      "error": null,
+      "seconds": 112.0,
+      "cost_usd": 0.986251,
+      "usage": {
+        "input_tokens": 164,
+        "output_tokens": 22177,
+        "cache_read_input_tokens": 513272,
+        "cache_creation_input_tokens": 216600,
+        "web_search_requests": 12,
+        "cost_usd": 0.986251
+      },
+      "predicted": [
+        "eshram",
+        "nfsa_ration",
+        "pm_sym",
+        "pm_vishwakarma",
+        "pmjjby",
+        "pmsby",
+        "up_kanya_sumangala"
+      ],
+      "expected": [
+        [
+          "pm_vishwakarma"
+        ],
+        [
+          "up_kanya_sumangala"
+        ],
+        [
+          "up_scholarship"
+        ]
+      ],
+      "score": {
+        "tp": 2,
+        "fn": 1,
+        "fp": 1,
+        "matched_predictions": 2,
+        "missed": [
+          [
+            "up_scholarship"
+          ]
+        ],
+        "false_positives": [
+          "nfsa_ration"
+        ],
+        "ignored_extras": [
+          "eshram",
+          "pm_sym",
+          "pmjjby",
+          "pmsby"
+        ]
+      },
+      "total_missing_inr_per_year": 29204,
+      "verified_sources": {
+        "pm_vishwakarma": "https://pmvishwakarma.gov.in/",
+        "nfsa_ration": "https://nfsa.gov.in/portal/nfsa-act",
+        "up_kanya_sumangala": "https://mksy.up.gov.in/",
+        "pm_sym": "https://maandhan.in/",
+        "pmsby": "https://www.pib.gov.in/PressReleaseIframePage.aspx?PRID=1922622&reg=48&lang=2",
+        "eshram": "https://eshram.gov.in/faqs",
+        "pmjjby": "https://old.financialservices.gov.in/insurance-divisions/Government-Sponsored-Socially-Oriented-Insurance-Schemes/Pradhan-Mantri-Jeevan-Jyoti-Bima-Yojana(PMJJBY)"
+      },
+      "dropped": {
+        "pmjjby:wife": "मैं नियम किसी सरकारी पेज पर पक्का नहीं कर पाया। myscheme.gov.in और jansuraksha.gov.in दोनों नहीं खुले, और financialservices.gov.in का पेज 404 आया। 18-50 साल की उम्र, बैंक खाता और 436 रुपये सालाना प्रीमियम की जानकारी मुझे सिर्फ Kotak जैसी गैर-सरकारी साइटों पर मिली। इसलिए योजना दर्ज नहीं की गई। पत्नी की उम्र 36 साल है, इसलिए वह शायद पात्र है। बस यह जांचना बाकी है कि उसका अपना बैंक खाता है या नहीं।",
+        "up_shadi_anudan:household": "आधिकारिक पोर्टल के अनुसार आय सीमा OBC के लिए ₹1,00,000 और सामान्य/SC/ST के लिए शहरी ₹56,460 है। परिवार की आय ₹1,10,000 है, जो हर वर्ग की सीमा से ऊपर है, इसलिए अभी पात्र नहीं। बेटियाँ अभी 14 और 10 साल की हैं (विवाह के लिए 18+ चाहिए)। भविष्य में आय सीमा के भीतर होने पर ही पात्रता बनेगी।",
+        "nsp_scholarship:daughter (14, class 9)": "बेटी की जाति/अल्पसंख्यक स्थिति परिवार ने नहीं बताई। NSP पर कक्षा 9 की प्री-मैट्रिक छात्रवृत्तियाँ जाति/समुदाय पर निर्भर हैं (SC, ST, अल्पसंख्यक आदि), और आधिकारिक पेज से इस परिवार की पात्रता पक्की नहीं हुई। NSP के पेज पर नियम और आय-सीमा नहीं मिली। साथ ही अल्पसंख्यक प्री-मैट्रिक में आय-सीमा सामान्यतः 1 लाख रुपये मानी जाती है, जबकि परिवार की आय 1.10 लाख है। इसकी भी आधिकारिक पुष्टि नहीं हुई। जाति पता चलने पर scholarships.gov.in पर दोबारा जाँचें।",
+        "pmjay:household": "आधिकारिक पेज (nha.gov.in, pmjay.gov.in, beneficiary.nha.gov.in, myscheme.gov.in) खुल नहीं सके या उनमें कोई पाठ नहीं था। खोज में केवल निजी साइटें मिलीं। इसलिए पात्रता नियम आधिकारिक स्रोत पर पक्के नहीं हो सके। परिवार की स्थिति: मुरादाबाद शहरी, पात्र गृहस्थी राशन कार्ड। यह संभावित रूप से पात्र हो सकता है, पर पुष्टि नहीं हुई। परिवार नजदीकी आयुष्मान केंद्र या CSC पर राशन कार्ड से जाँच करवा सकता है।",
+        "up_scholarship:daughter (14, class 9)": "The official pages I could open gave no pre-matric (class 9-10) eligibility or income-limit rules. scholarship.up.gov.in did not load, and the fallback pages (scholarships.gov.in and myscheme.gov.in) only had general portal information. Only unofficial sites (Buddy4Study and similar) gave the income limits. Those sites disagree with each other: one says Rs 2.5 lakh for every category, another says Rs 2 lakh for General, OBC and Minority. The caste category is also not shared, so the applicable limit cannot be fixed. I cannot confirm the rules on an official page, so I am not recording the scheme. The family income of Rs 1.1 lakh is likely below any of these limits, so the family should check at the UP scholarship portal or the school."
+      },
+      "conflicts": [],
+      "recoveries": 21
+    }
+  ]
+}
