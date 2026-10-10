@@ -18,7 +18,10 @@ from .config import FAST_MODEL, VERIFY_MODEL
 from .llm import Usage, create, structured
 
 RESEARCH_WORKERS = 4
-MAX_RESEARCH_TURNS = 10
+MAX_RESEARCH_TURNS = 6
+MAX_SEARCHES = 2            # web searches per scheme lookup
+BUDGET_NOTE = ("SEARCH BUDGET USED UP (2 searches): do not call web_search again. Use fetch_official_page on "
+               "official URLs you already found, then finish with record_verified or drop_scheme.")
 RESEARCH_DEADLINE_S = 420   # wall-clock budget for one scheme's research loop
 
 
@@ -221,8 +224,10 @@ def plan(profile: dict, usage: Usage, hid: str) -> list[dict]:
 RESEARCH_SYSTEM = """You are Haq's research agent. You verify ONE government scheme for ONE member of a family in Uttar Pradesh.
 
 Method:
-1. Use web_search to find the scheme's current eligibility rules and benefit. Prefer official domains:
-   *.gov.in, *.nic.in, myscheme.gov.in, the scheme's own portal.
+1. You have AT MOST 2 web searches for this scheme (none if cached official rules are given). Use them to
+   find the official page or rule document; prefer *.gov.in, *.nic.in, myscheme.gov.in, the scheme's portal.
+   STOP as soon as an official page confirms the rules you need: call record_verified in that same turn.
+   Do not search again to re-confirm something an official page already confirmed.
 2. Confirm EVERY eligibility rule you rely on against an OFFICIAL page. Use fetch_official_page to read an
    official URL directly (it retries and falls back to other official sources automatically). An official
    page that appears in your web_search results also counts as read. Portal home pages often lack the rules:
@@ -262,7 +267,7 @@ UNOFFICIAL_SOURCES_SCHEMA = {"type": "array", "items": {
     }}}
 
 TOOLS = [
-    {"type": "web_search_20260209", "name": "web_search", "max_uses": 4,
+    {"type": "web_search_20260209", "name": "web_search", "max_uses": MAX_SEARCHES,
      "user_location": {"type": "approximate", "country": "IN", "region": "Uttar Pradesh", "timezone": "Asia/Kolkata"}},
     {
         "name": "fetch_official_page",
@@ -331,6 +336,11 @@ TOOLS = [
 ]
 
 
+# Chosen once per loop and never changed mid-loop: editing the tool list invalidates the prompt cache and,
+# on Sonnet 5.5, counts as a history edit for the conversation's thinking blocks.
+TOOLS_NO_SEARCH = [t for t in TOOLS if t["name"] != "web_search"]
+
+
 def _search_result_urls(content) -> list[str]:
     urls = []
     for b in content:
@@ -374,6 +384,8 @@ def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str,
         ctx["read_official"].add(_norm(cached_rules["official_url"]))
 
     started = time.time()
+    tools = TOOLS_NO_SEARCH if cached_rules else TOOLS
+    searches, budget_noted, over_budget_turn = 0, False, None
     with neatlogs.trace(f"research:{cand['key']}", kind="AGENT", session_id=hid):
         for turn in range(MAX_RESEARCH_TURNS):
             if abort is not None and abort.is_set():
@@ -381,8 +393,15 @@ def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str,
             if time.time() - started > RESEARCH_DEADLINE_S:
                 return {**_dropped(cand, f"time budget ({RESEARCH_DEADLINE_S}s) exhausted without official "
                                          "confirmation", ""), **_logs(ctx)}
-            resp = create(usage, model=VERIFY_MODEL, effort="medium", system=RESEARCH_SYSTEM, tools=TOOLS, messages=messages)
+            if over_budget_turn is not None and turn > over_budget_turn:
+                return {**_dropped(cand, "search budget exceeded without official confirmation", ""),
+                        **_logs(ctx), "searches": searches}
+            resp = create(usage, model=VERIFY_MODEL, effort="medium", system=RESEARCH_SYSTEM, tools=tools,
+                          messages=messages)
             messages.append({"role": "assistant", "content": resp.content})
+            searches += getattr(getattr(resp.usage, "server_tool_use", None), "web_search_requests", 0) or 0
+            if searches > MAX_SEARCHES and over_budget_turn is None:
+                over_budget_turn = turn + 1   # one more turn to finish, then stop
             for u in _search_result_urls(resp.content):
                 (ctx["read_official"] if catalog.is_official(u) else ctx["unofficial_seen"]).add(_norm(u))
 
@@ -390,9 +409,14 @@ def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str,
                 continue  # server tool still working; resend to let it finish
             if resp.stop_reason == "refusal":
                 return {**_dropped(cand, "model declined", ""), **_logs(ctx)}
+            note = []  # appended to the next user message, after any tool results
+            if searches >= MAX_SEARCHES and not budget_noted:
+                budget_noted = True
+                note = [{"type": "text", "text": BUDGET_NOTE}]
             tool_uses = [b for b in resp.content if b.type == "tool_use"]
             if not tool_uses:
-                messages.append({"role": "user", "content": "Finish by calling record_verified or drop_scheme."})
+                messages.append({"role": "user", "content": note + [
+                    {"type": "text", "text": "Finish by calling record_verified or drop_scheme."}]})
                 continue
 
             results, final = [], None
@@ -401,14 +425,15 @@ def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str,
                 results.append({"type": "tool_result", "tool_use_id": tu.id,
                                 "content": out, **({"is_error": True} if is_err else {})})
                 final = final or fin
-            messages.append({"role": "user", "content": results})
+            messages.append({"role": "user", "content": results + note})
             if final:
-                final.update(**_logs(ctx), turns=turn + 1, rules_from_cache=bool(cached_rules))
+                final.update(**_logs(ctx), turns=turn + 1, rules_from_cache=bool(cached_rules), searches=searches)
                 if final["status"] in ("verified", "likely"):
                     cache.put_rules(final, source=f"{hid}:{run_id}:{cand['key']}")
                 return final
 
-    return {**_dropped(cand, "verification budget exhausted without official confirmation", ""), **_logs(ctx)}
+    return {**_dropped(cand, "verification budget exhausted without official confirmation", ""), **_logs(ctx),
+            "searches": searches}
 
 
 def rules_block(cached: dict) -> str:
