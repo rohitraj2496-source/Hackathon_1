@@ -1,0 +1,1906 @@
+{
+  "description": "20 Uttar Pradesh test households for Haq. Expected schemes were derived from the official source listed on each item; every expected answer is marked needs_human_check=true for spot-checking. Scoring is at household + scheme level. 'acceptable_extra' schemes are plausible but optional (insurance/contributory products, or eligibility that depends on facts not in the profile): predicting them is not a false positive and missing them is not a false negative. An expected item with 'any_of' is satisfied by any one of the listed scheme ids.",
+  "scope": "central + Uttar Pradesh",
+  "created": "2026-10-10",
+  "households": [
+    {
+      "id": "h01",
+      "description": "Barabanki small farmer family, kutcha house, son in class 11, daughter in class 7",
+      "profile": {
+        "district": "Barabanki",
+        "area": "rural",
+        "annual_family_income_inr": 90000,
+        "ration_card": "eligible_household",
+        "house_type": "kutcha",
+        "has_lpg_connection": true,
+        "has_bank_account": true,
+        "caste_category": "not_shared",
+        "land_acres": 1.5,
+        "land_owner_relation": "self",
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 45,
+            "gender": "male",
+            "occupation": "farmer",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "wife",
+            "age": 40,
+            "gender": "female",
+            "occupation": "homemaker",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "son",
+            "age": 16,
+            "gender": "male",
+            "occupation": "student",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": true,
+            "student_class": "11",
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "daughter",
+            "age": 12,
+            "gender": "female",
+            "occupation": "student",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": true,
+            "student_class": "7",
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [
+        {
+          "scheme_id": "pm_kisan",
+          "member": "self",
+          "official_source_url": "https://pmkisan.gov.in/",
+          "rule_basis": "Land-holding farmer family (husband, wife, minor children) with cultivable land in their name; excluded if income-tax payer, serving/retired govt employee, pensioner >= Rs 10,000/month, or professional. Rs 6,000/yr.",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "pmay_g",
+          "member": "household",
+          "official_source_url": "https://pmayg.dord.gov.in/",
+          "rule_basis": "PMAY-G: rural households that are houseless or living in kutcha / dilapidated houses (Awaas+ survey).",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "up_scholarship",
+          "member": "son",
+          "official_source_url": "https://scholarship.up.gov.in/",
+          "rule_basis": "UP Pre-matric (class 9-10) and Post-matric (11 and above) scholarship for students of UP families within the category income limit. Case note: class 11 -> post-matric",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "up_kanya_sumangala",
+          "member": "daughter",
+          "official_source_url": "https://mksy.up.gov.in/",
+          "rule_basis": "MKSY eligibility (official page): UP resident family, annual income <= Rs 3.00 lakh, max two girls per family, family has at most two children; Rs 25,000 in 6 stages (birth, vaccination, class 1, class 6, class 9, graduation/2-yr diploma admission). Case note: 2 children, income 90k; next stage at class 9 admission",
+          "needs_human_check": true
+        }
+      ],
+      "acceptable_extra": [
+        "eshram",
+        "nsp_scholarship",
+        "pm_kisan_maandhan",
+        "pmfby",
+        "pmjay",
+        "pmjjby",
+        "pmsby"
+      ]
+    },
+    {
+      "id": "h02",
+      "description": "Sitapur young widow, daily-wage worker, Antyodaya card, no gas, two children",
+      "profile": {
+        "district": "Sitapur",
+        "area": "rural",
+        "annual_family_income_inr": 40000,
+        "ration_card": "antyodaya",
+        "house_type": "kutcha",
+        "has_lpg_connection": false,
+        "has_bank_account": true,
+        "caste_category": "not_shared",
+        "land_acres": null,
+        "land_owner_relation": null,
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 38,
+            "gender": "female",
+            "occupation": "daily_wage",
+            "is_widow": true,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "son",
+            "age": 10,
+            "gender": "male",
+            "occupation": "student",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": true,
+            "student_class": "5",
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "daughter",
+            "age": 7,
+            "gender": "female",
+            "occupation": "student",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": true,
+            "student_class": "2",
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [
+        {
+          "scheme_id": "up_widow_pension",
+          "member": "self",
+          "official_source_url": "https://sspy-up.gov.in/",
+          "rule_basis": "UP integrated pension portal: निराश्रित महिला पेंशन for women aged 18+ after the death of the husband (पति की मृत्यु उपरान्त निराश्रित महिलायें जिनकी आयु 18 व उससे अधिक है).",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "pmjay",
+          "member": "household",
+          "official_source_url": "https://www.myscheme.gov.in/schemes/ab-pmjay",
+          "rule_basis": "AB PM-JAY covers SECC-deprived families and Antyodaya Anna Yojana (AAY) card holders; Rs 5 lakh/family/yr. Case note: AAY card",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "pmay_g",
+          "member": "household",
+          "official_source_url": "https://pmayg.dord.gov.in/",
+          "rule_basis": "PMAY-G: rural households that are houseless or living in kutcha / dilapidated houses (Awaas+ survey).",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "pmuy",
+          "member": "self",
+          "official_source_url": "https://pmuy.gov.in/",
+          "rule_basis": "PMUY eligibility: applicant is a woman aged 18+ from a poor household (SC/ST, PMAY-G, AAY, MBC, forest dwellers, SECC AHL or 14-point deprivation declaration) with no LPG connection in the household. Case note: AAY, no LPG",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "up_kanya_sumangala",
+          "member": "daughter",
+          "official_source_url": "https://mksy.up.gov.in/",
+          "rule_basis": "MKSY eligibility (official page): UP resident family, annual income <= Rs 3.00 lakh, max two girls per family, family has at most two children; Rs 25,000 in 6 stages (birth, vaccination, class 1, class 6, class 9, graduation/2-yr diploma admission). Case note: born after 1-4-2019, 2 children, income 40k",
+          "needs_human_check": true
+        }
+      ],
+      "acceptable_extra": [
+        "eshram",
+        "nfsa_ration",
+        "nsp_scholarship",
+        "pm_sym",
+        "pmjjby",
+        "pmsby"
+      ]
+    },
+    {
+      "id": "h03",
+      "description": "Gorakhpur elderly couple (72 and 68), no land, very low income",
+      "profile": {
+        "district": "Gorakhpur",
+        "area": "rural",
+        "annual_family_income_inr": 30000,
+        "ration_card": "eligible_household",
+        "house_type": "pucca",
+        "has_lpg_connection": true,
+        "has_bank_account": true,
+        "caste_category": "not_shared",
+        "land_acres": null,
+        "land_owner_relation": null,
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 72,
+            "gender": "male",
+            "occupation": "retired",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "wife",
+            "age": 68,
+            "gender": "female",
+            "occupation": "homemaker",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [
+        {
+          "scheme_id": "up_old_age_pension",
+          "member": "self and wife",
+          "official_source_url": "https://sspy-up.gov.in/",
+          "rule_basis": "UP integrated pension portal: old-age pension for persons 60+ living below the poverty line (गरीबी रेखा के नीचे जीवन यापन करने वाले 60 वर्ष से अधिक आयु के वृद्धजन). Case note: both 60+, income 30k",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "ayushman_vay_vandana",
+          "member": "self and wife",
+          "official_source_url": "https://www.myscheme.gov.in/schemes/abpmjayvv",
+          "rule_basis": "AB PM-JAY extended to all senior citizens aged 70+ irrespective of income (Ayushman Vay Vandana card), Rs 5 lakh/yr cover. Case note: husband is 70+",
+          "needs_human_check": true,
+          "any_of": [
+            "ayushman_vay_vandana",
+            "pmjay"
+          ],
+          "official_source_urls": {
+            "ayushman_vay_vandana": "https://www.myscheme.gov.in/schemes/abpmjayvv",
+            "pmjay": "https://www.myscheme.gov.in/schemes/ab-pmjay"
+          }
+        }
+      ],
+      "acceptable_extra": [
+        "ayushman_vay_vandana",
+        "pmjay",
+        "pmsby"
+      ]
+    },
+    {
+      "id": "h04",
+      "description": "Lucknow urban family, 22-year-old son with 60% locomotor disability",
+      "profile": {
+        "district": "Lucknow",
+        "area": "urban",
+        "annual_family_income_inr": 50000,
+        "ration_card": "eligible_household",
+        "house_type": "pucca",
+        "has_lpg_connection": true,
+        "has_bank_account": true,
+        "caste_category": "not_shared",
+        "land_acres": null,
+        "land_owner_relation": null,
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 50,
+            "gender": "male",
+            "occupation": "daily_wage",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "wife",
+            "age": 46,
+            "gender": "female",
+            "occupation": "homemaker",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "son",
+            "age": 22,
+            "gender": "male",
+            "occupation": "unemployed",
+            "is_widow": false,
+            "disability_percent": 60,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [
+        {
+          "scheme_id": "up_divyang_pension",
+          "member": "son",
+          "official_source_url": "https://sspy-up.gov.in/",
+          "rule_basis": "UP integrated pension portal: दिव्यांग पेंशन for persons with 40% or more disability (40 प्रतिशत या उससे अधिक प्रत्यक्ष दिव्यांग). Case note: 60% disability, income 50k urban",
+          "needs_human_check": true
+        }
+      ],
+      "acceptable_extra": [
+        "eshram",
+        "nsp_scholarship",
+        "pm_sym",
+        "pmjay",
+        "pmjjby",
+        "pmsby"
+      ]
+    },
+    {
+      "id": "h05",
+      "description": "Ghaziabad construction worker, wife pregnant with first child, no ration card, no gas",
+      "profile": {
+        "district": "Ghaziabad",
+        "area": "urban",
+        "annual_family_income_inr": 140000,
+        "ration_card": "none",
+        "house_type": "pucca",
+        "has_lpg_connection": false,
+        "has_bank_account": true,
+        "caste_category": "not_shared",
+        "land_acres": null,
+        "land_owner_relation": null,
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 32,
+            "gender": "male",
+            "occupation": "construction_worker",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "wife",
+            "age": 28,
+            "gender": "female",
+            "occupation": "homemaker",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": true,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [
+        {
+          "scheme_id": "up_bocw",
+          "member": "self",
+          "official_source_url": "https://upbocw.in/",
+          "rule_basis": "UP BOCW Welfare Board: construction workers aged 18-60 with 90 days of building/construction work in the last 12 months can register and access board schemes.",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "pmmvy",
+          "member": "wife",
+          "official_source_url": "https://pmmvy.wcd.gov.in/",
+          "rule_basis": "PMMVY: pregnant and lactating women for the first child (Rs 5,000), and for a second child if it is a girl (Rs 6,000). Case note: first child",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "nfsa_ration",
+          "member": "household",
+          "official_source_url": "https://fcs.up.gov.in/",
+          "rule_basis": "NFSA via UP Food & Civil Supplies: priority-household ration card for families not excluded by UP income/asset criteria; free grain 5 kg/person/month. Case note: urban, income 1.4L, no card",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "pmuy",
+          "member": "wife",
+          "official_source_url": "https://pmuy.gov.in/",
+          "rule_basis": "PMUY eligibility: applicant is a woman aged 18+ from a poor household (SC/ST, PMAY-G, AAY, MBC, forest dwellers, SECC AHL or 14-point deprivation declaration) with no LPG connection in the household. Case note: poor household (deprivation declaration), no LPG",
+          "needs_human_check": true
+        }
+      ],
+      "acceptable_extra": [
+        "eshram",
+        "pm_sym",
+        "pmjay",
+        "pmjjby",
+        "pmsby"
+      ]
+    },
+    {
+      "id": "h06",
+      "description": "Varanasi OBC shopkeeper family (caste volunteered), daughter in BA 1st year, son in class 10",
+      "profile": {
+        "district": "Varanasi",
+        "area": "urban",
+        "annual_family_income_inr": 180000,
+        "ration_card": "eligible_household",
+        "house_type": "pucca",
+        "has_lpg_connection": true,
+        "has_bank_account": true,
+        "caste_category": "obc",
+        "land_acres": null,
+        "land_owner_relation": null,
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 48,
+            "gender": "male",
+            "occupation": "small_business",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "wife",
+            "age": 45,
+            "gender": "female",
+            "occupation": "homemaker",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "daughter",
+            "age": 19,
+            "gender": "female",
+            "occupation": "student",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": true,
+            "student_class": "BA 1st year",
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "son",
+            "age": 15,
+            "gender": "male",
+            "occupation": "student",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": true,
+            "student_class": "10",
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [
+        {
+          "scheme_id": "up_scholarship",
+          "member": "daughter and son",
+          "official_source_url": "https://scholarship.up.gov.in/",
+          "rule_basis": "UP Pre-matric (class 9-10) and Post-matric (11 and above) scholarship for students of UP families within the category income limit. Case note: post-matric (BA) and pre-matric (class 10), OBC income 1.8L",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "up_kanya_sumangala",
+          "member": "daughter",
+          "official_source_url": "https://mksy.up.gov.in/",
+          "rule_basis": "MKSY eligibility (official page): UP resident family, annual income <= Rs 3.00 lakh, max two girls per family, family has at most two children; Rs 25,000 in 6 stages (birth, vaccination, class 1, class 6, class 9, graduation/2-yr diploma admission). Case note: stage 6: admission to graduation; 2 children; income 1.8L",
+          "needs_human_check": true
+        }
+      ],
+      "acceptable_extra": [
+        "eshram",
+        "nsp_scholarship",
+        "pmjay",
+        "pmjjby",
+        "pmsby",
+        "up_digishakti"
+      ]
+    },
+    {
+      "id": "h07",
+      "description": "Banda SC landless labourers (caste volunteered), three young children, no ration card",
+      "profile": {
+        "district": "Banda",
+        "area": "rural",
+        "annual_family_income_inr": 60000,
+        "ration_card": "none",
+        "house_type": "kutcha",
+        "has_lpg_connection": false,
+        "has_bank_account": true,
+        "caste_category": "sc",
+        "land_acres": null,
+        "land_owner_relation": null,
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 35,
+            "gender": "male",
+            "occupation": "daily_wage",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "wife",
+            "age": 32,
+            "gender": "female",
+            "occupation": "daily_wage",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "son",
+            "age": 8,
+            "gender": "male",
+            "occupation": "student",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": true,
+            "student_class": "3",
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "daughter",
+            "age": 5,
+            "gender": "female",
+            "occupation": "child",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "son",
+            "age": 3,
+            "gender": "male",
+            "occupation": "child",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [
+        {
+          "scheme_id": "nfsa_ration",
+          "member": "household",
+          "official_source_url": "https://fcs.up.gov.in/",
+          "rule_basis": "NFSA via UP Food & Civil Supplies: priority-household ration card for families not excluded by UP income/asset criteria; free grain 5 kg/person/month.",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "pmay_g",
+          "member": "household",
+          "official_source_url": "https://pmayg.dord.gov.in/",
+          "rule_basis": "PMAY-G: rural households that are houseless or living in kutcha / dilapidated houses (Awaas+ survey).",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "pmuy",
+          "member": "wife",
+          "official_source_url": "https://pmuy.gov.in/",
+          "rule_basis": "PMUY eligibility: applicant is a woman aged 18+ from a poor household (SC/ST, PMAY-G, AAY, MBC, forest dwellers, SECC AHL or 14-point deprivation declaration) with no LPG connection in the household. Case note: SC household, no LPG",
+          "needs_human_check": true
+        }
+      ],
+      "acceptable_extra": [
+        "eshram",
+        "pm_sym",
+        "pmjay",
+        "pmjjby",
+        "pmsby"
+      ]
+    },
+    {
+      "id": "h08",
+      "description": "Meerut farmer aged 58 owning 3 acres; adult son is a govt teacher (separate PM-KISAN family)",
+      "profile": {
+        "district": "Meerut",
+        "area": "rural",
+        "annual_family_income_inr": 700000,
+        "ration_card": "none",
+        "house_type": "pucca",
+        "has_lpg_connection": true,
+        "has_bank_account": true,
+        "caste_category": "not_shared",
+        "land_acres": 3,
+        "land_owner_relation": "self",
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 58,
+            "gender": "male",
+            "occupation": "farmer",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "son",
+            "age": 30,
+            "gender": "male",
+            "occupation": "salaried",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": true,
+            "govt_employee_or_pensioner": true
+          },
+          {
+            "name": null,
+            "relation": "daughter-in-law",
+            "age": 28,
+            "gender": "female",
+            "occupation": "homemaker",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "granddaughter",
+            "age": 2,
+            "gender": "female",
+            "occupation": "child",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [
+        {
+          "scheme_id": "pm_kisan",
+          "member": "self",
+          "official_source_url": "https://pmkisan.gov.in/",
+          "rule_basis": "Land-holding farmer family (husband, wife, minor children) with cultivable land in their name; excluded if income-tax payer, serving/retired govt employee, pensioner >= Rs 10,000/month, or professional. Rs 6,000/yr. Case note: PM-KISAN family = husband, wife, minor children; the adult govt-employee son is a separate family",
+          "needs_human_check": true
+        }
+      ],
+      "acceptable_extra": [
+        "eshram",
+        "pmfby",
+        "pmjjby",
+        "pmsby"
+      ]
+    },
+    {
+      "id": "h09",
+      "description": "Prayagraj widow aged 74 living alone, Antyodaya card, kutcha house, no gas",
+      "profile": {
+        "district": "Prayagraj",
+        "area": "rural",
+        "annual_family_income_inr": 0,
+        "ration_card": "antyodaya",
+        "house_type": "kutcha",
+        "has_lpg_connection": false,
+        "has_bank_account": true,
+        "caste_category": "not_shared",
+        "land_acres": null,
+        "land_owner_relation": null,
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 74,
+            "gender": "female",
+            "occupation": "unemployed",
+            "is_widow": true,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [
+        {
+          "scheme_id": "up_widow_pension",
+          "member": "self",
+          "official_source_url": "https://sspy-up.gov.in/",
+          "rule_basis": "UP integrated pension portal: निराश्रित महिला पेंशन for women aged 18+ after the death of the husband (पति की मृत्यु उपरान्त निराश्रित महिलायें जिनकी आयु 18 व उससे अधिक है). Case note: only one social pension at a time",
+          "needs_human_check": true,
+          "any_of": [
+            "up_widow_pension",
+            "up_old_age_pension"
+          ],
+          "official_source_urls": {
+            "up_widow_pension": "https://sspy-up.gov.in/",
+            "up_old_age_pension": "https://sspy-up.gov.in/"
+          }
+        },
+        {
+          "scheme_id": "pmjay",
+          "member": "self",
+          "official_source_url": "https://www.myscheme.gov.in/schemes/ab-pmjay",
+          "rule_basis": "AB PM-JAY covers SECC-deprived families and Antyodaya Anna Yojana (AAY) card holders; Rs 5 lakh/family/yr. Case note: AAY card and 70+",
+          "needs_human_check": true,
+          "any_of": [
+            "pmjay",
+            "ayushman_vay_vandana"
+          ],
+          "official_source_urls": {
+            "pmjay": "https://www.myscheme.gov.in/schemes/ab-pmjay",
+            "ayushman_vay_vandana": "https://www.myscheme.gov.in/schemes/abpmjayvv"
+          }
+        },
+        {
+          "scheme_id": "pmay_g",
+          "member": "household",
+          "official_source_url": "https://pmayg.dord.gov.in/",
+          "rule_basis": "PMAY-G: rural households that are houseless or living in kutcha / dilapidated houses (Awaas+ survey).",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "pmuy",
+          "member": "self",
+          "official_source_url": "https://pmuy.gov.in/",
+          "rule_basis": "PMUY eligibility: applicant is a woman aged 18+ from a poor household (SC/ST, PMAY-G, AAY, MBC, forest dwellers, SECC AHL or 14-point deprivation declaration) with no LPG connection in the household. Case note: AAY, no LPG",
+          "needs_human_check": true
+        }
+      ],
+      "acceptable_extra": [
+        "ayushman_vay_vandana",
+        "pmjay",
+        "pmsby",
+        "up_old_age_pension",
+        "up_widow_pension"
+      ]
+    },
+    {
+      "id": "h10",
+      "description": "Moradabad tailor (darzi), two daughters aged 14 (class 9) and 10",
+      "profile": {
+        "district": "Moradabad",
+        "area": "urban",
+        "annual_family_income_inr": 110000,
+        "ration_card": "eligible_household",
+        "house_type": "pucca",
+        "has_lpg_connection": true,
+        "has_bank_account": true,
+        "caste_category": "not_shared",
+        "land_acres": null,
+        "land_owner_relation": null,
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 40,
+            "gender": "male",
+            "occupation": "artisan:tailor",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "wife",
+            "age": 36,
+            "gender": "female",
+            "occupation": "homemaker",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "daughter",
+            "age": 14,
+            "gender": "female",
+            "occupation": "student",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": true,
+            "student_class": "9",
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "daughter",
+            "age": 10,
+            "gender": "female",
+            "occupation": "student",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": true,
+            "student_class": "5",
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [
+        {
+          "scheme_id": "pm_vishwakarma",
+          "member": "self",
+          "official_source_url": "https://pmvishwakarma.gov.in/",
+          "rule_basis": "PM Vishwakarma: artisans/craftspeople aged 18+ self-employed in one of 18 family-based trades (incl. tailor/darzi, potter/kumhar, carpenter, cobbler, barber, mason); one member per family; not for govt employees. Case note: tailor (darzi) trade",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "up_kanya_sumangala",
+          "member": "daughters",
+          "official_source_url": "https://mksy.up.gov.in/",
+          "rule_basis": "MKSY eligibility (official page): UP resident family, annual income <= Rs 3.00 lakh, max two girls per family, family has at most two children; Rs 25,000 in 6 stages (birth, vaccination, class 1, class 6, class 9, graduation/2-yr diploma admission). Case note: 2 girls, income 1.1L; class 9 admission stage",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "up_scholarship",
+          "member": "elder daughter",
+          "official_source_url": "https://scholarship.up.gov.in/",
+          "rule_basis": "UP Pre-matric (class 9-10) and Post-matric (11 and above) scholarship for students of UP families within the category income limit. Case note: class 9 pre-matric",
+          "needs_human_check": true
+        }
+      ],
+      "acceptable_extra": [
+        "eshram",
+        "nsp_scholarship",
+        "pm_sym",
+        "pmjay",
+        "pmjjby",
+        "pmsby"
+      ]
+    },
+    {
+      "id": "h11",
+      "description": "Bahraich landless daily-wager couple, wife pregnant with second child (first is a son)",
+      "profile": {
+        "district": "Bahraich",
+        "area": "rural",
+        "annual_family_income_inr": 70000,
+        "ration_card": "eligible_household",
+        "house_type": "kutcha",
+        "has_lpg_connection": true,
+        "has_bank_account": true,
+        "caste_category": "not_shared",
+        "land_acres": null,
+        "land_owner_relation": null,
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 26,
+            "gender": "male",
+            "occupation": "daily_wage",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "wife",
+            "age": 24,
+            "gender": "female",
+            "occupation": "homemaker",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": true,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "son",
+            "age": 3,
+            "gender": "male",
+            "occupation": "child",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [
+        {
+          "scheme_id": "pmay_g",
+          "member": "household",
+          "official_source_url": "https://pmayg.dord.gov.in/",
+          "rule_basis": "PMAY-G: rural households that are houseless or living in kutcha / dilapidated houses (Awaas+ survey).",
+          "needs_human_check": true
+        }
+      ],
+      "acceptable_extra": [
+        "eshram",
+        "pm_sym",
+        "pmjay",
+        "pmjjby",
+        "pmmvy",
+        "pmsby",
+        "up_kanya_sumangala"
+      ]
+    },
+    {
+      "id": "h12",
+      "description": "Azamgarh joint family: grandparents (66, 63) own 2 acres, son is a construction worker, two grandchildren",
+      "profile": {
+        "district": "Azamgarh",
+        "area": "rural",
+        "annual_family_income_inr": 150000,
+        "ration_card": "eligible_household",
+        "house_type": "kutcha",
+        "has_lpg_connection": true,
+        "has_bank_account": true,
+        "caste_category": "not_shared",
+        "land_acres": 2,
+        "land_owner_relation": "self",
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 66,
+            "gender": "male",
+            "occupation": "farmer",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "wife",
+            "age": 63,
+            "gender": "female",
+            "occupation": "homemaker",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "son",
+            "age": 38,
+            "gender": "male",
+            "occupation": "construction_worker",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "daughter-in-law",
+            "age": 34,
+            "gender": "female",
+            "occupation": "homemaker",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "grandson",
+            "age": 17,
+            "gender": "male",
+            "occupation": "student",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": true,
+            "student_class": "12",
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "granddaughter",
+            "age": 13,
+            "gender": "female",
+            "occupation": "student",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": true,
+            "student_class": "8",
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [
+        {
+          "scheme_id": "pm_kisan",
+          "member": "self",
+          "official_source_url": "https://pmkisan.gov.in/",
+          "rule_basis": "Land-holding farmer family (husband, wife, minor children) with cultivable land in their name; excluded if income-tax payer, serving/retired govt employee, pensioner >= Rs 10,000/month, or professional. Rs 6,000/yr.",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "pmay_g",
+          "member": "household",
+          "official_source_url": "https://pmayg.dord.gov.in/",
+          "rule_basis": "PMAY-G: rural households that are houseless or living in kutcha / dilapidated houses (Awaas+ survey).",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "up_bocw",
+          "member": "son",
+          "official_source_url": "https://upbocw.in/",
+          "rule_basis": "UP BOCW Welfare Board: construction workers aged 18-60 with 90 days of building/construction work in the last 12 months can register and access board schemes.",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "up_scholarship",
+          "member": "grandson",
+          "official_source_url": "https://scholarship.up.gov.in/",
+          "rule_basis": "UP Pre-matric (class 9-10) and Post-matric (11 and above) scholarship for students of UP families within the category income limit. Case note: class 12 post-matric",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "up_kanya_sumangala",
+          "member": "granddaughter",
+          "official_source_url": "https://mksy.up.gov.in/",
+          "rule_basis": "MKSY eligibility (official page): UP resident family, annual income <= Rs 3.00 lakh, max two girls per family, family has at most two children; Rs 25,000 in 6 stages (birth, vaccination, class 1, class 6, class 9, graduation/2-yr diploma admission). Case note: son's family has 2 children; income 1.5L",
+          "needs_human_check": true
+        }
+      ],
+      "acceptable_extra": [
+        "eshram",
+        "pm_kisan_maandhan",
+        "pm_sym",
+        "pmfby",
+        "pmjay",
+        "pmjjby",
+        "pmsby",
+        "up_old_age_pension"
+      ]
+    },
+    {
+      "id": "h13",
+      "description": "Kanpur street vendor, wife and 4-year-old son, no ration card, no gas",
+      "profile": {
+        "district": "Kanpur Nagar",
+        "area": "urban",
+        "annual_family_income_inr": 100000,
+        "ration_card": "none",
+        "house_type": "pucca",
+        "has_lpg_connection": false,
+        "has_bank_account": true,
+        "caste_category": "not_shared",
+        "land_acres": null,
+        "land_owner_relation": null,
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 29,
+            "gender": "male",
+            "occupation": "small_business",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "wife",
+            "age": 27,
+            "gender": "female",
+            "occupation": "homemaker",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "son",
+            "age": 4,
+            "gender": "male",
+            "occupation": "child",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [
+        {
+          "scheme_id": "nfsa_ration",
+          "member": "household",
+          "official_source_url": "https://fcs.up.gov.in/",
+          "rule_basis": "NFSA via UP Food & Civil Supplies: priority-household ration card for families not excluded by UP income/asset criteria; free grain 5 kg/person/month.",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "pmuy",
+          "member": "wife",
+          "official_source_url": "https://pmuy.gov.in/",
+          "rule_basis": "PMUY eligibility: applicant is a woman aged 18+ from a poor household (SC/ST, PMAY-G, AAY, MBC, forest dwellers, SECC AHL or 14-point deprivation declaration) with no LPG connection in the household. Case note: poor household declaration, no LPG",
+          "needs_human_check": true
+        }
+      ],
+      "acceptable_extra": [
+        "eshram",
+        "pm_svanidhi",
+        "pm_sym",
+        "pmjay",
+        "pmjjby",
+        "pmsby"
+      ]
+    },
+    {
+      "id": "h14",
+      "description": "Agra widow domestic worker; son aged 20 in B.Com with 80% visual disability",
+      "profile": {
+        "district": "Agra",
+        "area": "urban",
+        "annual_family_income_inr": 55000,
+        "ration_card": "antyodaya",
+        "house_type": "pucca",
+        "has_lpg_connection": true,
+        "has_bank_account": true,
+        "caste_category": "not_shared",
+        "land_acres": null,
+        "land_owner_relation": null,
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 44,
+            "gender": "female",
+            "occupation": "daily_wage",
+            "is_widow": true,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "son",
+            "age": 20,
+            "gender": "male",
+            "occupation": "student",
+            "is_widow": false,
+            "disability_percent": 80,
+            "is_student": true,
+            "student_class": "BCom 2nd year",
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [
+        {
+          "scheme_id": "up_widow_pension",
+          "member": "self",
+          "official_source_url": "https://sspy-up.gov.in/",
+          "rule_basis": "UP integrated pension portal: निराश्रित महिला पेंशन for women aged 18+ after the death of the husband (पति की मृत्यु उपरान्त निराश्रित महिलायें जिनकी आयु 18 व उससे अधिक है).",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "up_divyang_pension",
+          "member": "son",
+          "official_source_url": "https://sspy-up.gov.in/",
+          "rule_basis": "UP integrated pension portal: दिव्यांग पेंशन for persons with 40% or more disability (40 प्रतिशत या उससे अधिक प्रत्यक्ष दिव्यांग). Case note: 80% visual disability",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "up_scholarship",
+          "member": "son",
+          "official_source_url": "https://scholarship.up.gov.in/",
+          "rule_basis": "UP Pre-matric (class 9-10) and Post-matric (11 and above) scholarship for students of UP families within the category income limit. Case note: post-matric",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "pmjay",
+          "member": "household",
+          "official_source_url": "https://www.myscheme.gov.in/schemes/ab-pmjay",
+          "rule_basis": "AB PM-JAY covers SECC-deprived families and Antyodaya Anna Yojana (AAY) card holders; Rs 5 lakh/family/yr. Case note: AAY card",
+          "needs_human_check": true
+        }
+      ],
+      "acceptable_extra": [
+        "eshram",
+        "nsp_scholarship",
+        "pm_sym",
+        "pmjjby",
+        "pmsby",
+        "up_digishakti"
+      ]
+    },
+    {
+      "id": "h15",
+      "description": "Muzaffarnagar large farmer (15 acres), income-tax payer: most welfare excluded",
+      "profile": {
+        "district": "Muzaffarnagar",
+        "area": "rural",
+        "annual_family_income_inr": 1200000,
+        "ration_card": "none",
+        "house_type": "pucca",
+        "has_lpg_connection": true,
+        "has_bank_account": true,
+        "caste_category": "not_shared",
+        "land_acres": 15,
+        "land_owner_relation": "self",
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 52,
+            "gender": "male",
+            "occupation": "farmer",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": true,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "wife",
+            "age": 48,
+            "gender": "female",
+            "occupation": "homemaker",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "son",
+            "age": 24,
+            "gender": "male",
+            "occupation": "student",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": true,
+            "student_class": "MSc",
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [],
+      "acceptable_extra": [
+        "pmfby",
+        "pmjjby",
+        "pmsby",
+        "up_abhyudaya",
+        "up_digishakti"
+      ]
+    },
+    {
+      "id": "h16",
+      "description": "Jhansi farmer with 1 acre; son 23 preparing for exams; daughter 21 in B.Sc",
+      "profile": {
+        "district": "Jhansi",
+        "area": "rural",
+        "annual_family_income_inr": 80000,
+        "ration_card": "eligible_household",
+        "house_type": "pucca",
+        "has_lpg_connection": true,
+        "has_bank_account": true,
+        "caste_category": "not_shared",
+        "land_acres": 1,
+        "land_owner_relation": "self",
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 55,
+            "gender": "male",
+            "occupation": "farmer",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "wife",
+            "age": 50,
+            "gender": "female",
+            "occupation": "homemaker",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "son",
+            "age": 23,
+            "gender": "male",
+            "occupation": "unemployed",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "daughter",
+            "age": 21,
+            "gender": "female",
+            "occupation": "student",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": true,
+            "student_class": "BSc 3rd year",
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [
+        {
+          "scheme_id": "pm_kisan",
+          "member": "self",
+          "official_source_url": "https://pmkisan.gov.in/",
+          "rule_basis": "Land-holding farmer family (husband, wife, minor children) with cultivable land in their name; excluded if income-tax payer, serving/retired govt employee, pensioner >= Rs 10,000/month, or professional. Rs 6,000/yr.",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "up_scholarship",
+          "member": "daughter",
+          "official_source_url": "https://scholarship.up.gov.in/",
+          "rule_basis": "UP Pre-matric (class 9-10) and Post-matric (11 and above) scholarship for students of UP families within the category income limit. Case note: post-matric",
+          "needs_human_check": true
+        }
+      ],
+      "acceptable_extra": [
+        "eshram",
+        "nsp_scholarship",
+        "pm_sym",
+        "pmfby",
+        "pmjay",
+        "pmjjby",
+        "pmsby",
+        "up_abhyudaya",
+        "up_digishakti",
+        "up_kanya_sumangala"
+      ]
+    },
+    {
+      "id": "h17",
+      "description": "Bareilly: grandfather 81 with 50% disability, widowed daughter-in-law, two grandsons",
+      "profile": {
+        "district": "Bareilly",
+        "area": "rural",
+        "annual_family_income_inr": 45000,
+        "ration_card": "eligible_household",
+        "house_type": "kutcha",
+        "has_lpg_connection": false,
+        "has_bank_account": true,
+        "caste_category": "not_shared",
+        "land_acres": null,
+        "land_owner_relation": null,
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 81,
+            "gender": "male",
+            "occupation": "retired",
+            "is_widow": false,
+            "disability_percent": 50,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "daughter-in-law",
+            "age": 42,
+            "gender": "female",
+            "occupation": "homemaker",
+            "is_widow": true,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "grandson",
+            "age": 15,
+            "gender": "male",
+            "occupation": "student",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": true,
+            "student_class": "10",
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "grandson",
+            "age": 12,
+            "gender": "male",
+            "occupation": "student",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": true,
+            "student_class": "7",
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [
+        {
+          "scheme_id": "up_old_age_pension",
+          "member": "self",
+          "official_source_url": "https://sspy-up.gov.in/",
+          "rule_basis": "UP integrated pension portal: old-age pension for persons 60+ living below the poverty line (गरीबी रेखा के नीचे जीवन यापन करने वाले 60 वर्ष से अधिक आयु के वृद्धजन). Case note: one social pension at a time",
+          "needs_human_check": true,
+          "any_of": [
+            "up_old_age_pension",
+            "up_divyang_pension"
+          ],
+          "official_source_urls": {
+            "up_old_age_pension": "https://sspy-up.gov.in/",
+            "up_divyang_pension": "https://sspy-up.gov.in/"
+          }
+        },
+        {
+          "scheme_id": "ayushman_vay_vandana",
+          "member": "self",
+          "official_source_url": "https://www.myscheme.gov.in/schemes/abpmjayvv",
+          "rule_basis": "AB PM-JAY extended to all senior citizens aged 70+ irrespective of income (Ayushman Vay Vandana card), Rs 5 lakh/yr cover. Case note: 81 years old",
+          "needs_human_check": true,
+          "any_of": [
+            "ayushman_vay_vandana",
+            "pmjay"
+          ],
+          "official_source_urls": {
+            "ayushman_vay_vandana": "https://www.myscheme.gov.in/schemes/abpmjayvv",
+            "pmjay": "https://www.myscheme.gov.in/schemes/ab-pmjay"
+          }
+        },
+        {
+          "scheme_id": "up_widow_pension",
+          "member": "daughter-in-law",
+          "official_source_url": "https://sspy-up.gov.in/",
+          "rule_basis": "UP integrated pension portal: निराश्रित महिला पेंशन for women aged 18+ after the death of the husband (पति की मृत्यु उपरान्त निराश्रित महिलायें जिनकी आयु 18 व उससे अधिक है).",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "pmay_g",
+          "member": "household",
+          "official_source_url": "https://pmayg.dord.gov.in/",
+          "rule_basis": "PMAY-G: rural households that are houseless or living in kutcha / dilapidated houses (Awaas+ survey).",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "pmuy",
+          "member": "daughter-in-law",
+          "official_source_url": "https://pmuy.gov.in/",
+          "rule_basis": "PMUY eligibility: applicant is a woman aged 18+ from a poor household (SC/ST, PMAY-G, AAY, MBC, forest dwellers, SECC AHL or 14-point deprivation declaration) with no LPG connection in the household. Case note: poor household, no LPG",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "up_scholarship",
+          "member": "elder grandson",
+          "official_source_url": "https://scholarship.up.gov.in/",
+          "rule_basis": "UP Pre-matric (class 9-10) and Post-matric (11 and above) scholarship for students of UP families within the category income limit. Case note: class 10 pre-matric",
+          "needs_human_check": true
+        }
+      ],
+      "acceptable_extra": [
+        "ayushman_vay_vandana",
+        "eshram",
+        "nsp_scholarship",
+        "pmjay",
+        "pmjjby",
+        "pmsby",
+        "up_divyang_pension",
+        "up_old_age_pension"
+      ]
+    },
+    {
+      "id": "h18",
+      "description": "Gorakhpur potter family (kumhar), adult son works as daily wager",
+      "profile": {
+        "district": "Gorakhpur",
+        "area": "rural",
+        "annual_family_income_inr": 72000,
+        "ration_card": "eligible_household",
+        "house_type": "pucca",
+        "has_lpg_connection": true,
+        "has_bank_account": true,
+        "caste_category": "not_shared",
+        "land_acres": null,
+        "land_owner_relation": null,
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 45,
+            "gender": "male",
+            "occupation": "artisan:potter",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "wife",
+            "age": 42,
+            "gender": "female",
+            "occupation": "artisan:potter",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "son",
+            "age": 19,
+            "gender": "male",
+            "occupation": "daily_wage",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [
+        {
+          "scheme_id": "pm_vishwakarma",
+          "member": "self",
+          "official_source_url": "https://pmvishwakarma.gov.in/",
+          "rule_basis": "PM Vishwakarma: artisans/craftspeople aged 18+ self-employed in one of 18 family-based trades (incl. tailor/darzi, potter/kumhar, carpenter, cobbler, barber, mason); one member per family; not for govt employees. Case note: potter (kumhar) trade, one per family",
+          "needs_human_check": true
+        }
+      ],
+      "acceptable_extra": [
+        "eshram",
+        "pm_sym",
+        "pmjay",
+        "pmjjby",
+        "pmsby"
+      ]
+    },
+    {
+      "id": "h19",
+      "description": "Etah brick-kiln workers, homeless, wife pregnant with first child, no ration card, no gas",
+      "profile": {
+        "district": "Etah",
+        "area": "rural",
+        "annual_family_income_inr": 65000,
+        "ration_card": "none",
+        "house_type": "homeless",
+        "has_lpg_connection": false,
+        "has_bank_account": true,
+        "caste_category": "not_shared",
+        "land_acres": null,
+        "land_owner_relation": null,
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 33,
+            "gender": "male",
+            "occupation": "daily_wage",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "wife",
+            "age": 30,
+            "gender": "female",
+            "occupation": "daily_wage",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": true,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [
+        {
+          "scheme_id": "nfsa_ration",
+          "member": "household",
+          "official_source_url": "https://fcs.up.gov.in/",
+          "rule_basis": "NFSA via UP Food & Civil Supplies: priority-household ration card for families not excluded by UP income/asset criteria; free grain 5 kg/person/month.",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "pmay_g",
+          "member": "household",
+          "official_source_url": "https://pmayg.dord.gov.in/",
+          "rule_basis": "PMAY-G: rural households that are houseless or living in kutcha / dilapidated houses (Awaas+ survey). Case note: houseless",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "pmuy",
+          "member": "wife",
+          "official_source_url": "https://pmuy.gov.in/",
+          "rule_basis": "PMUY eligibility: applicant is a woman aged 18+ from a poor household (SC/ST, PMAY-G, AAY, MBC, forest dwellers, SECC AHL or 14-point deprivation declaration) with no LPG connection in the household.",
+          "needs_human_check": true
+        },
+        {
+          "scheme_id": "pmmvy",
+          "member": "wife",
+          "official_source_url": "https://pmmvy.wcd.gov.in/",
+          "rule_basis": "PMMVY: pregnant and lactating women for the first child (Rs 5,000), and for a second child if it is a girl (Rs 6,000). Case note: first child",
+          "needs_human_check": true
+        }
+      ],
+      "acceptable_extra": [
+        "eshram",
+        "pm_sym",
+        "pmjay",
+        "pmjjby",
+        "pmsby",
+        "up_bocw"
+      ]
+    },
+    {
+      "id": "h20",
+      "description": "Lucknow divorced single mother (not a widow), domestic worker, daughter aged 9",
+      "profile": {
+        "district": "Lucknow",
+        "area": "urban",
+        "annual_family_income_inr": 60000,
+        "ration_card": "eligible_household",
+        "house_type": "pucca",
+        "has_lpg_connection": true,
+        "has_bank_account": true,
+        "caste_category": "not_shared",
+        "land_acres": null,
+        "land_owner_relation": null,
+        "already_receiving": [],
+        "members": [
+          {
+            "name": null,
+            "relation": "self",
+            "age": 35,
+            "gender": "female",
+            "occupation": "daily_wage",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": false,
+            "student_class": null,
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          },
+          {
+            "name": null,
+            "relation": "daughter",
+            "age": 9,
+            "gender": "female",
+            "occupation": "student",
+            "is_widow": false,
+            "disability_percent": null,
+            "is_student": true,
+            "student_class": "4",
+            "is_pregnant": false,
+            "income_tax_payer": false,
+            "govt_employee_or_pensioner": false
+          }
+        ]
+      },
+      "expected": [
+        {
+          "scheme_id": "up_kanya_sumangala",
+          "member": "daughter",
+          "official_source_url": "https://mksy.up.gov.in/",
+          "rule_basis": "MKSY eligibility (official page): UP resident family, annual income <= Rs 3.00 lakh, max two girls per family, family has at most two children; Rs 25,000 in 6 stages (birth, vaccination, class 1, class 6, class 9, graduation/2-yr diploma admission). Case note: 1 child, income 60k; next stage at class 6 admission",
+          "needs_human_check": true
+        }
+      ],
+      "acceptable_extra": [
+        "eshram",
+        "pm_sym",
+        "pmjay",
+        "pmjjby",
+        "pmsby"
+      ]
+    }
+  ]
+}
