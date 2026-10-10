@@ -1,0 +1,9 @@
+<pasted_content id="da97">
+I can't add more API credit. Do NOT run any evals or live calls until I say so.
+Make Haq ~10x cheaper:
+1. Cache official pages and scheme rules on disk so repeat lookups are free.
+2. Use Haiku for interview, planning and formatting; Sonnet only for eligibility verification.
+3. Max 2 web searches per scheme, stop once an official page confirms the rule.
+4. Use prompt caching for system prompt and scheme rules.
+Separate commit per change. Then tell me the estimated cost to re-run ONLY the households that had errors in the baseline (not all 10).
+</pasted_content id="da97">
