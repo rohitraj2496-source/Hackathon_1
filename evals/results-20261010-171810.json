@@ -1,0 +1,1052 @@
+{
+  "timestamp": "20261010-171810",
+  "git_commit": "3b0ec4c",
+  "config": {
+    "model": "claude-sonnet-5-5",
+    "fast_model": "claude-haiku-5-5",
+    "effort": "medium",
+    "simulate_failure": false,
+    "only": "h01,h02,h03,h04,h05,h06,h07,h10"
+  },
+  "summary": {
+    "households": 8,
+    "errors": 0,
+    "tp": 21,
+    "fp": 1,
+    "fn": 3,
+    "precision": 0.9565,
+    "recall": 0.875,
+    "f1": 0.9139,
+    "accuracy": 0.84,
+    "avg_cost_usd": 0.236,
+    "total_cost_usd": 1.888,
+    "avg_seconds": 60.7,
+    "recoveries": 28,
+    "conflicts_logged": 0,
+    "likely_predictions": 13,
+    "unofficial_claims_logged": 8,
+    "confirmed_only": {
+      "tp": 11,
+      "fp": 1,
+      "fn": 13,
+      "precision": 0.9167,
+      "recall": 0.4583,
+      "f1": 0.6111,
+      "accuracy": 0.44
+    }
+  },
+  "households": [
+    {
+      "id": "h01",
+      "description": "Barabanki small farmer family, kutcha house, son in class 11, daughter in class 7",
+      "household_state_id": "dcf8867a7f",
+      "error": null,
+      "seconds": 59.0,
+      "cost_usd": 0.269788,
+      "usage": {
+        "input_tokens": 2942,
+        "output_tokens": 16867,
+        "cache_read_input_tokens": 131791,
+        "cache_creation_input_tokens": 35668,
+        "web_search_requests": 1,
+        "cost_usd": 0.269788,
+        "by_model": {
+          "claude-haiku-5-5": {
+            "input_tokens": 2874,
+            "output_tokens": 2561,
+            "cache_read_input_tokens": 2646,
+            "cache_creation_input_tokens": 0,
+            "web_search_requests": 0,
+            "calls": 2,
+            "cost_usd": 0.001594
+          },
+          "claude-sonnet-5-5": {
+            "input_tokens": 68,
+            "output_tokens": 14306,
+            "cache_read_input_tokens": 129145,
+            "cache_creation_input_tokens": 35668,
+            "web_search_requests": 1,
+            "calls": 16,
+            "cost_usd": 0.268194
+          }
+        }
+      },
+      "predicted": [
+        "eshram",
+        "pm_kisan",
+        "pmay_g",
+        "pmfby",
+        "pmjay",
+        "pmjjby",
+        "pmsby",
+        "up_kanya_sumangala",
+        "up_scholarship"
+      ],
+      "expected": [
+        [
+          "pm_kisan"
+        ],
+        [
+          "pmay_g"
+        ],
+        [
+          "up_scholarship"
+        ],
+        [
+          "up_kanya_sumangala"
+        ]
+      ],
+      "predicted_likely": [
+        "pmjay",
+        "up_scholarship"
+      ],
+      "score": {
+        "tp": 4,
+        "fn": 0,
+        "fp": 0,
+        "matched_predictions": 4,
+        "missed": [],
+        "false_positives": [],
+        "ignored_extras": [
+          "eshram",
+          "pmfby",
+          "pmjay",
+          "pmjjby",
+          "pmsby"
+        ]
+      },
+      "score_confirmed_only": {
+        "tp": 3,
+        "fn": 1,
+        "fp": 0,
+        "matched_predictions": 3,
+        "missed": [
+          [
+            "up_scholarship"
+          ]
+        ],
+        "false_positives": [],
+        "ignored_extras": [
+          "eshram",
+          "pmfby",
+          "pmjjby",
+          "pmsby"
+        ]
+      },
+      "total_missing_inr_per_year": 138000,
+      "verified_sources": {
+        "pmay_g": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2074713&reg=48&lang=2",
+        "up_kanya_sumangala": "https://mksy.up.gov.in/",
+        "pm_kisan": "https://pmkisan.gov.in/",
+        "pmjjby": "https://www.pib.gov.in/PressNoteDetails.aspx?NoteId=154428&ModuleId=3&reg=3&lang=1",
+        "pmfby": "https://pmfby.gov.in/pdf/Revamped%20Operational%20Guidelines_17th%20August%202020.pdf",
+        "eshram": "https://eshram.gov.in/faqs",
+        "pmsby": "https://financialservices.gov.in/pradhan-mantri-suraksha-bima-yojana-pmsby",
+        "pmjay": "https://nha.gov.in/PM-JAY",
+        "up_scholarship": "https://scholarship.up.gov.in/"
+      },
+      "likely_unconfirmed_rules": {
+        "pmjay": [
+          "परिवार का SECC 2011 सूची में नाम होना (कच्चे घर से D1 अभाव की संभावना) - आयुष्मान मित्र/पोर्टल पर जाँचें"
+        ],
+        "up_scholarship": [
+          "आय सीमा (परिवार की वार्षिक आय श्रेणी की सीमा के भीतर) आधिकारिक पेज पर पढ़कर पुष्टि नहीं हो सकी",
+          "जाति श्रेणी की जानकारी उपलब्ध नहीं"
+        ]
+      },
+      "dropped": {
+        "nsp_scholarship:son": "Eligibility depends on caste/minority category (SC/ST/OBC/minority), which is not shared. The official NSP pages fetched list schemes but not rules, so core eligibility could not be confirmed.",
+        "nsp_scholarship:daughter": "Eligibility depends on caste/minority category (SC/ST/OBC/minority), which is not shared. The official NSP pages fetched list schemes but not rules, so core eligibility could not be confirmed.",
+        "up_abhyudaya:son": "आधिकारिक पेज (abhyuday.up.gov.in) नहीं खुला; केवल myScheme का होम पेज मिला जिसमें इस योजना के नियम नहीं हैं। पात्रता केवल समाचार साइटों पर मिली, इसलिए आधिकारिक रूप से पुष्टि नहीं हो सकी।"
+      },
+      "conflicts": [],
+      "unofficial_claims": [
+        {
+          "topic": "up_abhyudaya",
+          "unofficial_url": "https://www.thequint.com/news/education/up-free-coaching-for-upsc-jee-neet-cds-nda-abhyuday-up-government-in-registration",
+          "claim": "Free coaching for UPSC, JEE, NEET, NDA, CDS aspirants under Abhyudaya",
+          "reason": "not stated on any official page read; not used as a confirmed rule",
+          "scheme": "up_abhyudaya"
+        }
+      ],
+      "recoveries": 4
+    },
+    {
+      "id": "h02",
+      "description": "Sitapur young widow, daily-wage worker, Antyodaya card, no gas, two children",
+      "household_state_id": "d5804f95da",
+      "error": null,
+      "seconds": 68.2,
+      "cost_usd": 0.238822,
+      "usage": {
+        "input_tokens": 2617,
+        "output_tokens": 14167,
+        "cache_read_input_tokens": 138939,
+        "cache_creation_input_tokens": 31179,
+        "web_search_requests": 1,
+        "cost_usd": 0.238822,
+        "by_model": {
+          "claude-haiku-5-5": {
+            "input_tokens": 2440,
+            "output_tokens": 1966,
+            "cache_read_input_tokens": 2646,
+            "cache_creation_input_tokens": 0,
+            "web_search_requests": 0,
+            "calls": 2,
+            "cost_usd": 0.001253
+          },
+          "claude-sonnet-5-5": {
+            "input_tokens": 177,
+            "output_tokens": 12201,
+            "cache_read_input_tokens": 136293,
+            "cache_creation_input_tokens": 31179,
+            "web_search_requests": 1,
+            "calls": 16,
+            "cost_usd": 0.237569
+          }
+        }
+      },
+      "predicted": [
+        "eshram",
+        "pm_sym",
+        "pmay_g",
+        "pmjay",
+        "pmjjby",
+        "pmsby",
+        "pmuy",
+        "up_kanya_sumangala",
+        "up_widow_pension"
+      ],
+      "expected": [
+        [
+          "up_widow_pension"
+        ],
+        [
+          "pmjay"
+        ],
+        [
+          "pmay_g"
+        ],
+        [
+          "pmuy"
+        ],
+        [
+          "up_kanya_sumangala"
+        ]
+      ],
+      "predicted_likely": [
+        "pmjay",
+        "up_widow_pension"
+      ],
+      "score": {
+        "tp": 5,
+        "fn": 0,
+        "fp": 0,
+        "matched_predictions": 5,
+        "missed": [],
+        "false_positives": [],
+        "ignored_extras": [
+          "eshram",
+          "pm_sym",
+          "pmjjby",
+          "pmsby"
+        ]
+      },
+      "score_confirmed_only": {
+        "tp": 3,
+        "fn": 2,
+        "fp": 0,
+        "matched_predictions": 3,
+        "missed": [
+          [
+            "up_widow_pension"
+          ],
+          [
+            "pmjay"
+          ]
+        ],
+        "false_positives": [],
+        "ignored_extras": [
+          "eshram",
+          "pm_sym",
+          "pmjjby",
+          "pmsby"
+        ]
+      },
+      "total_missing_inr_per_year": 122050,
+      "verified_sources": {
+        "pmay_g": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2074713&reg=48&lang=2",
+        "pmuy": "https://pmuy.gov.in/",
+        "pm_sym": "https://maandhan.in/",
+        "eshram": "https://eshram.gov.in/faqs",
+        "pmjjby": "https://www.pib.gov.in/PressNoteDetails.aspx?NoteId=154428&ModuleId=3&reg=3&lang=1",
+        "pmsby": "https://financialservices.gov.in/pradhan-mantri-suraksha-bima-yojana-pmsby",
+        "up_kanya_sumangala": "https://mksy.up.gov.in/",
+        "up_widow_pension": "https://sspy-up.gov.in/",
+        "pmjay": "https://nha.gov.in/PM-JAY"
+      },
+      "likely_unconfirmed_rules": {
+        "up_widow_pension": [
+          "आय सीमा (परिवार की वार्षिक आय की सीमा) आधिकारिक पेज पर नहीं मिली"
+        ],
+        "pmjay": [
+          "SECC 2011 सूची में नाम / अभाव मानदंड की पुष्टि; आय सीमा आधिकारिक पेज पर नहीं मिली"
+        ]
+      },
+      "dropped": {
+        "nsp_scholarship:son": "The official NSP home page does not list the rules for pre-matric schemes. I could not confirm on an official page that any central pre-matric scheme covers a Class 5 student. The family's caste/religion category was not shared. The only central scheme I know of for classes 1-8 is the minority pre-matric scheme, and that needs minority community status, which is unknown. So eligibility could not be verified.",
+        "nsp_scholarship:daughter": "The official NSP home page does not list the rules for pre-matric schemes. I could not confirm on an official page that any central pre-matric scheme covers a Class 2 student. The family's caste/religion category was not shared. The only central scheme I know of for classes 1-8 is the minority pre-matric scheme, and that needs minority community status, which is unknown. So eligibility could not be verified.",
+        "up_bocw:self": "मुझे किसी सरकारी पेज पर इस योजना के नियम नहीं मिले। upbocw.in, myScheme और bocw.up.gov.in नहीं खुले या उनमें नियम नहीं थे। uplabour.gov.in के होमपेज पर पात्रता नहीं लिखी है। उम्र 18-60 और 90 दिन के काम की शर्त सिर्फ एक गैर-सरकारी साइट पर मिली, इसलिए उसे पक्का नियम नहीं माना। इस परिवार की प्रोफ़ाइल में निर्माण कार्य के 90 दिन भी पक्के नहीं हैं। वह सिर्फ दिहाड़ी मज़दूर है।"
+      },
+      "conflicts": [],
+      "unofficial_claims": [
+        {
+          "topic": "up_bocw",
+          "unofficial_url": "https://www.compliancecalendar.in/learn/up-bocw-registration-purpose-benefits-and-procedure",
+          "claim": "Workers aged 18-60 with at least 90 days of construction work in the last 12 months can register under UP BOCW",
+          "reason": "not stated on any official page read; not used as a confirmed rule",
+          "scheme": "up_bocw"
+        }
+      ],
+      "recoveries": 5
+    },
+    {
+      "id": "h03",
+      "description": "Gorakhpur elderly couple (72 and 68), no land, very low income",
+      "household_state_id": "9588bd9f98",
+      "error": null,
+      "seconds": 59.3,
+      "cost_usd": 0.072965,
+      "usage": {
+        "input_tokens": 1577,
+        "output_tokens": 6994,
+        "cache_read_input_tokens": 18716,
+        "cache_creation_input_tokens": 4612,
+        "web_search_requests": 0,
+        "cost_usd": 0.072965,
+        "by_model": {
+          "claude-haiku-5-5": {
+            "input_tokens": 1557,
+            "output_tokens": 1257,
+            "cache_read_input_tokens": 2646,
+            "cache_creation_input_tokens": 0,
+            "web_search_requests": 0,
+            "calls": 2,
+            "cost_usd": 0.000811
+          },
+          "claude-sonnet-5-5": {
+            "input_tokens": 20,
+            "output_tokens": 5737,
+            "cache_read_input_tokens": 16070,
+            "cache_creation_input_tokens": 4612,
+            "web_search_requests": 0,
+            "calls": 5,
+            "cost_usd": 0.072154
+          }
+        }
+      },
+      "predicted": [
+        "ayushman_vay_vandana",
+        "pmjay",
+        "pmsby",
+        "up_old_age_pension"
+      ],
+      "expected": [
+        [
+          "up_old_age_pension"
+        ],
+        [
+          "ayushman_vay_vandana",
+          "pmjay"
+        ]
+      ],
+      "predicted_likely": [
+        "pmjay",
+        "up_old_age_pension"
+      ],
+      "score": {
+        "tp": 2,
+        "fn": 0,
+        "fp": 0,
+        "matched_predictions": 3,
+        "missed": [],
+        "false_positives": [],
+        "ignored_extras": [
+          "pmsby"
+        ]
+      },
+      "score_confirmed_only": {
+        "tp": 1,
+        "fn": 1,
+        "fp": 0,
+        "matched_predictions": 1,
+        "missed": [
+          [
+            "up_old_age_pension"
+          ]
+        ],
+        "false_positives": [],
+        "ignored_extras": [
+          "pmsby"
+        ]
+      },
+      "total_missing_inr_per_year": 0,
+      "verified_sources": {
+        "ayushman_vay_vandana": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2082288&reg=48&lang=2",
+        "pmsby": "https://financialservices.gov.in/pradhan-mantri-suraksha-bima-yojana-pmsby",
+        "up_old_age_pension": "https://sspy-up.gov.in/",
+        "pmjay": "https://nha.gov.in/PM-JAY"
+      },
+      "likely_unconfirmed_rules": {
+        "up_old_age_pension": [
+          "आय सीमा / BPL मानदंड की सटीक राशि आधिकारिक पेज पर नहीं मिली"
+        ],
+        "pmjay": [
+          "SECC 2011 सूची में परिवार का नाम / अभाव श्रेणी और राशन कार्ड से जुड़ाव आधिकारिक पेज पर दोबारा नहीं देख सके - आयुष्मान मित्र से जाँच करें"
+        ]
+      },
+      "dropped": {},
+      "conflicts": [],
+      "unofficial_claims": [],
+      "recoveries": 1
+    },
+    {
+      "id": "h04",
+      "description": "Lucknow urban family, 22-year-old son with 60% locomotor disability",
+      "household_state_id": "77ef247ec7",
+      "error": null,
+      "seconds": 37.9,
+      "cost_usd": 0.185476,
+      "usage": {
+        "input_tokens": 2300,
+        "output_tokens": 12445,
+        "cache_read_input_tokens": 67709,
+        "cache_creation_input_tokens": 23367,
+        "web_search_requests": 1,
+        "cost_usd": 0.185476,
+        "by_model": {
+          "claude-haiku-5-5": {
+            "input_tokens": 2260,
+            "output_tokens": 2183,
+            "cache_read_input_tokens": 2646,
+            "cache_creation_input_tokens": 0,
+            "web_search_requests": 0,
+            "calls": 2,
+            "cost_usd": 0.001344
+          },
+          "claude-sonnet-5-5": {
+            "input_tokens": 40,
+            "output_tokens": 10262,
+            "cache_read_input_tokens": 65063,
+            "cache_creation_input_tokens": 23367,
+            "web_search_requests": 1,
+            "calls": 9,
+            "cost_usd": 0.184132
+          }
+        }
+      },
+      "predicted": [
+        "eshram",
+        "pmjjby",
+        "pmsby",
+        "up_divyang_pension"
+      ],
+      "expected": [
+        [
+          "up_divyang_pension"
+        ]
+      ],
+      "predicted_likely": [
+        "up_divyang_pension"
+      ],
+      "score": {
+        "tp": 1,
+        "fn": 0,
+        "fp": 0,
+        "matched_predictions": 1,
+        "missed": [],
+        "false_positives": [],
+        "ignored_extras": [
+          "eshram",
+          "pmjjby",
+          "pmsby"
+        ]
+      },
+      "score_confirmed_only": {
+        "tp": 0,
+        "fn": 1,
+        "fp": 0,
+        "matched_predictions": 0,
+        "missed": [
+          [
+            "up_divyang_pension"
+          ]
+        ],
+        "false_positives": [],
+        "ignored_extras": [
+          "eshram",
+          "pmjjby",
+          "pmsby"
+        ]
+      },
+      "total_missing_inr_per_year": 0,
+      "verified_sources": {
+        "eshram": "https://eshram.gov.in/faqs",
+        "pmjjby": "https://www.pib.gov.in/PressNoteDetails.aspx?NoteId=154428&ModuleId=3&reg=3&lang=1",
+        "pmsby": "https://financialservices.gov.in/pradhan-mantri-suraksha-bima-yojana-pmsby",
+        "up_divyang_pension": "https://sspy-up.gov.in/"
+      },
+      "likely_unconfirmed_rules": {
+        "up_divyang_pension": [
+          "आय सीमा की सटीक राशि आधिकारिक पेज पर नहीं मिली"
+        ]
+      },
+      "dropped": {
+        "pmjay:household": "The official rules I confirmed cover rural families under the SECC 2011 deprivation criteria (D1-D7). This family lives in urban Lucknow. I could not confirm on an official page that an eligible-household ration card or an income of Rs 50,000 qualifies an urban family. Daily-wage work is not clearly one of the urban occupation categories. So eligibility is not confirmed. The family can still check at an Ayushman Mitra or CSC centre.",
+        "pm_sym:son": "पीएम-एसवाईएम (maandhan.in) असंगठित क्षेत्र के कामगारों (आयु 18-40, मासिक आय ₹15,000 तक) के लिए है। बेटा अभी बेरोज़गार है और कोई काम या आय नहीं है, इसलिए अभी वह असंगठित कामगार नहीं माना जा सकता। काम शुरू करने पर वह नामांकन करा सकता है। यह योजना अंशदान वाली है और इसमें नकद लाभ नहीं मिलता।",
+        "up_bocw:self": "आधिकारिक पेज (upbocw.in, myscheme) नहीं खुले, इसलिए पात्रता की पुष्टि नहीं हो सकी। साथ ही यह भी पता नहीं कि पिछले साल 90 दिन निर्माण कार्य किया या नहीं।"
+      },
+      "conflicts": [],
+      "unofficial_claims": [
+        {
+          "topic": "up_bocw",
+          "unofficial_url": "https://corpbiz.io/up-bocw-registration",
+          "claim": "Construction worker aged 18-60 with 90 days of work in the previous year can register for BOCW",
+          "reason": "not stated on any official page read; not used as a confirmed rule",
+          "scheme": "up_bocw"
+        }
+      ],
+      "recoveries": 2
+    },
+    {
+      "id": "h05",
+      "description": "Ghaziabad construction worker, wife pregnant with first child, no ration card, no gas",
+      "household_state_id": "12497bc458",
+      "error": null,
+      "seconds": 57.3,
+      "cost_usd": 0.204589,
+      "usage": {
+        "input_tokens": 2436,
+        "output_tokens": 13870,
+        "cache_read_input_tokens": 105077,
+        "cache_creation_input_tokens": 21243,
+        "web_search_requests": 1,
+        "cost_usd": 0.204589,
+        "by_model": {
+          "claude-haiku-5-5": {
+            "input_tokens": 2376,
+            "output_tokens": 1904,
+            "cache_read_input_tokens": 2646,
+            "cache_creation_input_tokens": 0,
+            "web_search_requests": 0,
+            "calls": 2,
+            "cost_usd": 0.001216
+          },
+          "claude-sonnet-5-5": {
+            "input_tokens": 60,
+            "output_tokens": 11966,
+            "cache_read_input_tokens": 102431,
+            "cache_creation_input_tokens": 21243,
+            "web_search_requests": 1,
+            "calls": 14,
+            "cost_usd": 0.203374
+          }
+        }
+      },
+      "predicted": [
+        "eshram",
+        "nfsa_ration",
+        "pm_sym",
+        "pm_vishwakarma",
+        "pmjjby",
+        "pmmvy",
+        "pmsby"
+      ],
+      "expected": [
+        [
+          "up_bocw"
+        ],
+        [
+          "pmmvy"
+        ],
+        [
+          "nfsa_ration"
+        ],
+        [
+          "pmuy"
+        ]
+      ],
+      "predicted_likely": [
+        "nfsa_ration",
+        "pmmvy"
+      ],
+      "score": {
+        "tp": 2,
+        "fn": 2,
+        "fp": 1,
+        "matched_predictions": 2,
+        "missed": [
+          [
+            "up_bocw"
+          ],
+          [
+            "pmuy"
+          ]
+        ],
+        "false_positives": [
+          "pm_vishwakarma"
+        ],
+        "ignored_extras": [
+          "eshram",
+          "pm_sym",
+          "pmjjby",
+          "pmsby"
+        ]
+      },
+      "score_confirmed_only": {
+        "tp": 0,
+        "fn": 4,
+        "fp": 1,
+        "matched_predictions": 0,
+        "missed": [
+          [
+            "up_bocw"
+          ],
+          [
+            "pmmvy"
+          ],
+          [
+            "nfsa_ration"
+          ],
+          [
+            "pmuy"
+          ]
+        ],
+        "false_positives": [
+          "pm_vishwakarma"
+        ],
+        "ignored_extras": [
+          "eshram",
+          "pm_sym",
+          "pmjjby",
+          "pmsby"
+        ]
+      },
+      "total_missing_inr_per_year": 15000,
+      "verified_sources": {
+        "pm_vishwakarma": "https://pmvishwakarma.gov.in/",
+        "pm_sym": "https://maandhan.in/",
+        "eshram": "https://eshram.gov.in/faqs",
+        "pmjjby": "https://www.pib.gov.in/PressNoteDetails.aspx?NoteId=154428&ModuleId=3&reg=3&lang=1",
+        "pmsby": "https://financialservices.gov.in/pradhan-mantri-suraksha-bima-yojana-pmsby",
+        "pmmvy": "https://wcd.gov.in/women/pradhan-mantri-matru-vandana-yojna",
+        "nfsa_ration": "https://nfsa.gov.in/portal/nfsa-act"
+      },
+      "likely_unconfirmed_rules": {
+        "pmmvy": [
+          "यह पहला जीवित बच्चा है - पुष्टि नहीं हुई",
+          "सरकारी नौकरी/मातृत्व लाभ न मिल रहा हो - पुष्टि करें"
+        ],
+        "nfsa_ration": [
+          "आय सीमा / पात्र गृहस्थी की पहचान का शहरी मानदंड आधिकारिक पेज पर नहीं मिला"
+        ]
+      },
+      "dropped": {
+        "pmuy:wife": "पत्नी 28 साल की महिला है और घर में LPG कनेक्शन नहीं है, पर PMUY के लिए परिवार का पात्र श्रेणी में होना ज़रूरी है (जैसे अंत्योदय/AAY राशन कार्ड)। इस परिवार के पास कोई राशन कार्ड नहीं है, इसलिए AAY साबित नहीं होता। जाति की जानकारी नहीं दी गई और पक्का घर है। किसी पात्र श्रेणी की पुष्टि नहीं हो सकी।",
+        "pmjay:household": "परिवार शहरी (ग़ाज़ियाबाद) है। आधिकारिक पेज के उपलब्ध नियम केवल ग्रामीण SECC अभाव मानदंड (D1-D7) और निचले 40% गरीब परिवारों के बारे में हैं। शहरी व्यावसायिक श्रेणी (जैसे निर्माण मज़दूर) का नियम मैं किसी आधिकारिक पेज पर नहीं देख पाया, क्योंकि nha.gov.in और myscheme के पेज खुले नहीं। इसलिए पात्रता की पुष्टि नहीं हो सकी। परिवार के पास राशन कार्ड भी नहीं है।",
+        "up_bocw:self": "No official page with the UP BOCW eligibility rules could be read. upbocw.in and the central BOCW Act PDF both failed and returned only the myScheme home page. The uplabour.gov.in home page only links to the board and has no rules. Only an unofficial site (corpbiz.io) states age 18-60 and 90 days of work, and that is not confirmed officially, so it is not used."
+      },
+      "conflicts": [],
+      "unofficial_claims": [
+        {
+          "topic": "up_bocw",
+          "unofficial_url": "https://corpbiz.io/up-bocw-registration",
+          "claim": "Building worker aged 18-60 with 90 days of construction work in the preceding year can register as a BOCW beneficiary",
+          "reason": "not stated on any official page read; not used as a confirmed rule",
+          "scheme": "up_bocw"
+        }
+      ],
+      "recoveries": 4
+    },
+    {
+      "id": "h06",
+      "description": "Varanasi OBC shopkeeper family (caste volunteered), daughter in BA 1st year, son in class 10",
+      "household_state_id": "ba03985258",
+      "error": null,
+      "seconds": 73.6,
+      "cost_usd": 0.337274,
+      "usage": {
+        "input_tokens": 2671,
+        "output_tokens": 17152,
+        "cache_read_input_tokens": 250003,
+        "cache_creation_input_tokens": 44132,
+        "web_search_requests": 3,
+        "cost_usd": 0.337274,
+        "by_model": {
+          "claude-haiku-5-5": {
+            "input_tokens": 2583,
+            "output_tokens": 2580,
+            "cache_read_input_tokens": 2646,
+            "cache_creation_input_tokens": 0,
+            "web_search_requests": 0,
+            "calls": 2,
+            "cost_usd": 0.001575
+          },
+          "claude-sonnet-5-5": {
+            "input_tokens": 88,
+            "output_tokens": 14572,
+            "cache_read_input_tokens": 247357,
+            "cache_creation_input_tokens": 44132,
+            "web_search_requests": 3,
+            "calls": 19,
+            "cost_usd": 0.335699
+          }
+        }
+      },
+      "predicted": [
+        "eshram",
+        "nsp_scholarship",
+        "pmjjby",
+        "pmsby",
+        "up_scholarship"
+      ],
+      "expected": [
+        [
+          "up_scholarship"
+        ],
+        [
+          "up_kanya_sumangala"
+        ]
+      ],
+      "predicted_likely": [
+        "up_scholarship"
+      ],
+      "score": {
+        "tp": 1,
+        "fn": 1,
+        "fp": 0,
+        "matched_predictions": 1,
+        "missed": [
+          [
+            "up_kanya_sumangala"
+          ]
+        ],
+        "false_positives": [],
+        "ignored_extras": [
+          "eshram",
+          "nsp_scholarship",
+          "pmjjby",
+          "pmsby"
+        ]
+      },
+      "score_confirmed_only": {
+        "tp": 0,
+        "fn": 2,
+        "fp": 0,
+        "matched_predictions": 0,
+        "missed": [
+          [
+            "up_scholarship"
+          ],
+          [
+            "up_kanya_sumangala"
+          ]
+        ],
+        "false_positives": [],
+        "ignored_extras": [
+          "eshram",
+          "nsp_scholarship",
+          "pmjjby",
+          "pmsby"
+        ]
+      },
+      "total_missing_inr_per_year": 12000,
+      "verified_sources": {
+        "nsp_scholarship": "https://dosje.gov.in/schemes/pm-yasasvi",
+        "eshram": "https://eshram.gov.in/faqs",
+        "pmjjby": "https://www.pib.gov.in/PressNoteDetails.aspx?NoteId=154428&ModuleId=3&reg=3&lang=1",
+        "pmsby": "https://financialservices.gov.in/pradhan-mantri-suraksha-bima-yojana-pmsby",
+        "up_scholarship": "https://scholarship.up.gov.in/"
+      },
+      "likely_unconfirmed_rules": {
+        "up_scholarship": [
+          "परिवार की वार्षिक आय सीमा (OBC) आधिकारिक पेज से पढ़कर पुष्टि नहीं हो सकी"
+        ]
+      },
+      "dropped": {
+        "pm_vishwakarma:self": "PM Vishwakarma is only for self-employed artisans in one of the 18 traditional trades. The profile says only \"small_business\" and does not name a trade. The member's age (48), non-government status and family details do not disqualify him, but I cannot confirm the trade requirement. If he works in one of the listed trades, such as carpenter, mason, tailor, barber, potter or cobbler, he can apply at a CSC or at pmvishwakarma.gov.in.",
+        "up_digishakti:daughter": "The official DigiShakti portal page only shows the 2021-22 tablet/smartphone distribution title and maintenance notices. It has no eligibility rules. The myscheme page could not be fetched. The only page with rules was an unofficial site, so the core eligibility is not confirmed on any official page.",
+        "pmjay:household": "आधिकारिक नियम (NHA) ग्रामीण परिवारों के लिए SECC के अभाव मानदंड (D1-D7) बताते हैं। यह परिवार शहरी है और छोटा व्यवसाय करता है। शहरी श्रेणी की सूची और राशन कार्ड से जुड़ाव आधिकारिक पेज पर नहीं देख पाए, क्योंकि पेज खुले नहीं। इसलिए पात्रता की पुष्टि नहीं हो सकी। परिवार चाहे तो नज़दीकी आयुष्मान मित्र या CSC पर जाँच करा सकता है।",
+        "up_abhyudaya:daughter": "अभ्युदय योजना की पात्रता किसी सरकारी पेज पर पढ़ी नहीं जा सकी। abhyuday.up.gov.in और myScheme के पेज नहीं खुले। सिर्फ़ समाचार साइटें मिलीं, इसलिए पक्का नहीं कर सके।"
+      },
+      "conflicts": [],
+      "unofficial_claims": [
+        {
+          "topic": "up_digishakti",
+          "unofficial_url": "https://www.labhgrow.in/gov-schemes/up-tablet-yojana-eligibility-2026",
+          "claim": "No income cap; only course enrollment matters for the free tablet",
+          "reason": "not stated on any official page read; not used as a confirmed rule",
+          "scheme": "up_digishakti"
+        },
+        {
+          "topic": "up_abhyudaya",
+          "unofficial_url": "https://www.indiatvnews.com/education/news/uttar-pradesh-government-providing-free-coaching-classes-to-upsc-other-competitive-exams-aspirants-yogi-adityanath-mukhyamantri-abhyudaya-yojana-2023-08-01-884301",
+          "claim": "UP residents who are economically weak can get free coaching for competitive exams by registering on abhyuday.up.gov.in",
+          "reason": "not stated on any official page read; not used as a confirmed rule",
+          "scheme": "up_abhyudaya"
+        },
+        {
+          "topic": "up_abhyudaya",
+          "unofficial_url": "https://teachernews.in/up-abhyudaya-free-coaching-scheme/",
+          "claim": "Eligibility and application process for the Abhyudaya free coaching scheme",
+          "reason": "not stated on any official page read; not used as a confirmed rule",
+          "scheme": "up_abhyudaya"
+        }
+      ],
+      "recoveries": 7
+    },
+    {
+      "id": "h07",
+      "description": "Banda SC landless labourers (caste volunteered), three young children, no ration card",
+      "household_state_id": "9d4a01f2af",
+      "error": null,
+      "seconds": 72.3,
+      "cost_usd": 0.353296,
+      "usage": {
+        "input_tokens": 3006,
+        "output_tokens": 17778,
+        "cache_read_input_tokens": 277747,
+        "cache_creation_input_tokens": 43876,
+        "web_search_requests": 3,
+        "cost_usd": 0.353296,
+        "by_model": {
+          "claude-haiku-5-5": {
+            "input_tokens": 2916,
+            "output_tokens": 2073,
+            "cache_read_input_tokens": 2646,
+            "cache_creation_input_tokens": 0,
+            "web_search_requests": 0,
+            "calls": 2,
+            "cost_usd": 0.001355
+          },
+          "claude-sonnet-5-5": {
+            "input_tokens": 90,
+            "output_tokens": 15705,
+            "cache_read_input_tokens": 275101,
+            "cache_creation_input_tokens": 43876,
+            "web_search_requests": 3,
+            "calls": 19,
+            "cost_usd": 0.35194
+          }
+        }
+      },
+      "predicted": [
+        "eshram",
+        "nfsa_ration",
+        "pm_sym",
+        "pmay_g",
+        "pmjay",
+        "pmjjby",
+        "pmsby",
+        "pmuy"
+      ],
+      "expected": [
+        [
+          "nfsa_ration"
+        ],
+        [
+          "pmay_g"
+        ],
+        [
+          "pmuy"
+        ]
+      ],
+      "predicted_likely": [
+        "nfsa_ration",
+        "pmjay"
+      ],
+      "score": {
+        "tp": 3,
+        "fn": 0,
+        "fp": 0,
+        "matched_predictions": 3,
+        "missed": [],
+        "false_positives": [],
+        "ignored_extras": [
+          "eshram",
+          "pm_sym",
+          "pmjay",
+          "pmjjby",
+          "pmsby"
+        ]
+      },
+      "score_confirmed_only": {
+        "tp": 2,
+        "fn": 1,
+        "fp": 0,
+        "matched_predictions": 2,
+        "missed": [
+          [
+            "nfsa_ration"
+          ]
+        ],
+        "false_positives": [],
+        "ignored_extras": [
+          "eshram",
+          "pm_sym",
+          "pmjjby",
+          "pmsby"
+        ]
+      },
+      "total_missing_inr_per_year": 122050,
+      "verified_sources": {
+        "pmay_g": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2074713&reg=48&lang=2",
+        "pmuy": "https://pmuy.gov.in/",
+        "pm_sym": "https://maandhan.in/",
+        "eshram": "https://eshram.gov.in/faqs",
+        "pmsby": "https://financialservices.gov.in/pradhan-mantri-suraksha-bima-yojana-pmsby",
+        "pmjjby": "https://www.pib.gov.in/PressNoteDetails.aspx?NoteId=154428&ModuleId=3&reg=3&lang=1",
+        "nfsa_ration": "https://nfsa.gov.in/portal/nfsa-act",
+        "pmjay": "https://nha.gov.in/PM-JAY"
+      },
+      "likely_unconfirmed_rules": {
+        "nfsa_ration": [
+          "आय सीमा / पात्र गृहस्थी की पहचान के राज्य के मानदंड आधिकारिक पेज पर नहीं मिले"
+        ],
+        "pmjay": [
+          "परिवार का नाम SECC 2011 सूची में होना - आयुष्मान मित्र/पोर्टल पर जाँचें"
+        ]
+      },
+      "dropped": {
+        "up_kanya_sumangala:daughter": "आय सीमा (₹3 लाख) में परिवार आता है, लेकिन योजना में प्रति परिवार अधिकतम दो बच्चे (और दो बेटियाँ) ही पात्र हैं। इस परिवार में तीन बच्चे हैं (बेटा 8, बेटी 5, बेटा 3), इसलिए बेटी पात्र नहीं है।",
+        "nsp_scholarship:son": "सरकारी गाइडलाइन के अनुसार SC छात्रों की केंद्रीय प्री-मैट्रिक छात्रवृत्ति सिर्फ कक्षा 9 और 10 के छात्रों के लिए है (आय सीमा 2.5 लाख)। बेटा कक्षा 3 में है, इसलिए पात्र नहीं है। कक्षा 1-10 वाला हिस्सा सिर्फ सफाई/चमड़ा/कचरा बीनने जैसे काम करने वाले माता-पिता के बच्चों के लिए है, जो इस परिवार पर लागू नहीं होता।",
+        "up_bocw:self": "आधिकारिक पेज (upbocw.in, myscheme, श्रम विभाग) खुल नहीं पाए, इसलिए किसी सरकारी स्रोत पर पात्रता (18-60 वर्ष, 90 दिन काम) की पुष्टि नहीं हो सकी। केवल गैर-सरकारी साइटों पर यह जानकारी मिली, जो मान्य नहीं है। इसके अलावा यह भी पता नहीं है कि वह निर्माण मजदूर है या नहीं।"
+      },
+      "conflicts": [],
+      "unofficial_claims": [
+        {
+          "topic": "up_bocw",
+          "unofficial_url": "https://corpbiz.io/up-bocw-registration",
+          "claim": "आयु 18-60 वर्ष और पिछले 12 महीनों में कम से कम 90 दिन निर्माण कार्य करने वाला श्रमिक पंजीकरण के योग्य है",
+          "reason": "not stated on any official page read; not used as a confirmed rule",
+          "scheme": "up_bocw"
+        }
+      ],
+      "recoveries": 4
+    },
+    {
+      "id": "h10",
+      "description": "Moradabad tailor (darzi), two daughters aged 14 (class 9) and 10",
+      "household_state_id": "2e47367fca",
+      "error": null,
+      "seconds": 58.0,
+      "cost_usd": 0.225752,
+      "usage": {
+        "input_tokens": 2893,
+        "output_tokens": 15515,
+        "cache_read_input_tokens": 68153,
+        "cache_creation_input_tokens": 30909,
+        "web_search_requests": 0,
+        "cost_usd": 0.225752,
+        "by_model": {
+          "claude-haiku-5-5": {
+            "input_tokens": 2841,
+            "output_tokens": 2125,
+            "cache_read_input_tokens": 2646,
+            "cache_creation_input_tokens": 0,
+            "web_search_requests": 0,
+            "calls": 2,
+            "cost_usd": 0.001373
+          },
+          "claude-sonnet-5-5": {
+            "input_tokens": 52,
+            "output_tokens": 13390,
+            "cache_read_input_tokens": 65507,
+            "cache_creation_input_tokens": 30909,
+            "web_search_requests": 0,
+            "calls": 13,
+            "cost_usd": 0.224378
+          }
+        }
+      },
+      "predicted": [
+        "eshram",
+        "pm_sym",
+        "pm_vishwakarma",
+        "pmjjby",
+        "pmsby",
+        "up_kanya_sumangala",
+        "up_scholarship"
+      ],
+      "expected": [
+        [
+          "pm_vishwakarma"
+        ],
+        [
+          "up_kanya_sumangala"
+        ],
+        [
+          "up_scholarship"
+        ]
+      ],
+      "predicted_likely": [
+        "up_scholarship"
+      ],
+      "score": {
+        "tp": 3,
+        "fn": 0,
+        "fp": 0,
+        "matched_predictions": 3,
+        "missed": [],
+        "false_positives": [],
+        "ignored_extras": [
+          "eshram",
+          "pm_sym",
+          "pmjjby",
+          "pmsby"
+        ]
+      },
+      "score_confirmed_only": {
+        "tp": 2,
+        "fn": 1,
+        "fp": 0,
+        "matched_predictions": 2,
+        "missed": [
+          [
+            "up_scholarship"
+          ]
+        ],
+        "false_positives": [],
+        "ignored_extras": [
+          "eshram",
+          "pm_sym",
+          "pmjjby",
+          "pmsby"
+        ]
+      },
+      "total_missing_inr_per_year": 27000,
+      "verified_sources": {
+        "pm_vishwakarma": "https://pmvishwakarma.gov.in/",
+        "up_kanya_sumangala": "https://mksy.up.gov.in/",
+        "eshram": "https://eshram.gov.in/faqs",
+        "pm_sym": "https://maandhan.in/",
+        "pmsby": "https://financialservices.gov.in/pradhan-mantri-suraksha-bima-yojana-pmsby",
+        "pmjjby": "https://www.pib.gov.in/PressNoteDetails.aspx?NoteId=154428&ModuleId=3&reg=3&lang=1",
+        "up_scholarship": "https://scholarship.up.gov.in/pdfs/go/OBC_Pre%20matrici%20Niyamawali%20(2016).pdf"
+      },
+      "likely_unconfirmed_rules": {
+        "up_scholarship": [
+          "जाति श्रेणी (OBC/SC/ST/सामान्य/अल्पसंख्यक) परिवार ने नहीं बताई; जिस श्रेणी की नियमावली लागू होगी उसकी आय सीमा की पुष्टि करें (OBC के लिए 2 लाख रुपये पढ़ी गई)"
+        ]
+      },
+      "dropped": {
+        "nsp_scholarship:daughter (14)": "NSP पेज पर केवल योजनाओं की सूची मिली, पात्रता नियम नहीं। जाति/वर्ग की जानकारी नहीं दी गई है, इसलिए पात्रता पक्की नहीं हो सकी। आधिकारिक पेज पर नियम पुष्ट नहीं हुए।",
+        "nsp_scholarship:daughter (10)": "NSP पेज पर केवल योजनाओं की सूची मिली, पात्रता नियम नहीं। जाति/वर्ग की जानकारी नहीं दी गई है, इसलिए पात्रता पक्की नहीं हो सकी। आधिकारिक पेज पर नियम पुष्ट नहीं हुए।",
+        "pmjay:household": "आधिकारिक पेज पर पुष्ट नियम केवल ग्रामीण परिवारों (SECC 2011 के D1-D7) और निचले 40% गरीब परिवारों के लिए हैं। यह परिवार शहरी (मुरादाबाद) है। शहरी पात्रता व्यावसायिक श्रेणियों पर आधारित है, और दर्ज़ी उनमें आता है, पर मैं इसे आधिकारिक पेज पर पुष्ट नहीं कर पाया। पेज दोबारा खोलने पर भी जानकारी नहीं मिली। राशन कार्ड या आय से पात्रता की पुष्टि नहीं होती, इसलिए इसे हटाया गया है।"
+      },
+      "conflicts": [],
+      "unofficial_claims": [],
+      "recoveries": 1
+    }
+  ]
+}

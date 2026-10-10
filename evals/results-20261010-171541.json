@@ -1,0 +1,143 @@
+{
+  "timestamp": "20261010-171541",
+  "git_commit": "3b0ec4c",
+  "config": {
+    "model": "claude-sonnet-5-5",
+    "fast_model": "claude-haiku-5-5",
+    "effort": "medium",
+    "simulate_failure": false,
+    "only": "h09"
+  },
+  "summary": {
+    "households": 1,
+    "errors": 0,
+    "tp": 4,
+    "fp": 0,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "accuracy": 1.0,
+    "avg_cost_usd": 0.1119,
+    "total_cost_usd": 0.1119,
+    "avg_seconds": 47.4,
+    "recoveries": 0,
+    "conflicts_logged": 0,
+    "likely_predictions": 2,
+    "unofficial_claims_logged": 0,
+    "confirmed_only": {
+      "tp": 4,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "accuracy": 1.0
+    }
+  },
+  "households": [
+    {
+      "id": "h09",
+      "description": "Prayagraj widow aged 74 living alone, Antyodaya card, kutcha house, no gas",
+      "household_state_id": "cca0218304",
+      "error": null,
+      "seconds": 47.4,
+      "cost_usd": 0.111876,
+      "usage": {
+        "input_tokens": 1615,
+        "output_tokens": 7526,
+        "cache_read_input_tokens": 5656,
+        "cache_creation_input_tokens": 20664,
+        "web_search_requests": 0,
+        "cost_usd": 0.111876,
+        "by_model": {
+          "claude-haiku-5-5": {
+            "input_tokens": 1591,
+            "output_tokens": 1063,
+            "cache_read_input_tokens": 0,
+            "cache_creation_input_tokens": 2646,
+            "web_search_requests": 0,
+            "calls": 2,
+            "cost_usd": 0.001022
+          },
+          "claude-sonnet-5-5": {
+            "input_tokens": 24,
+            "output_tokens": 6463,
+            "cache_read_input_tokens": 5656,
+            "cache_creation_input_tokens": 18018,
+            "web_search_requests": 0,
+            "calls": 6,
+            "cost_usd": 0.110856
+          }
+        }
+      },
+      "predicted": [
+        "ayushman_vay_vandana",
+        "pmay_g",
+        "pmjay",
+        "pmuy",
+        "up_old_age_pension",
+        "up_widow_pension"
+      ],
+      "expected": [
+        [
+          "up_widow_pension",
+          "up_old_age_pension"
+        ],
+        [
+          "pmjay",
+          "ayushman_vay_vandana"
+        ],
+        [
+          "pmay_g"
+        ],
+        [
+          "pmuy"
+        ]
+      ],
+      "predicted_likely": [
+        "pmjay",
+        "up_widow_pension"
+      ],
+      "score": {
+        "tp": 4,
+        "fn": 0,
+        "fp": 0,
+        "matched_predictions": 6,
+        "missed": [],
+        "false_positives": [],
+        "ignored_extras": []
+      },
+      "score_confirmed_only": {
+        "tp": 4,
+        "fn": 0,
+        "fp": 0,
+        "matched_predictions": 4,
+        "missed": [],
+        "false_positives": [],
+        "ignored_extras": []
+      },
+      "total_missing_inr_per_year": 134050,
+      "verified_sources": {
+        "pmay_g": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2074713&reg=48&lang=2",
+        "up_old_age_pension": "https://sspy-up.gov.in/",
+        "pmuy": "https://pmuy.gov.in/",
+        "ayushman_vay_vandana": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2082288&reg=48&lang=2",
+        "up_widow_pension": "https://sspy-up.gov.in/",
+        "pmjay": "https://nha.gov.in/PM-JAY"
+      },
+      "likely_unconfirmed_rules": {
+        "up_widow_pension": [
+          "पारिवारिक आय सीमा आधिकारिक पेज पर नहीं मिली"
+        ],
+        "pmjay": [
+          "SECC 2011 सूची में परिवार का नाम होना (अभाव मानदंड) - आधिकारिक पोर्टल पर जाँचना होगा"
+        ]
+      },
+      "dropped": {},
+      "conflicts": [],
+      "unofficial_claims": [],
+      "recoveries": 0
+    }
+  ]
+}

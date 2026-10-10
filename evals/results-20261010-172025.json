@@ -1,0 +1,156 @@
+{
+  "timestamp": "20261010-172025",
+  "git_commit": "3b0ec4c",
+  "config": {
+    "model": "claude-sonnet-5-5",
+    "fast_model": "claude-haiku-5-5",
+    "effort": "medium",
+    "simulate_failure": false,
+    "only": "h09"
+  },
+  "summary": {
+    "households": 1,
+    "errors": 0,
+    "tp": 4,
+    "fp": 0,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "accuracy": 1.0,
+    "avg_cost_usd": 0.2411,
+    "total_cost_usd": 0.2411,
+    "avg_seconds": 121.9,
+    "recoveries": 7,
+    "conflicts_logged": 0,
+    "likely_predictions": 2,
+    "unofficial_claims_logged": 1,
+    "confirmed_only": {
+      "tp": 3,
+      "fp": 0,
+      "fn": 1,
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1": 0.8571,
+      "accuracy": 0.75
+    }
+  },
+  "households": [
+    {
+      "id": "h09",
+      "description": "Prayagraj widow aged 74 living alone, Antyodaya card, kutcha house, no gas",
+      "household_state_id": "0d677a7b06",
+      "error": null,
+      "seconds": 121.9,
+      "cost_usd": 0.241143,
+      "usage": {
+        "input_tokens": 1584,
+        "output_tokens": 11894,
+        "cache_read_input_tokens": 203283,
+        "cache_creation_input_tokens": 27646,
+        "web_search_requests": 3,
+        "cost_usd": 0.241143,
+        "by_model": {
+          "claude-haiku-5-5": {
+            "input_tokens": 1514,
+            "output_tokens": 1827,
+            "cache_read_input_tokens": 2646,
+            "cache_creation_input_tokens": 0,
+            "web_search_requests": 0,
+            "calls": 2,
+            "cost_usd": 0.001091
+          },
+          "claude-sonnet-5-5": {
+            "input_tokens": 70,
+            "output_tokens": 10067,
+            "cache_read_input_tokens": 200637,
+            "cache_creation_input_tokens": 27646,
+            "web_search_requests": 3,
+            "calls": 14,
+            "cost_usd": 0.240052
+          }
+        }
+      },
+      "predicted": [
+        "ayushman_vay_vandana",
+        "pmay_g",
+        "pmuy",
+        "up_old_age_pension",
+        "up_widow_pension"
+      ],
+      "expected": [
+        [
+          "up_widow_pension",
+          "up_old_age_pension"
+        ],
+        [
+          "pmjay",
+          "ayushman_vay_vandana"
+        ],
+        [
+          "pmay_g"
+        ],
+        [
+          "pmuy"
+        ]
+      ],
+      "predicted_likely": [
+        "up_old_age_pension",
+        "up_widow_pension"
+      ],
+      "score": {
+        "tp": 4,
+        "fn": 0,
+        "fp": 0,
+        "matched_predictions": 5,
+        "missed": [],
+        "false_positives": [],
+        "ignored_extras": []
+      },
+      "score_confirmed_only": {
+        "tp": 3,
+        "fn": 1,
+        "fp": 0,
+        "matched_predictions": 3,
+        "missed": [
+          [
+            "up_old_age_pension",
+            "up_widow_pension"
+          ]
+        ],
+        "false_positives": [],
+        "ignored_extras": []
+      },
+      "total_missing_inr_per_year": 122050,
+      "verified_sources": {
+        "pmay_g": "https://pmayg.dord.gov.in/netiayHome/Uploaded/Guidelines-English_Book_Final.pdf",
+        "pmuy": "https://pmuy.gov.in/",
+        "ayushman_vay_vandana": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2082288&reg=48&lang=2",
+        "up_old_age_pension": "https://sspy-up.gov.in/",
+        "up_widow_pension": "https://sspy-up.gov.in/"
+      },
+      "likely_unconfirmed_rules": {
+        "up_old_age_pension": [
+          "आय सीमा / गरीबी रेखा की सटीक शर्त आधिकारिक पेज पर नहीं मिली"
+        ],
+        "up_widow_pension": [
+          "आय सीमा / पारिवारिक आय की अधिकतम सीमा आधिकारिक पेज पर नहीं मिली"
+        ]
+      },
+      "dropped": {
+        "pmjay:household": "आधिकारिक पेज (nha.gov.in, pmjay.gov.in, myscheme) नहीं खुले। ABDM के सरकारी पेज के अनुसार केवल SECC सूची में नाम वाले परिवार पात्र हैं। अंत्योदय राशन कार्ड से पात्रता किसी आधिकारिक पेज पर पुष्ट नहीं हुई। इसलिए पुष्टि नहीं हो सकी। (74 वर्ष की उम्र पर 70+ वरिष्ठ नागरिक कवर भी आधिकारिक स्रोत से पुष्ट नहीं हुआ।)"
+      },
+      "conflicts": [],
+      "unofficial_claims": [
+        {
+          "topic": "pmjay",
+          "unofficial_url": "https://www.bajajfinserv.in/insurance/ayushman-bharat-yojana-are-you-eligible-for-the-pmjay-scheme",
+          "claim": "Senior citizens 70+ eligible irrespective of socio-economic background; SECC-based eligibility",
+          "reason": "not stated on any official page read; not used as a confirmed rule",
+          "scheme": "pmjay"
+        }
+      ],
+      "recoveries": 7
+    }
+  ]
+}
