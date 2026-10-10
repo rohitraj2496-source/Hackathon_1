@@ -1,0 +1,28 @@
+Credit added. Before the full evals: tell me what the first household run cost and estimate the cost of all 20. Then resume the household. Run evals on 10 households first, not 20, and report precision, recall, accuracy, cost and time.
+
+---
+
+<task-notification>
+<task-id>bfbdqcyu8</task-id>
+<summary>Monitor event: "per-household eval results (10-household run)"</summary>
+<event>h03: tp=2 fp=1 fn=0   148.5s  $0.598  fp=['nfsa_ration']
+h02: tp=2 fp=1 fn=3   185.0s  $0.932  missed=[['up_widow_pension'], ['pmjay'], ['pmay_g']]  fp=['up_shadi_anudan']
+h01: tp=3 fp=2 fn=1   187.9s  $1.162  missed=[['up_scholarship']]  fp=['nfsa_ration', 'up_shadi_anudan']
+h04: tp=1 fp=1 fn=0   193.2s  $1.127  fp=['nfsa_ration']
+h05: tp=2 fp=0 fn=2   138.3s  $0.958  missed=[['up_bocw'], ['nfsa_ration']]
+h08: tp=1 fp=0 fn=0   102.6s  $0.878
+h06: tp=1 fp=1 fn=1   118.5s  $0.996  missed=[['up_scholarship']]  fp=['nfsa_ration']
+h07: tp=1 fp=0 fn=2   124.5s  $1.044  missed=[['nfsa_ration'], ['pmay_g']]
+h09: tp=4 fp=1 fn=0   110.2s  $0.545  fp=['nfsa_ration']
+h10: tp=2 fp=1 fn=1   112.0s  $0.986  missed=[['up_scholarship']]  fp=['nfsa_ration']</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bhe0mf8c2</task-id>
+<tool-use-id>toolu_01B2KZ5fF2gLyAc5HaFgPiS8</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/tasks/bhe0mf8c2.output</output-file>
+<status>completed</status>
+<summary>Background command ".venv/bin/python run_evals.py --only h01,h02,h03,h04,h05,h06,h07,h08,h09,h10 --workers 4 2&gt;&amp;1 | grep -v "neatlogs - INFO" &gt; /private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/scratchpad/eval10.log" completed (exit code 0)</summary>
+</task-notification>
