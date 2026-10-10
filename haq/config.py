@@ -20,7 +20,10 @@ neatlogs.init(
 
 from anthropic import Anthropic  # noqa: E402
 
-MODEL = os.environ.get("HAQ_MODEL", "claude-sonnet-5-5")
+# Sonnet only where judgment matters (eligibility verification); Haiku for interview, planning, formatting.
+VERIFY_MODEL = os.environ.get("HAQ_VERIFY_MODEL", os.environ.get("HAQ_MODEL", "claude-sonnet-5-5"))
+FAST_MODEL = os.environ.get("HAQ_FAST_MODEL", "claude-haiku-5-5")
+MODEL = VERIFY_MODEL  # back-compat name
 EFFORT = os.environ.get("HAQ_EFFORT", "medium")
 SIMULATE_FAILURE = os.environ.get("SIMULATE_FAILURE") == "1"
 STATE_FILE = os.environ.get("HAQ_STATE_FILE", "data/state.json")
@@ -30,6 +33,8 @@ STATE_FILE = os.environ.get("HAQ_STATE_FILE", "data/state.json")
 # wrapper still instruments the plain messages.create path.
 FALLBACK_HEADERS = {"anthropic-beta": "server-side-fallback-2026-07-01"}
 FALLBACK_BODY = {"fallbacks": "default"}
+# Haiku has no server-side refusal fallback; only send the parameter to models that accept it.
+FALLBACK_MODELS = ("claude-sonnet-5-5", "claude-opus-5-5", "claude-opus-5", "claude-fable-5-1")
 
 # Bounded so one stalled request cannot hold a research loop for long (the SDK default is 10 min x retries).
 client = neatlogs.wrap(Anthropic(max_retries=3, timeout=180.0))
@@ -38,5 +43,7 @@ client = neatlogs.wrap(Anthropic(max_retries=3, timeout=180.0))
 PRICES = {
     "claude-opus-5-5": {"in": 4.00, "out": 20.00, "cache_read": 0.20, "cache_write": 5.00},
     "claude-sonnet-5-5": {"in": 2.00, "out": 10.00, "cache_read": 0.20, "cache_write": 2.50},
+    # Haiku 5.5 list price for prompts <= 100K tokens. Cache rates assumed at the usual 0.1x / 1.25x of input.
+    "claude-haiku-5-5": {"in": 0.10, "out": 0.50, "cache_read": 0.01, "cache_write": 0.125},
 }
 WEB_SEARCH_USD = 10.0 / 1000

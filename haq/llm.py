@@ -4,7 +4,7 @@ import threading
 
 from anthropic.types import Message
 
-from .config import (EFFORT, FALLBACK_BODY, FALLBACK_HEADERS, MODEL, PRICES,
+from .config import (EFFORT, FALLBACK_BODY, FALLBACK_HEADERS, FALLBACK_MODELS, MODEL, PRICES,
                      WEB_SEARCH_USD, client)
 
 
@@ -46,16 +46,18 @@ class Usage:
             return dict(self.totals)
 
 
-def create(usage: Usage | None, *, effort: str | None = None, max_tokens: int = 16000, **kwargs) -> Message:
+def create(usage: Usage | None, *, model: str = MODEL, effort: str | None = None, max_tokens: int = 16000,
+           **kwargs) -> Message:
     """messages.create with Haq defaults: adaptive thinking, effort, caching, refusal fallback."""
+    fallback = model in FALLBACK_MODELS
     msg = client.messages.create(
-        model=MODEL,
+        model=model,
         max_tokens=max_tokens,
         thinking={"type": "adaptive"},
         output_config={**kwargs.pop("output_config", {}), "effort": effort or EFFORT},
         cache_control={"type": "ephemeral"},
-        extra_headers=FALLBACK_HEADERS,
-        extra_body=FALLBACK_BODY,
+        extra_headers=FALLBACK_HEADERS if fallback else None,
+        extra_body=FALLBACK_BODY if fallback else None,
         **kwargs,
     )
     if usage is not None:
@@ -63,10 +65,10 @@ def create(usage: Usage | None, *, effort: str | None = None, max_tokens: int = 
     return msg
 
 
-def structured(usage: Usage | None, *, system: str, user: str, schema: dict,
+def structured(usage: Usage | None, *, system: str, user: str, schema: dict, model: str = MODEL,
                effort: str | None = None, max_tokens: int = 16000) -> dict:
     """One call that must return JSON matching `schema`."""
-    msg = create(usage, effort=effort, max_tokens=max_tokens, system=system,
+    msg = create(usage, model=model, effort=effort, max_tokens=max_tokens, system=system,
                  messages=[{"role": "user", "content": user}],
                  output_config={"format": {"type": "json_schema", "schema": schema}})
     if msg.stop_reason == "refusal":

@@ -126,7 +126,7 @@ def main():
 
     previous = sorted(glob.glob("evals/results-*.json"))
     rows = []
-    print(f"Running Haq on {len(households)} households (model={config.MODEL}, effort={config.EFFORT}, "
+    print(f"Running Haq on {len(households)} households (verify={config.VERIFY_MODEL}, fast={config.FAST_MODEL}, effort={config.EFFORT}, "
           f"simulate_failure={config.SIMULATE_FAILURE})\n")
     with neatlogs.trace("eval_suite", kind="WORKFLOW", households=len(households)):
         with ThreadPoolExecutor(args.workers) as pool:
@@ -148,7 +148,7 @@ def main():
     ts = time.strftime("%Y%m%d-%H%M%S")
     out = {
         "timestamp": ts, "git_commit": _git_commit(),
-        "config": {"model": config.MODEL, "effort": config.EFFORT, "simulate_failure": config.SIMULATE_FAILURE,
+        "config": {"model": config.VERIFY_MODEL, "fast_model": config.FAST_MODEL, "effort": config.EFFORT, "simulate_failure": config.SIMULATE_FAILURE,
                    "only": args.only},
         "summary": summary, "households": rows,
     }

@@ -177,7 +177,8 @@ All spans for one family share `session_id = household id`. Eval runs are traced
 |---|---|---|
 | `ANTHROPIC_API_KEY` | — | required |
 | `NEATLOGS_API_KEY` | — | required for traces to be exported |
-| `HAQ_MODEL` | `claude-sonnet-5-5` | Claude model (`claude-opus-5-5` for higher accuracy, ~2x cost) |
+| `HAQ_VERIFY_MODEL` | `claude-sonnet-5-5` | eligibility verification (the research loops). `HAQ_MODEL` is still accepted |
+| `HAQ_FAST_MODEL` | `claude-haiku-5-5` | interview, planning, spoken summary, follow-ups |
 | `HAQ_EFFORT` | `medium` | default effort (the interview and summary use `low`) |
 | `SIMULATE_FAILURE` | off | `1` makes the first official lookup fail |
 | `HAQ_STATE_FILE` | `data/state.json` | where profiles and runs are stored |

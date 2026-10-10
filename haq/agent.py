@@ -14,6 +14,7 @@ import anthropic
 import neatlogs
 
 from . import cache, catalog, fetcher, state
+from .config import FAST_MODEL, VERIFY_MODEL
 from .llm import Usage, create, structured
 
 RESEARCH_WORKERS = 4
@@ -126,7 +127,7 @@ def interview_turn(hid: str, user_text: str) -> dict:
         transcript = "\n".join(f"{'Family' if m['role'] == 'user' else 'Haq'}: {m['text']}" for m in msgs)
         profile = h["profile"] or empty_profile()
         out = structured(
-            None, system=INTERVIEW_SYSTEM, effort="low", max_tokens=8000, schema=INTERVIEW_SCHEMA,
+            None, model=FAST_MODEL, system=INTERVIEW_SYSTEM, effort="low", max_tokens=8000, schema=INTERVIEW_SCHEMA,
             user=f"Current profile JSON:\n{json.dumps(profile, ensure_ascii=False)}\n\n"
                  f"Conversation so far:\n{transcript}\n\nUpdate the profile and give the next question.",
         )
@@ -197,7 +198,7 @@ PLAN_SCHEMA = {
 
 def plan(profile: dict, usage: Usage, hid: str) -> list[dict]:
     with neatlogs.trace("plan", kind="CHAIN", session_id=hid):
-        out = structured(usage, system=PLAN_SYSTEM, effort="medium", schema=PLAN_SCHEMA,
+        out = structured(usage, model=FAST_MODEL, system=PLAN_SYSTEM, effort="medium", schema=PLAN_SCHEMA,
                          user=f"Household profile:\n{json.dumps(profile, ensure_ascii=False, indent=1)}")
     seen, cands = set(), []
     have = already_has(profile)
@@ -380,7 +381,7 @@ def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str,
             if time.time() - started > RESEARCH_DEADLINE_S:
                 return {**_dropped(cand, f"time budget ({RESEARCH_DEADLINE_S}s) exhausted without official "
                                          "confirmation", ""), **_logs(ctx)}
-            resp = create(usage, effort="medium", system=RESEARCH_SYSTEM, tools=TOOLS, messages=messages)
+            resp = create(usage, model=VERIFY_MODEL, effort="medium", system=RESEARCH_SYSTEM, tools=TOOLS, messages=messages)
             messages.append({"role": "assistant", "content": resp.content})
             for u in _search_result_urls(resp.content):
                 (ctx["read_official"] if catalog.is_official(u) else ctx["unofficial_seen"]).add(_norm(u))
@@ -582,7 +583,7 @@ def write(profile: dict, research: dict, usage: Usage, hid: str) -> dict:
                   "value": c["annual_value_inr"], "counted": c["counts_toward_total"],
                   "status": c["verification"]} for c in cards]
         summary = structured(
-            usage, effort="low", max_tokens=4000, schema=SUMMARY_SCHEMA,
+            usage, model=FAST_MODEL, effort="low", max_tokens=4000, schema=SUMMARY_SCHEMA,
             system="Write a warm spoken summary in very simple Hindi (Devanagari) for a non-literate family. "
                    "3-5 short sentences, max 70 words. Say the total rupees per year they are missing, name the top "
                    "2-3 schemes and for whom, and say to take the listed documents to the CSC / Jan Seva Kendra. "
@@ -694,7 +695,7 @@ def followup(hid: str, question: str) -> dict:
     result = last["result"] if last else None
     with neatlogs.trace("followup", kind="AGENT", session_id=hid, end_user_id=hid):
         out = structured(
-            None, effort="low", max_tokens=8000, schema=FOLLOWUP_SCHEMA,
+            None, model=FAST_MODEL, effort="low", max_tokens=8000, schema=FOLLOWUP_SCHEMA,
             system="You are Haq. A family that already got scheme results is back with a question or new information. "
                    "Answer in very simple spoken Hindi (max 60 words) using ONLY their saved results and profile. "
                    "If they report a change (new baby, death, new job, land, disability...), update the profile, set "
