@@ -1,0 +1,15 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# python
+.venv/
+__pycache__/
+*.pyc
+
+# runtime state (household profiles + run progress)
+data/
+
+# claude / entire local files
+.claude/settings.local.json
