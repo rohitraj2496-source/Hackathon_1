@@ -1,0 +1,81 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4JKJ2Z7BAQWDD9APGT5Z9K9",
+  "session_id": "ea589cac-9458-4a9b-a0b6-65d04317dc8a",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-10T09:51:01.023242Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app.py",
+    "haq/agent.py",
+    "haq/catalog.py",
+    "haq/config.py",
+    "haq/fetcher.py",
+    "haq/llm.py",
+    "haq/state.py",
+    "static/index.html"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-5-5",
+  "turn_id": "28c3e263bd45",
+  "checkpoint_transcript_start": 297,
+  "transcript_lines_at_start": 297,
+  "compact_transcript_start": 31,
+  "token_usage": {
+    "input_tokens": 36,
+    "cache_creation_tokens": 41604,
+    "cache_read_tokens": 2901535,
+    "output_tokens": 38363,
+    "api_call_count": 18
+  },
+  "skill_events_version": 1,
+  "skill_events": [
+    {
+      "id": "claude-skill-toolu_01ChXEMpMgjP8XKqzVAgqeZN",
+      "event_type": "tool_invocation",
+      "skill": {
+        "name": "claude-api"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "skill_tool_use",
+        "confidence": "explicit"
+      },
+      "turn_id": "28c3e263bd45",
+      "transcript_anchor": {
+        "unit": "line",
+        "start": 51,
+        "end": 52,
+        "entry_ids": [
+          "e192278a-5327-47cd-a75f-a0413ced6345"
+        ],
+        "tool_use_id": "toolu_01ChXEMpMgjP8XKqzVAgqeZN"
+      },
+      "native": {
+        "tool_name": "Skill",
+        "tool_use_id": "toolu_01ChXEMpMgjP8XKqzVAgqeZN"
+      },
+      "collapse": {
+        "target": "tool_pair",
+        "label": "Skill: claude-api",
+        "default_collapsed": true
+      }
+    }
+  ],
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-10T09:51:00.946832Z",
+    "agent_lines": 1541,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 1541,
+    "total_lines_changed": 1541,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}
