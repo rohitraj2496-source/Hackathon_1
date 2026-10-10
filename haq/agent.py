@@ -218,7 +218,9 @@ Method:
    *.gov.in, *.nic.in, myscheme.gov.in, the scheme's own portal.
 2. Confirm EVERY eligibility rule you rely on against an OFFICIAL page. Use fetch_official_page to read an
    official URL directly (it retries and falls back to other official sources automatically). An official
-   page that appears in your web_search results also counts as read.
+   page that appears in your web_search results also counts as read. Portal home pages often lack the rules:
+   then read the scheme's official rule documents (guidelines / niyamawali / shasanadesh PDFs on .gov.in or
+   .nic.in; fetch_official_page extracts PDF text) or search for them before giving up.
 3. If a non-official source (news, blogs, coaching sites) disagrees with an official source, trust the
    official one and call log_conflict with the reason.
 4. Finish by calling exactly ONE of:
@@ -243,7 +245,7 @@ TOOLS = [
      "user_location": {"type": "approximate", "country": "IN", "region": "Uttar Pradesh", "timezone": "Asia/Kolkata"}},
     {
         "name": "fetch_official_page",
-        "description": "Fetch the text of an OFFICIAL government web page (.gov.in / .nic.in / scheme portal). "
+        "description": "Fetch the text of an OFFICIAL government web page or PDF rule document (.gov.in / .nic.in / scheme portal). "
                        "Retries with backoff and falls back to other official URLs for the same scheme if it fails. "
                        "Non-official URLs are refused.",
         "strict": True,
@@ -321,8 +323,14 @@ def _norm(url: str) -> str:
 def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str) -> dict:
     """Agent loop for a single (scheme, member). Returns a verified or dropped record."""
     seed = catalog.BY_ID.get(cand["scheme_id"])
-    seed_txt = (f"Known official starting points: {', '.join(seed['official_urls'] + seed['fallback_urls'])}\n"
-                f"Catalog note (re-verify, may be outdated): {seed['hint']}") if seed else "Not in catalog."
+    if seed:
+        docs = seed.get("rules_docs", [])
+        seed_txt = (f"Known official starting points: {', '.join(seed['official_urls'] + seed['fallback_urls'])}\n"
+                    + (f"Official rule documents (PDF, readable with fetch_official_page): {', '.join(docs)}\n"
+                       if docs else "")
+                    + f"Catalog note (re-verify, may be outdated): {seed['hint']}")
+    else:
+        seed_txt = "Not in catalog."
     user = (f"Scheme to verify: {cand['scheme_id']}\nMember: {cand['member']}\nWhy planned: {cand['why']}\n{seed_txt}\n\n"
             f"Household profile:\n{json.dumps(profile, ensure_ascii=False)}")
     messages = [{"role": "user", "content": user}]

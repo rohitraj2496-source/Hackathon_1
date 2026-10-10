@@ -8,12 +8,16 @@ recovery path is visible in the run log and in neatlogs traces.
 SIMULATE_FAILURE=1 makes the very first lookup of the process fail on purpose.
 """
 import html
+import io
+import logging
 import re
+import ssl
 import threading
 import time
 
 import httpx
 import neatlogs
+import pypdf
 
 from . import catalog
 from .config import SIMULATE_FAILURE
@@ -21,6 +25,8 @@ from .config import SIMULATE_FAILURE
 MAX_ATTEMPTS = 3
 BASE_DELAY = 1.0
 TIMEOUT = 12.0
+PDF_TIMEOUT = 60.0
+PDF_MAX_PAGES = 200
 MAX_CHARS = 12000
 UA = "Mozilla/5.0 (HaqBot; +https://github.com/rohitraj2496-source/Hackathon_1) welfare-eligibility-research"
 
@@ -49,34 +55,64 @@ def _html_to_text(raw: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
-def _get(url: str, verify: bool) -> str:
-    with httpx.Client(timeout=TIMEOUT, follow_redirects=True, verify=verify,
+def _pdf_to_text(data: bytes) -> str:
+    """Text of an official rules PDF (guidelines, niyamawali). Scanned PDFs yield ~nothing."""
+    logging.getLogger("pypdf").setLevel(logging.ERROR)
+    reader = pypdf.PdfReader(io.BytesIO(data))
+    text = " ".join((p.extract_text() or "") for p in reader.pages[:PDF_MAX_PAGES])
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _tls(legacy: bool, verify: bool) -> ssl.SSLContext:
+    """legacy: allow legacy TLS renegotiation (old IIS servers). verify=False: accept expired/invalid certs."""
+    ctx = ssl.create_default_context()
+    if legacy:
+        ctx.options |= getattr(ssl, "OP_LEGACY_SERVER_CONNECT", 0x4)
+    if not verify:
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+    return ctx
+
+
+def _get(url: str, legacy: bool, verify: bool) -> str:
+    with httpx.Client(timeout=PDF_TIMEOUT if url.lower().endswith(".pdf") else TIMEOUT,
+                      follow_redirects=True, verify=_tls(legacy, verify),
                       headers={"User-Agent": UA, "Accept-Language": "hi,en;q=0.8"}) as http:
         resp = http.get(url)
         resp.raise_for_status()
         if not catalog.is_official(str(resp.url)):
             raise LookupFailed(f"redirected off official domain to {resp.url}")
+        if "pdf" in resp.headers.get("content-type", "") or resp.content[:5] == b"%PDF-":
+            return _pdf_to_text(resp.content)
         return _html_to_text(resp.text)
 
 
 @neatlogs.span(kind="TOOL", tool_name="fetch_url_with_retry")
 def _fetch_one(url: str, log: list) -> str:
     """Retry one URL with exponential backoff. Raises LookupFailed after MAX_ATTEMPTS."""
-    verify = True
+    legacy, verify = False, True
     last = None
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
             _maybe_simulate_failure(url)
-            text = _get(url, verify)
+            text = _get(url, legacy, verify)
             if len(text) < 1000:
                 raise LookupFailed("page returned almost no text (JS-only page or error page)")
-            log.append({"url": url, "attempt": attempt, "ok": True, "insecure_tls": not verify})
+            log.append({"url": url, "attempt": attempt, "ok": True,
+                        "tls_legacy_renegotiation": legacy, "insecure_tls": not verify})
             return text
         except httpx.ConnectError as e:
             last = e
-            # Several state portals serve expired certificates. The content is public
-            # and read-only, so retry once without TLS verification and record it.
-            if verify and "CERTIFICATE" in str(e).upper():
+            # Some state portals run old TLS stacks. The content is public and read-only, so
+            # adapt once and record it: legacy renegotiation (certificate still verified), or
+            # no verification for an expired/invalid certificate.
+            err = str(e).upper()
+            if not legacy and "LEGACY_RENEGOTIATION" in err:
+                legacy = True
+                log.append({"url": url, "attempt": attempt, "ok": False,
+                            "error": "tls_legacy_renegotiation -> retrying with legacy renegotiation allowed"})
+                continue
+            if verify and "CERTIFICATE" in err:
                 verify = False
                 log.append({"url": url, "attempt": attempt, "ok": False,
                             "error": "tls_certificate_invalid -> retrying without verification"})

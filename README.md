@@ -111,11 +111,12 @@ INTERVIEW ──► PLAN ──► RESEARCH ─► VERIFY ──► WRITE
    directly or returned in its own search results. Anything that can't be confirmed officially is dropped. When
    an unofficial source disagrees with an official one, the official source wins and the conflict is logged
    with a reason.
-5. **Recover** (`haq/fetcher.py`) retries each official URL 3 times with exponential backoff. If the TLS
-   certificate has expired (sspy-up.gov.in, for example), it retries once without certificate checks, which is
-   read-only and public, and records that it did. If the URL still fails, it moves on to the scheme's other
-   official URLs. Every attempt is recorded in `recovery_log`. With `SIMULATE_FAILURE=1` the first lookup fails
-   on purpose.
+5. **Recover** (`haq/fetcher.py`) retries each official URL 3 times with exponential backoff. Old state
+   portals get one adaptation each, recorded in the log: legacy TLS renegotiation (scholarship.up.gov.in), and
+   no certificate check for expired certificates (sspy-up.gov.in). Both are safe here because the pages are
+   public and only read. If the URL still fails, Haq moves on to the scheme's official rule documents (PDF
+   guidelines or niyamawali, whose text is extracted with pypdf) and then to its other official URLs. Every
+   attempt is recorded in `recovery_log`. With `SIMULATE_FAILURE=1` the first lookup fails on purpose.
 6. **Write** (`agent.write`) builds the card JSON and the headline total, then has Claude write a short spoken
    Hindi summary. Schemes the family already receives are shown but left out of the total. Health and
    insurance cover is shown on its own card but not added to the ₹/year figure.

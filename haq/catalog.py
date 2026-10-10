@@ -52,6 +52,7 @@ SCHEMES = [
         "name_hi": "प्रधानमंत्री आवास योजना (ग्रामीण)", "name_en": "PMAY-Gramin",
         "hint": "Rural homeless / kutcha-house families; Rs 1.2 lakh (plains) one-time for a pucca house.",
         "official_urls": ["https://pmayg.dord.gov.in/"],
+        "rules_docs": ["https://pmayg.dord.gov.in/netiayHome/Uploaded/Guidelines-English_Book_Final.pdf"],
         "fallback_urls": ["https://pmayg.nic.in/", "https://www.myscheme.gov.in/schemes/pmay-g"],
         "aliases": ["pmayg", "awas_gramin"],
     },
@@ -197,6 +198,10 @@ SCHEMES = [
         "name_hi": "उ.प्र. छात्रवृत्ति (पूर्व/उत्तर दशम)", "name_en": "UP Pre/Post-Matric Scholarship",
         "hint": "UP students class 9+ (pre-matric 9-10, post-matric 11+) of SC/ST/OBC/General/minority with family income within category limit.",
         "official_urls": ["https://scholarship.up.gov.in/"],
+        "rules_docs": [
+            "https://scholarship.up.gov.in/pdfs/go/OBC_Pre%20matrici%20Niyamawali%20(2016).pdf",
+            "https://scholarship.up.gov.in/pdfs/SC%20NIYAMAVALI14%20OCTOBER%202019%20ENF%20BY%202020-21.pdf",
+        ],
         "fallback_urls": ["https://scholarships.gov.in/"],
         "aliases": ["up_post_matric", "up_pre_matric"],
     },
@@ -236,8 +241,9 @@ def canonical_id(scheme_id: str) -> str:
 
 
 def all_official_urls(scheme_id: str) -> list[str]:
+    """Portal pages, then official rule documents (PDF guidelines / niyamawali), then other official pages."""
     s = BY_ID.get(canonical_id(scheme_id))
-    return (s["official_urls"] + s["fallback_urls"]) if s else []
+    return (s["official_urls"] + s.get("rules_docs", []) + s["fallback_urls"]) if s else []
 
 
 def catalog_for_prompt() -> str:
