@@ -75,6 +75,9 @@
   .card a, .card .actions button { display: inline-block; border-radius: 14px; padding: 10px 14px; font-size: 18px;
             text-decoration: none; border: 2px solid var(--line); color: var(--ink); background: none; }
   .card a.official { border-color: var(--ok); color: var(--ok); font-weight: 600; }
+  .likely { display: block; margin: 10px 0 0; padding: 8px 12px; border-radius: 12px; background: var(--warn-bg);
+            font-size: 19px; font-weight: 600; }
+  .likely small { display: block; font-weight: 400; font-size: 15px; color: var(--muted); }
   .tag { display: inline-block; font-size: 15px; padding: 2px 10px; border-radius: 10px; background: var(--warn-bg); margin-top: 6px; }
   .hidden { display: none !important; }
   .muted { color: var(--muted); font-size: 18px; }
@@ -100,6 +103,7 @@
       <div class="lbl">आपका परिवार हर साल इतना पैसा नहीं ले रहा:</div>
       <div class="amt" id="totalAmt">₹0</div>
       <div class="sub" id="totalSub"></div>
+      <div class="sub hidden" id="likelySub"></div>
       <button class="ghost" id="speakSummary" style="margin-top:12px">🔊 फिर से सुनें</button>
     </div>
     <div id="cards"></div>
@@ -250,7 +254,8 @@ async function poll() {
     write: "✍️ नतीजे तैयार हो रहे हैं…",
   }[run.stage] || "⏳ …";
   $("progressText").textContent = stageText;
-  $("progressSub").textContent = run.verified ? `✅ ${run.verified} योजनाएँ पक्की हुईं` +
+  $("progressSub").textContent = run.verified || run.likely ? `✅ ${run.verified} योजनाएँ पक्की हुईं` +
+    (run.likely ? ` · ⚠️ ${run.likely} शायद` : "") +
     (run.recoveries ? ` · 🔁 ${run.recoveries} बार दूसरी सरकारी साइट से जाँचा` : "") : "";
   if (run.stage !== lastSpokenStage) {
     lastSpokenStage = run.stage;
@@ -265,6 +270,9 @@ function render(result, speakIt) {
   $("totalAmt").textContent = rupee(result.total_missing_inr_per_year) + " / साल";
   const extra = result.cards.filter(c => !c.counts_toward_total && !c.already_receiving).length;
   $("totalSub").textContent = `${result.cards.length} योजनाएँ मिलीं` + (extra ? ` · ${extra} बीमा/इलाज वाली योजनाएँ अलग से` : "");
+  const lk = result.likely_extra_inr_per_year || 0;
+  $("likelySub").classList.toggle("hidden", !lk);
+  $("likelySub").textContent = lk ? `+ ${rupee(lk)} / साल शायद और (आय सीमा की पुष्टि बाकी)` : "";
   lastSummary = result.summary_hi;
   const box = $("cards"); box.innerHTML = "";
   for (const c of result.cards) {
@@ -275,6 +283,7 @@ function render(result, speakIt) {
       <div class="top"><div class="icon" aria-hidden="true"></div>
         <div><h3></h3><div class="who"></div>${c.already_receiving ? '<span class="tag">पहले से मिल रही</span>' : ""}</div></div>
       ${money ? `<div class="money">${money}</div>` : ""}
+      ${c.verification === "likely" ? `<div class="likely"></div>` : ""}
       <div class="benefit"></div>
       <div class="row"><b>📄 ज़रूरी कागज़</b><ul></ul></div>
       <div class="row"><b>📍 कहाँ आवेदन करें</b><span class="where"></span></div>
@@ -287,6 +296,13 @@ function render(result, speakIt) {
     el.querySelector("h3").textContent = c.name_hi;
     el.querySelector(".who").textContent = "👤 " + c.member;
     el.querySelector(".benefit").textContent = c.benefit_hi;
+    if (c.verification === "likely") {
+      const lb = el.querySelector(".likely");
+      lb.textContent = "⚠️ " + c.label_hi;
+      const en = document.createElement("small"); en.textContent = c.label_en; lb.appendChild(en);
+      if (c.annual_value_inr) el.querySelector(".top").insertAdjacentHTML("afterend",
+        `<div class="money" style="opacity:.6">${rupee(c.annual_value_inr)} / साल ?</div>`);
+    }
     const ul = el.querySelector("ul");
     c.documents_hi.forEach(doc => { const li = document.createElement("li"); li.textContent = doc; ul.appendChild(li); });
     el.querySelector(".where").textContent = c.where_to_apply_hi;
@@ -294,7 +310,7 @@ function render(result, speakIt) {
     const ap = el.querySelector(".apply");
     if (c.apply_url && c.apply_url.startsWith("http")) ap.href = c.apply_url; else ap.remove();
     el.querySelector(".say").onclick = () => speak(
-      `${c.name_hi}. ${c.member} के लिए. ${c.benefit_hi}. ज़रूरी कागज़: ${c.documents_hi.join(", ")}. आवेदन: ${c.where_to_apply_hi}`);
+      `${c.name_hi}. ${c.member} के लिए. ${c.verification === "likely" ? c.label_hi + ". " : ""}${c.benefit_hi}. ज़रूरी कागज़: ${c.documents_hi.join(", ")}. आवेदन: ${c.where_to_apply_hi}`);
     box.appendChild(el);
   }
   if (speakIt) speak(result.summary_hi);

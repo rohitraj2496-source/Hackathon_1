@@ -82,6 +82,7 @@ def get_household(hid: str):
             "id": run["id"], "status": run["status"], "stage": run["stage"], "error": run["error"],
             "total": len(run["candidates"]), "done": len(run["research"]),
             "verified": sum(1 for r in run["research"].values() if r.get("status") == "verified"),
+            "likely": sum(1 for r in run["research"].values() if r.get("status") == "likely"),
             "recoveries": len(run["recovery_log"]), "conflicts": len(run["conflicts"]),
             "cost_usd": run["usage"]["cost_usd"],
         }

@@ -59,6 +59,7 @@ def run_one(household: dict) -> dict:
     cards = (run or {}).get("result", {}) or {}
     cards = cards.get("cards", [])
     predicted = {catalog.canonical_id(c["scheme_id"]) for c in cards}
+    confirmed = {catalog.canonical_id(c["scheme_id"]) for c in cards if c.get("verification", "confirmed") == "confirmed"}
     research = (run or {}).get("research", {})
     return {
         "id": household["id"], "description": household["description"], "household_state_id": hid,
@@ -66,20 +67,24 @@ def run_one(household: dict) -> dict:
         "usage": (run or {}).get("usage"),
         "predicted": sorted(predicted),
         "expected": [item.get("any_of") or [item["scheme_id"]] for item in household["expected"]],
+        "predicted_likely": sorted(predicted - confirmed),
         "score": score(household, predicted),
+        "score_confirmed_only": score(household, confirmed),
         "total_missing_inr_per_year": ((run or {}).get("result") or {}).get("total_missing_inr_per_year"),
         "verified_sources": {c["scheme_id"]: c["official_url"] for c in cards},
+        "likely_unconfirmed_rules": {c["scheme_id"]: c.get("unconfirmed_rules", []) for c in cards
+                                     if c.get("verification") == "likely"},
         "dropped": {k: r.get("reason") for k, r in research.items() if r.get("status") == "dropped"},
         "conflicts": (run or {}).get("conflicts", []),
         "recoveries": len((run or {}).get("recovery_log", [])),
     }
 
 
-def summarize(rows: list[dict]) -> dict:
-    tp = sum(r["score"]["tp"] for r in rows)
-    fn = sum(r["score"]["fn"] for r in rows)
-    fp = sum(r["score"]["fp"] for r in rows)
-    matched = sum(r["score"]["matched_predictions"] for r in rows)
+def summarize(rows: list[dict], key: str = "score") -> dict:
+    tp = sum(r[key]["tp"] for r in rows)
+    fn = sum(r[key]["fn"] for r in rows)
+    fp = sum(r[key]["fp"] for r in rows)
+    matched = sum(r[key]["matched_predictions"] for r in rows)
     n = len(rows) or 1
     precision = matched / (matched + fp) if matched + fp else 1.0
     recall = tp / (tp + fn) if tp + fn else 1.0
@@ -94,6 +99,7 @@ def summarize(rows: list[dict]) -> dict:
         "avg_seconds": round(sum(r["seconds"] for r in rows) / n, 1),
         "recoveries": sum(r["recoveries"] for r in rows),
         "conflicts_logged": sum(len(r["conflicts"]) for r in rows),
+        "likely_predictions": sum(len(r.get("predicted_likely", [])) for r in rows),
     }
 
 
@@ -133,6 +139,9 @@ def main():
                       + (f"  fp={s['false_positives']}" if s["false_positives"] else ""))
     rows.sort(key=lambda r: r["id"])
     summary = summarize(rows)
+    # Same metrics counting only schemes confirmed end-to-end (likely-eligible cards excluded)
+    summary["confirmed_only"] = {k: v for k, v in summarize(rows, "score_confirmed_only").items()
+                                 if k in ("tp", "fp", "fn", "precision", "recall", "f1", "accuracy")}
 
     ts = time.strftime("%Y%m%d-%H%M%S")
     out = {
@@ -147,8 +156,9 @@ def main():
 
     print("\n=== Summary ===")
     for k in ("precision", "recall", "f1", "accuracy", "avg_cost_usd", "total_cost_usd", "avg_seconds",
-              "recoveries", "conflicts_logged", "errors"):
+              "recoveries", "conflicts_logged", "likely_predictions", "errors"):
         print(f"  {k:<18} {summary[k]}")
+    print(f"  confirmed_only     {summary['confirmed_only']}")
     if previous:
         prev = json.load(open(previous[-1], encoding="utf-8"))["summary"]
         print(f"\n=== Change vs {previous[-1]} ===")

@@ -222,9 +222,16 @@ Method:
 3. If a non-official source (news, blogs, coaching sites) disagrees with an official source, trust the
    official one and call log_conflict with the reason.
 4. Finish by calling exactly ONE of:
-   - record_verified: the member qualifies on the profile facts and you confirmed the rules on an official page.
-   - drop_scheme: the member does not qualify, or you could not confirm the rules on any official page.
-   Never record a scheme that you could only confirm on unofficial sites.
+   - record_verified with verification="confirmed": the member qualifies and you confirmed EVERY rule you rely
+     on (including any income limit) on an official page.
+   - record_verified with verification="likely": you confirmed the scheme's core eligibility on an official page
+     (who it is for, e.g. "widow aged 18+ resident of UP", "rural household in a kutcha house", "student of class
+     9-10") and the member clearly meets it, but the ONLY rule you could not find on an official page is the
+     income limit / poverty-line criterion. List that in unconfirmed_rules. The family will be told
+     "Likely eligible - confirm income limit". If the member's income is clearly above a limit you did confirm,
+     drop instead.
+   - drop_scheme: the member does not qualify, or you could not confirm the core eligibility on any official page.
+   Never record a scheme whose core eligibility you could only confirm on unofficial sites.
 
 Facts that are unknown in the profile do not disqualify by themselves; judge on what is known and note the
 assumption in assumptions_hi. annual_value_inr: yearly cash or cash-equivalent value for this member
@@ -255,18 +262,22 @@ TOOLS = [
     },
     {
         "name": "record_verified",
-        "description": "Final answer: the member is eligible and the rules were confirmed on an official page.",
+        "description": "Final answer: eligible (verification=confirmed), or core eligibility confirmed on an official "
+                       "page with only the income limit unconfirmed (verification=likely).",
         "strict": True,
         "input_schema": {
             "type": "object", "additionalProperties": False,
-            "required": ["scheme_id", "scheme_name_hi", "member", "official_url", "rules_checked",
-                         "benefit_hi", "annual_value_inr", "counts_toward_total", "documents_hi",
+            "required": ["scheme_id", "scheme_name_hi", "member", "official_url", "verification", "rules_checked",
+                         "unconfirmed_rules", "benefit_hi", "annual_value_inr", "counts_toward_total", "documents_hi",
                          "where_to_apply_hi", "apply_url", "assumptions_hi"],
             "properties": {
                 "scheme_id": {"type": "string"},
                 "scheme_name_hi": {"type": "string"},
                 "member": {"type": "string"},
                 "official_url": {"type": "string", "description": "official page where the rules were confirmed"},
+                "verification": {"type": "string", "enum": ["confirmed", "likely"]},
+                "unconfirmed_rules": {"type": "array", "items": {"type": "string"},
+                                      "description": "empty for confirmed; for likely, the income-limit rule(s) not found officially"},
                 "rules_checked": {"type": "array", "items": {
                     "type": "object", "additionalProperties": False,
                     "required": ["rule", "member_fact", "official_url"],
@@ -387,7 +398,13 @@ def _run_tool(name, args, cand, read_official, conflicts, log_recovery):
                        f"Non-official: {bad}. Not read yet: {unread}. Read them with fetch_official_page "
                        "(or cite an official URL from your search results), or call drop_scheme.")
                 return msg, True, None
-            rec = {"status": "verified", **args, "scheme_id": catalog.canonical_id(args["scheme_id"])}
+            if args["verification"] == "likely" and not args["unconfirmed_rules"]:
+                return ("REJECTED: verification=likely needs unconfirmed_rules naming the income-limit rule you "
+                        "could not confirm. If everything is confirmed, use verification=confirmed."), True, None
+            if args["verification"] == "confirmed":
+                args["unconfirmed_rules"] = []
+            status = "verified" if args["verification"] == "confirmed" else "likely"
+            rec = {**args, "status": status, "scheme_id": catalog.canonical_id(args["scheme_id"])}
             return "recorded", False, rec
 
         return f"unknown tool {name}", True, None
@@ -396,6 +413,9 @@ def _run_tool(name, args, cand, read_official, conflicts, log_recovery):
 # --------------------------------------------------------------------------
 # 6. WRITE
 # --------------------------------------------------------------------------
+LIKELY_LABEL_EN = "Likely eligible — confirm income limit"
+LIKELY_LABEL_HI = "शायद पात्र — आय सीमा की पुष्टि करें"
+
 SUMMARY_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["summary_hi"],
                   "properties": {"summary_hi": {"type": "string"}}}
 
@@ -405,8 +425,9 @@ def write(profile: dict, research: dict, usage: Usage, hid: str) -> dict:
         received = already_has(profile)
         cards = []
         for rec in research.values():
-            if rec.get("status") != "verified":
+            if rec.get("status") not in ("verified", "likely"):
                 continue
+            likely = rec["status"] == "likely"
             seed = catalog.BY_ID.get(rec["scheme_id"], {})
             already = rec["scheme_id"] in received
             cards.append({
@@ -418,7 +439,12 @@ def write(profile: dict, research: dict, usage: Usage, hid: str) -> dict:
                 "member": rec["member"],
                 "benefit_hi": rec["benefit_hi"],
                 "annual_value_inr": rec["annual_value_inr"],
-                "counts_toward_total": rec["counts_toward_total"] and not already,
+                "verification": "likely" if likely else "confirmed",
+                "label_en": LIKELY_LABEL_EN if likely else "Confirmed on official source",
+                "label_hi": LIKELY_LABEL_HI if likely else "सरकारी स्रोत से पक्का",
+                "unconfirmed_rules": rec.get("unconfirmed_rules", []),
+                "counts_toward_total": rec["counts_toward_total"] and not already and not likely,
+                "counts_toward_likely_total": rec["counts_toward_total"] and not already and likely,
                 "already_receiving": already,
                 "documents_hi": rec["documents_hi"],
                 "where_to_apply_hi": rec["where_to_apply_hi"],
@@ -427,19 +453,26 @@ def write(profile: dict, research: dict, usage: Usage, hid: str) -> dict:
                 "rules_checked": rec["rules_checked"],
                 "assumptions_hi": rec["assumptions_hi"],
             })
-        cards.sort(key=lambda c: (-int(c["counts_toward_total"]), -c["annual_value_inr"]))
+        cards.sort(key=lambda c: (c["verification"] != "confirmed", -int(c["counts_toward_total"]),
+                                  -c["annual_value_inr"]))
         total = sum(c["annual_value_inr"] for c in cards if c["counts_toward_total"])
+        likely_total = sum(c["annual_value_inr"] for c in cards if c["counts_toward_likely_total"])
         brief = [{"name": c["name_hi"], "member": c["member"], "benefit": c["benefit_hi"],
-                  "value": c["annual_value_inr"], "counted": c["counts_toward_total"]} for c in cards]
+                  "value": c["annual_value_inr"], "counted": c["counts_toward_total"],
+                  "status": c["verification"]} for c in cards]
         summary = structured(
             usage, effort="low", max_tokens=4000, schema=SUMMARY_SCHEMA,
             system="Write a warm spoken summary in very simple Hindi (Devanagari) for a non-literate family. "
                    "3-5 short sentences, max 70 words. Say the total rupees per year they are missing, name the top "
                    "2-3 schemes and for whom, and say to take the listed documents to the CSC / Jan Seva Kendra. "
+                   "Schemes with status 'likely' are NOT confirmed: say they are 'शायद मिल सकती है, आय सीमा की "
+                   "जाँच करवाएँ' and never add them to the confirmed total. "
                    "Write numbers as words a Hindi speaker would say (e.g. 'बारह हज़ार रुपये'). No English.",
-            user=json.dumps({"total_inr_per_year": total, "schemes": brief}, ensure_ascii=False),
+            user=json.dumps({"confirmed_total_inr_per_year": total, "likely_extra_inr_per_year": likely_total,
+                             "schemes": brief}, ensure_ascii=False),
         )["summary_hi"]
-    return {"total_missing_inr_per_year": total, "cards": cards, "summary_hi": summary}
+    return {"total_missing_inr_per_year": total, "likely_extra_inr_per_year": likely_total,
+            "cards": cards, "summary_hi": summary}
 
 
 # --------------------------------------------------------------------------
