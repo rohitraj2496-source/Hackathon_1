@@ -6,6 +6,7 @@ the state file after each step so a crashed run resumes where it stopped.
 """
 import contextvars
 import json
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -17,6 +18,11 @@ from .llm import Usage, create, structured
 
 RESEARCH_WORKERS = 4
 MAX_RESEARCH_TURNS = 10
+RESEARCH_DEADLINE_S = 420   # wall-clock budget for one scheme's research loop
+
+
+class RunAborted(Exception):
+    """Another lookup in this run hit an error that every call would hit (auth, billing)."""
 
 # --------------------------------------------------------------------------
 # Profile schema (shared by the interview, the eval set and the planner)
@@ -336,7 +342,8 @@ def _norm(url: str) -> str:
     return url.strip().rstrip("/").lower().replace("http://", "https://").replace("://www.", "://")
 
 
-def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str) -> dict:
+def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str,
+                 abort: threading.Event | None = None) -> dict:
     """Agent loop for a single (scheme, member). Returns a verified or dropped record."""
     seed = catalog.BY_ID.get(cand["scheme_id"])
     if seed:
@@ -359,8 +366,14 @@ def research_one(profile: dict, cand: dict, usage: Usage, hid: str, run_id: str)
         "asked_for_sources": False,
     }
 
+    started = time.time()
     with neatlogs.trace(f"research:{cand['key']}", kind="AGENT", session_id=hid):
         for turn in range(MAX_RESEARCH_TURNS):
+            if abort is not None and abort.is_set():
+                raise RunAborted("run aborted after a fatal API error in another lookup")
+            if time.time() - started > RESEARCH_DEADLINE_S:
+                return {**_dropped(cand, f"time budget ({RESEARCH_DEADLINE_S}s) exhausted without official "
+                                         "confirmation", ""), **_logs(ctx)}
             resp = create(usage, effort="medium", system=RESEARCH_SYSTEM, tools=TOOLS, messages=messages)
             messages.append({"role": "assistant", "content": resp.content})
             for u in _search_result_urls(resp.content):
@@ -399,12 +412,31 @@ def _logs(ctx):
             "recovery_log": ctx["recovery"]}
 
 
+def _object_list(value) -> list[dict]:
+    """Tool inputs occasionally arrive with a nested array serialised as a JSON string, or as bare URLs.
+    Normalise to a list of dicts so one odd tool call cannot crash a research loop."""
+    if isinstance(value, str):
+        try:
+            value = json.loads(value)
+        except json.JSONDecodeError:
+            value = [value] if value.strip() else []
+    out = []
+    for item in value if isinstance(value, list) else []:
+        if isinstance(item, dict):
+            out.append(item)
+        elif isinstance(item, str) and item.strip():
+            out.append({"url": item.strip()})
+    return out
+
+
 def _account_for_unofficial(args, cand, ctx):
     """Turn the agent's unofficial_sources list into conflict / unofficial-claim records.
 
     Returns a rejection message if non-government pages came back in search but none were
     accounted for (asked once per loop, so a stubborn model cannot stall the run)."""
-    listed = [s for s in args.get("unofficial_sources", []) if s["url"] and not catalog.is_official(s["url"])]
+    defaults = {"url": "", "claim": "", "official_says": "", "official_url": "", "verdict": "not_on_official_source"}
+    listed = [{**defaults, **s} for s in _object_list(args.get("unofficial_sources", []))]
+    listed = [s for s in listed if s["url"] and not catalog.is_official(s["url"])]
     if ctx["unofficial_seen"] and not listed and not ctx["asked_for_sources"]:
         ctx["asked_for_sources"] = True
         seen = sorted(ctx["unofficial_seen"])[:12]
@@ -453,6 +485,7 @@ def _run_tool(name, args, cand, ctx):
             return "ok", False, _dropped(cand, args["reason"], args.get("official_url", ""))
 
         if name == "record_verified":
+            args["rules_checked"] = [r for r in _object_list(args.get("rules_checked", [])) if "official_url" in r]
             urls = [args["official_url"]] + [r["official_url"] for r in args["rules_checked"]]
             bad = [u for u in urls if not catalog.is_official(u)]
             unread = [u for u in urls if catalog.is_official(u) and _norm(u) not in ctx["read_official"]]
@@ -564,8 +597,10 @@ def run(hid: str, resume: bool = True) -> dict:
             done = set(state.get(hid)["runs"][-1]["research"])
             todo = [c for c in cands if c["key"] not in done]
             errors = []
+            abort = threading.Event()
             with ThreadPoolExecutor(RESEARCH_WORKERS) as pool:
-                futs = {pool.submit(contextvars.copy_context().run, research_one, profile, c, usage, hid, rid): c
+                futs = {pool.submit(contextvars.copy_context().run, research_one, profile, c, usage, hid, rid,
+                                    abort): c
                         for c in todo}
                 for fut in as_completed(futs):
                     c = futs[fut]
@@ -576,7 +611,7 @@ def run(hid: str, resume: bool = True) -> dict:
                         errors.append(f"{c['key']}: {type(e).__name__}: {e}"[:300])
                         if isinstance(e, (anthropic.AuthenticationError, anthropic.PermissionDeniedError,
                                           anthropic.BadRequestError)):
-                            pool.shutdown(wait=False, cancel_futures=True)  # same error will hit every call
+                            abort.set()  # the same error will hit every call; other loops stop at their next turn
                         continue
 
                     def _save(r, c=c, rec=rec):
