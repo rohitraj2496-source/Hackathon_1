@@ -18,8 +18,10 @@ class Usage:
         self._lock = threading.Lock()
         self.totals = {k: 0 for k in self.FIELDS}
         self.totals["cost_usd"] = 0.0
+        self.by_model: dict[str, dict] = {}
         if initial:
             self.totals.update({k: initial.get(k, v) for k, v in self.totals.items()})
+            self.by_model = {m: dict(v) for m, v in (initial.get("by_model") or {}).items()}
 
     def add(self, msg: Message) -> None:
         u = msg.usage
@@ -40,10 +42,15 @@ class Usage:
             for k, v in vals.items():
                 self.totals[k] += v
             self.totals["cost_usd"] = round(self.totals["cost_usd"] + cost, 6)
+            m = self.by_model.setdefault(msg.model, {**{k: 0 for k in self.FIELDS}, "calls": 0, "cost_usd": 0.0})
+            for k, v in vals.items():
+                m[k] += v
+            m["calls"] += 1
+            m["cost_usd"] = round(m["cost_usd"] + cost, 6)
 
     def snapshot(self) -> dict:
         with self._lock:
-            return dict(self.totals)
+            return {**self.totals, "by_model": {m: dict(v) for m, v in self.by_model.items()}}
 
 
 CACHE = {"type": "ephemeral"}
