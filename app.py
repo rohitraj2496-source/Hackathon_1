@@ -8,12 +8,14 @@ from contextlib import asynccontextmanager
 from haq import config  # noqa: F401  (loads .env, initialises neatlogs before anything else)
 
 import neatlogs
+from typing import Literal
+
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from haq import agent, state
+from haq import agent, catalog, intake, present, state
 
 _running: set[str] = set()
 _running_lock = threading.Lock()
@@ -54,8 +56,44 @@ app = FastAPI(title="Haq", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-class Say(BaseModel):
+Lang = Literal["hi", "en"]
+
+
+class Create(BaseModel):
+    lang: Lang = "hi"
+
+
+class Intake(BaseModel):
+    lang: Lang = "hi"
+    text: str | None = None          # one open answer (spoken or typed)
+    builder: dict | None = None      # tap-only family builder
+
+
+class Answers(BaseModel):
+    lang: Lang = "hi"
+    answers: dict[str, str] = {}     # follow-up id -> chosen option value
+
+
+class Ask(BaseModel):
+    lang: Lang = "hi"
     text: str
+
+
+def _get(hid: str) -> dict:
+    h = state.get(hid)
+    if not h:
+        raise HTTPException(404, "household not found")
+    return h
+
+
+def _start(hid: str, lang: str) -> None:
+    """Interview finished: fill remaining unknowns with safer assumptions and start the research run."""
+    def _fin(h):
+        h["profile"] = intake.finalize(h["profile"])
+        h["interview"]["done"] = True
+        h["lang"] = lang
+    state.update(hid, _fin)
+    _run_in_background(hid)
 
 
 @app.get("/")
@@ -64,53 +102,88 @@ def index():
 
 
 @app.post("/api/households")
-def create_household():
+def create_household(body: Create):
     hid = state.new_household()
-    state.update(hid, lambda h: h["interview"]["messages"].append({"role": "assistant", "text": agent.GREETING_HI}))
-    return {"id": hid, "question_hi": agent.GREETING_HI}
+    state.update(hid, lambda h: h.update(lang=body.lang))
+    return {"id": hid, "neatlogs_session_id": hid}
+
+
+@app.post("/api/households/{hid}/intake")
+def submit_intake(hid: str, body: Intake):
+    """The one open answer or the builder. Returns at most 2 tap follow-ups (or starts the run)."""
+    _get(hid)
+    trace = None
+    if body.builder:
+        profile = intake.profile_from_builder(body.builder)
+        source = {"role": "user", "builder": body.builder}
+    elif body.text and body.text.strip():
+        out = intake.extract_from_text(body.text.strip(), body.lang, hid)
+        profile, trace = out["profile"], out["trace"]
+        source = {"role": "user", "text": body.text.strip()}
+    else:
+        raise HTTPException(400, "send text or builder")
+    followups = intake.pick_followups(profile, body.lang)
+
+    def _save(h):
+        h["profile"], h["lang"] = profile, body.lang
+        h["interview"]["messages"].append({**source, **({"trace": trace} if trace else {})})
+        h["interview"]["followups"] = [f["id"] for f in followups]
+    state.update(hid, _save)
+    if not followups:
+        _start(hid, body.lang)
+    return {"followups": followups, "started": not followups,
+            "members": len(profile["members"])}
+
+
+@app.post("/api/households/{hid}/answers")
+def submit_answers(hid: str, body: Answers):
+    """Tap answers to the follow-ups; then start the run."""
+    h = _get(hid)
+    allowed = set(h["interview"].get("followups", []))
+
+    def _apply(hh):
+        for qid, value in body.answers.items():
+            if qid in allowed:
+                intake.apply_answer(hh["profile"], qid, value)
+        hh["interview"]["messages"].append({"role": "user", "answers": body.answers})
+    state.update(hid, _apply)
+    _start(hid, body.lang)
+    return {"started": True}
+
+
+@app.post("/api/households/{hid}/ask")
+def ask(hid: str, body: Ask):
+    """A returning family asks about their results or reports a change (which triggers a fresh search)."""
+    _get(hid)
+    out = agent.followup(hid, body.text, body.lang)
+    if out["profile_changed"]:
+        state.start_run(hid)  # new run; run(resume=True) picks it up
+        _run_in_background(hid)
+    return {"answer": out["answer"], "rerun": out["profile_changed"]}
 
 
 @app.get("/api/households/{hid}")
-def get_household(hid: str):
-    h = state.get(hid)
-    if not h:
-        raise HTTPException(404, "household not found")
+def get_household(hid: str, lang: Lang = "hi"):
+    h = _get(hid)
     run = h["runs"][-1] if h["runs"] else None
-    progress = None
+    progress, result = None, None
     if run:
         progress = {
             "id": run["id"], "status": run["status"], "stage": run["stage"], "error": run["error"],
             "total": len(run["candidates"]), "done": len(run["research"]),
-            "verified": sum(1 for r in run["research"].values() if r.get("status") == "verified"),
-            "likely": sum(1 for r in run["research"].values() if r.get("status") == "likely"),
+            "events": run.get("events", []),
             "recoveries": len(run["recovery_log"]), "conflicts": len(run["conflicts"]),
-            "unofficial_claims": len(run.get("unofficial_claims", [])),
-            "cost_usd": run["usage"]["cost_usd"],
-            "traces": run.get("traces", []),
+            "cost_usd": run["usage"]["cost_usd"], "traces": run.get("traces", []),
         }
-    return {"id": hid, "neatlogs_session_id": hid, "profile": h["profile"], "interview": h["interview"], "run": progress,
-            "result": run["result"] if run else None, "running": hid in _running}
-
-
-@app.post("/api/households/{hid}/answer")
-def answer(hid: str, body: Say):
-    h = state.get(hid)
-    if not h:
-        raise HTTPException(404, "household not found")
-    if h["interview"]["done"]:
-        out = agent.followup(hid, body.text)
-        if out["profile_changed"]:
-            state.start_run(hid)  # new run; run(resume=True) picks it up
-            _run_in_background(hid)
-        return {"question_hi": out["answer_hi"], "done": True, "rerun": out["profile_changed"]}
-    out = agent.interview_turn(hid, body.text)
-    if out["done"]:
-        _run_in_background(hid)
-    return {"question_hi": out["next_question_hi"], "done": out["done"], "profile": out["profile"]}
+        if run["status"] == "done" and run["result"]:
+            result = present.localized(hid, run["id"], run["result"], lang)
+    return {"id": hid, "neatlogs_session_id": hid, "lang": h.get("lang", "hi"),
+            "interview_done": h["interview"]["done"], "run": progress, "result": result,
+            "running": hid in _running,
+            "schemes": {s["id"]: {"name": s["name_en"], "emoji": s["emoji"]} for s in catalog.SCHEMES}}
 
 
 @app.post("/api/households/{hid}/run")
 def start_or_resume(hid: str):
-    if not state.get(hid):
-        raise HTTPException(404, "household not found")
+    _get(hid)
     return {"started": _run_in_background(hid)}

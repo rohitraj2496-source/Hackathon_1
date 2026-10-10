@@ -87,9 +87,15 @@ def start_run(hid: str) -> dict:
                   "cache_creation_input_tokens": 0, "web_search_requests": 0, "cost_usd": 0.0},
         "error": None,
         "traces": [],              # neatlogs trace refs, one per attempt (resume adds one)
+        "events": [],              # live step log for the UI checklist
     }
     update(hid, lambda h: h["runs"].append(run))
     return run
+
+
+def add_event(hid: str, run_id: str, type_: str, **data) -> None:
+    """Append one step to the run's live log (shown as a checklist while the agent works)."""
+    update_run(hid, run_id, lambda r: r.setdefault("events", []).append({"t": time.time(), "type": type_, **data}))
 
 
 def update_run(hid: str, run_id: str, fn) -> dict:

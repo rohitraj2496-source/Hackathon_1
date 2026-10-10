@@ -14,6 +14,7 @@ import anthropic
 import neatlogs
 
 from . import cache, catalog, fetcher, state
+from . import intake
 from .config import FAST_MODEL, VERIFY_MODEL, trace_ref
 from .llm import Usage, create, structured, system_blocks
 
@@ -84,66 +85,8 @@ PROFILE_SCHEMA = {
 # --------------------------------------------------------------------------
 # 1. INTERVIEW
 # --------------------------------------------------------------------------
-INTERVIEW_SYSTEM = """You are Haq (हक़), a kind helper for poor and often non-literate families in Uttar Pradesh.
-You interview ONE family to find government schemes they are entitled to. Your words are read aloud.
-
-Rules for questions:
-- Hindi in Devanagari, very simple village Hindi, max 15 words, ONE question at a time.
-- Prefer yes/no or a number. Never use English jargon (say "ज़मीन" not "land holding").
-- Ask in this rough order, skipping anything already known: who lives in the house (ages, men/women),
-  work of each adult, farm land and whose name it is in, rough yearly income, village or city + district,
-  ration card type, pucca/kutcha house, gas connection, any widow, any disabled member (and %),
-  children studying (class), anyone pregnant, any marriage coming up in the family (record in upcoming_events),
-  govt job / income-tax payer, schemes already received.
-- NEVER ask about caste. Record caste_category only if the user volunteers it; otherwise "not_shared".
-- Stop (done=true) once you know members with ages/gender/occupation, area, income band, land, ration card,
-  house type, and widow/disability/student/pregnancy status. Usually 6-10 questions. Do not over-ask.
-- Keep everything already learned in the profile; update it with each answer. Unknown values stay null/"unknown".
-- When done, next_question_hi is a short thank-you saying you will now search the schemes."""
-
-INTERVIEW_SCHEMA = {
-    "type": "object",
-    "additionalProperties": False,
-    "required": ["profile", "done", "next_question_hi"],
-    "properties": {
-        "profile": PROFILE_SCHEMA,
-        "done": {"type": "boolean"},
-        "next_question_hi": {"type": "string"},
-    },
-}
-
-GREETING_HI = "नमस्ते! मैं हक़ हूँ। मैं आपके परिवार के लिए सरकारी योजनाएँ ढूँढूँगा। आपके घर में कुल कितने लोग रहते हैं?"
-
-
-def empty_profile() -> dict:
-    return {"district": None, "area": "unknown", "annual_family_income_inr": None,
-            "ration_card": "unknown", "house_type": "unknown", "has_lpg_connection": None,
-            "has_bank_account": None, "caste_category": "not_shared", "land_acres": None,
-            "land_owner_relation": None, "already_receiving": [], "upcoming_events": [], "members": []}
-
-
-def interview_turn(hid: str, user_text: str) -> dict:
-    """Record the user's answer, update the profile, return the next question."""
-    h = state.get(hid)
-    with neatlogs.trace("interview_turn", kind="AGENT", session_id=hid, end_user_id=hid) as span:
-        ref = trace_ref(span, "interview_turn", hid)
-        msgs = h["interview"]["messages"] + [{"role": "user", "text": user_text}]
-        transcript = "\n".join(f"{'Family' if m['role'] == 'user' else 'Haq'}: {m['text']}" for m in msgs)
-        profile = h["profile"] or empty_profile()
-        out = structured(
-            None, model=FAST_MODEL, system=INTERVIEW_SYSTEM, effort="low", max_tokens=8000, schema=INTERVIEW_SCHEMA,
-            user=f"Current profile JSON:\n{json.dumps(profile, ensure_ascii=False)}\n\n"
-                 f"Conversation so far:\n{transcript}\n\nUpdate the profile and give the next question.",
-        )
-
-    def _save(hh):
-        hh["interview"]["messages"] = msgs + [{"role": "assistant", "text": out["next_question_hi"],
-                                                "trace": ref}]
-        hh["interview"]["done"] = out["done"]
-        hh["profile"] = out["profile"]
-
-    state.update(hid, _save)
-    return out
+# The interview itself (one open answer or the tap builder, then at most 2 tap follow-ups)
+# lives in haq/intake.py. PROFILE_SCHEMA above is shared with it.
 
 
 # --------------------------------------------------------------------------
@@ -416,6 +359,8 @@ def research_scheme(profile: dict, cands: list[dict], usage: Usage, hid: str, ru
                        batch_size=len(cands))
         return decided
 
+    ctx["emit"] = lambda type_, **d: state.add_event(hid, run_id, type_, scheme_id=scheme_id, **d)
+    ctx["emit"]("checking", from_cache=bool(cached_rules))
     with neatlogs.trace(f"research:{scheme_id}", kind="AGENT", session_id=hid,
                         members=[c["member"] for c in cands]):
         for turn in range(MAX_RESEARCH_TURNS):
@@ -560,6 +505,9 @@ def _run_tool(name, args, cand, ctx):
             if failed or r.get("fell_back"):
                 ctx["recovery"].append({"requested": args["url"], "served_by": r["url"] if r["ok"] else None,
                               "ok": r["ok"], "attempts": r["attempts"]})
+                if "emit" in ctx:
+                    ctx["emit"]("recovered" if r["ok"] else "source_failed", requested=args["url"],
+                                served_by=r["url"] if r["ok"] else None, fell_back=bool(r.get("fell_back")))
             if not r["ok"]:
                 return (f"FAILED: {r.get('error')}. Attempts: {json.dumps(r['attempts'], ensure_ascii=False)}. "
                         "Try another official URL (web_search for it) or drop the scheme."), True, None
@@ -619,7 +567,11 @@ def write(profile: dict, research: dict, usage: Usage, hid: str) -> dict:
         for rec in research.values():
             if rec.get("status") not in ("verified", "likely"):
                 continue
-            likely = rec["status"] == "likely"
+            # What the family still has to confirm: an income limit no official page states, and/or a fact
+            # the short interview did not ask and we assumed (see intake.finalize).
+            check_needed = (["income_limit"] if rec["status"] == "likely" else []) + \
+                intake.assumed_facts_for(rec["scheme_id"], profile)
+            likely = bool(check_needed)
             seed = catalog.BY_ID.get(rec["scheme_id"], {})
             already = rec["scheme_id"] in received
             cards.append({
@@ -635,6 +587,7 @@ def write(profile: dict, research: dict, usage: Usage, hid: str) -> dict:
                 "label_en": LIKELY_LABEL_EN if likely else "Confirmed on official source",
                 "label_hi": LIKELY_LABEL_HI if likely else "सरकारी स्रोत से पक्का",
                 "unconfirmed_rules": rec.get("unconfirmed_rules", []),
+                "check_needed": check_needed,
                 "counts_toward_total": rec["counts_toward_total"] and not already and not likely,
                 "counts_toward_likely_total": rec["counts_toward_total"] and not already and likely,
                 "already_receiving": already,
@@ -689,9 +642,11 @@ def run(hid: str, resume: bool = True) -> dict:
             # PLAN
             cands = run_["candidates"]
             if not cands:
+                state.add_event(hid, rid, "understood", members=len(profile.get("members", [])))
                 cands = plan(profile, usage, hid)
                 state.update_run(hid, rid, lambda r: r.update(candidates=cands, stage="research",
                                                               usage=usage.snapshot()))
+                state.add_event(hid, rid, "planned", schemes=len({c["scheme_id"] for c in cands}))
             # RESEARCH + VERIFY + RECOVER (skip candidates finished before a crash)
             done = set(state.get(hid)["runs"][-1]["research"])
             todo = [c for c in cands if c["key"] not in done]
@@ -707,8 +662,10 @@ def run(hid: str, resume: bool = True) -> dict:
 
             # WRITE
             state.update_run(hid, rid, lambda r: r.update(stage="write"))
+            state.add_event(hid, rid, "writing")
             research = state.get(hid)["runs"][-1]["research"]
             result = write(profile, research, usage, hid)
+            state.add_event(hid, rid, "done")
             return state.update_run(hid, rid, lambda r: r.update(
                 result=result, stage="done", status="done", finished_at=time.time(), usage=usage.snapshot()))
         except Exception as e:
@@ -743,6 +700,11 @@ def _research_groups(groups, profile, usage, hid, rid, abort, errors):
                 r.setdefault("unofficial_claims", []).extend(
                     {**x, "scheme": scheme} for x in first.get("unofficial_claims", []))
                 r["usage"] = usage.snapshot()
+                statuses = {x.get("status") for x in recs.values()}
+                outcome = ("confirmed" if "verified" in statuses else "likely" if "likely" in statuses
+                           else "not_eligible")
+                r.setdefault("events", []).append({"t": time.time(), "type": "scheme_done", "scheme_id": scheme,
+                                                   "outcome": outcome})
             state.update_run(hid, rid, _save)
 
 
@@ -751,12 +713,12 @@ def _research_groups(groups, profile, usage, hid, rid, abort, errors):
 # --------------------------------------------------------------------------
 FOLLOWUP_SCHEMA = {
     "type": "object", "additionalProperties": False,
-    "required": ["answer_hi", "profile_changed", "profile"],
-    "properties": {"answer_hi": {"type": "string"}, "profile_changed": {"type": "boolean"}, "profile": PROFILE_SCHEMA},
+    "required": ["answer", "profile_changed", "profile"],
+    "properties": {"answer": {"type": "string"}, "profile_changed": {"type": "boolean"}, "profile": PROFILE_SCHEMA},
 }
 
 
-def followup(hid: str, question: str) -> dict:
+def followup(hid: str, question: str, lang: str = "hi") -> dict:
     h = state.get(hid)
     last = next((r for r in reversed(h["runs"]) if r["status"] == "done"), None)
     result = last["result"] if last else None
@@ -765,7 +727,8 @@ def followup(hid: str, question: str) -> dict:
         out = structured(
             None, model=FAST_MODEL, effort="low", max_tokens=8000, schema=FOLLOWUP_SCHEMA,
             system="You are Haq. A family that already got scheme results is back with a question or new information. "
-                   "Answer in very simple spoken Hindi (max 60 words) using ONLY their saved results and profile. "
+                   f"Answer in very simple spoken {'English' if lang == 'en' else 'Hindi (Devanagari)'} (max 60 words) "
+                   "using ONLY their saved results and profile. Keep official scheme names as they are. "
                    "If they report a change (new baby, death, new job, land, disability...), update the profile, set "
                    "profile_changed=true and tell them you will check schemes again. Otherwise return the profile unchanged.",
             user=json.dumps({"profile": h["profile"], "results": result, "question": question}, ensure_ascii=False),
@@ -773,8 +736,8 @@ def followup(hid: str, question: str) -> dict:
 
     def _save(hh):
         hh["interview"]["messages"] += [{"role": "user", "text": question},
-                                        {"role": "assistant", "text": out["answer_hi"], "trace": ref}]
+                                        {"role": "assistant", "text": out["answer"], "trace": ref}]
         if out["profile_changed"]:
-            hh["profile"] = out["profile"]
+            hh["profile"] = {**hh["profile"], **out["profile"]}  # keep state/assumptions the schema doesn't carry
     state.update(hid, _save)
     return out
