@@ -1,0 +1,35 @@
+Start the Haq web app in the background and give me the URL to open in Chrome. Don't run any evals.
+
+---
+
+show web
+
+---
+
+save memory
+
+---
+
+<pasted_content id="da97">
+Three fixes: the UI looks bad, the agent asks too many questions, and users need a Hindi/English choice. Redesign the frontend and the interview flow. Keep the existing backend; only change the interview logic and frontend. Don't run evals.
+
+LANGUAGE:
+- Screen 1 first shows two big buttons: "हिंदी" and "English". Default to Hindi if nothing is chosen.
+- After that, a small toggle (हिं | EN) stays in the top corner on every screen so the user can switch anytime.
+- The choice controls everything: all UI text, the agent's questions and follow-up button labels, speech recognition language (hi-IN or en-IN), the read-aloud voice, and the results summary. Show only the chosen language — no dual Hindi/English text.
+- Keep official scheme names as they are (e.g. "PM-KISAN"), but translate the explanation around them.
+- Remember the choice in the browser (wrap storage in try/catch so it never breaks), and pass the language to the backend so the agent replies in that language.
+
+FEWER QUESTIONS:
+- Start with ONE open prompt: "Tell us about your family" / "अपने परिवार के बारे में बताइए" (speak or type). Extract as much of the profile as possible from that single answer.
+- Also offer a tap-only "family builder" so nobody has to talk or type: tap member chips (Father/पापा 👨, Mother/माँ 👩, Grandfather/दादा 👴, Grandmother/दादी 👵, Son/बेटा 👦, Daughter/बेटी 👧) and for each, tap tags (Farmer/किसान 🌾, Labourer/मज़दूर 🧱, Student/पढ़ाई 🎓, Widow/विधवा 👩‍🦳, Disabled/विकलांग ♿). One income chip row (Low/कम, Medium/मध्यम, High/ज़्यादा). State defaults to Uttar Pradesh.
+- After that, ask AT MOST 2 follow-up questions, and only for facts that change eligibility. Each follow-up must be big tap buttons (e.g. Yes/No, or 3 options), never open-ended. If something is still unknown, assume the safer option and mark affected schemes "Likely eligible — confirm X".
+
+NEW UI (mobile-first, one screen at a time, big touch targets):
+Design: warm off-white background #F4EFE4, ink #1B1A17, deep green accent #1F5E3B, muted red #B4503A for warnings. Inter font for English, system Devanagari font for Hindi. Rounded cards, generous spacing, no clutter.
+Screen 1 — Start: language choice first, then "Haq हक़" wordmark, a one-line promise (e.g. "Government schemes your family is owed"), a huge round mic button in the centre, and below it "Or tap to tell us" opening the family builder.
+Screen 2 — Working: show the agent's real steps live as a simple checklist as they happen (e.g. "✓ Understood your family", "⏳ Checking PM-KISAN official website", "⚠️ Website was down — verified from another official source ✓"). This makes recovery visible in the demo.
+Screen 3 — Results: huge headline "Your family is missing ₹X every year". Then one card per scheme: big emoji, scheme name, which family member, ₹/year, a green "Confirmed" badge or amber "Check needed: <what to confirm>" badge, documents as icon chips, a "Where to apply" button, and a small "Official source" link. A 🔊 button on the headline and on each card reads it aloud in the chosen language.
+
+Make sure it works well on a phone-sized screen in Chrome. Commit and push with clear messages.
+</pasted_content id="da97">
