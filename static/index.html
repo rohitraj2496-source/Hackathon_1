@@ -366,6 +366,11 @@ const store = {
   set(k, v) { try { localStorage.setItem(k, v); } catch {} },
   del(k) { try { localStorage.removeItem(k); } catch {} },
 };
+// Open with ?new (e.g. for a demo) to forget the remembered family and language and start from the first screen.
+if (new URLSearchParams(location.search).has("new")) {
+  store.del("haq_hid"); store.del("haq_lang");
+  history.replaceState(null, "", location.pathname);
+}
 let lang = store.get("haq_lang");
 let hid = store.get("haq_hid");
 let schemes = {};
