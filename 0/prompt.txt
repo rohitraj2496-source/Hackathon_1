@@ -1,0 +1,327 @@
+<pasted_content id="da97">
+Three polish fixes, then commit and push. No real API calls.
+1. Results headline: lead with the total including likely-eligible, kept honest. Hindi: "आपके परिवार का ₹X/साल तक का हक़ बाकी है" with a line below "₹A पक्का · ₹B जाँच के बाद". English: "Up to ₹X/year your family is owed" with "₹A confirmed · ₹B after checks". Read-aloud must say the same.
+2. In Hindi mode, show official Hindi scheme names where they exist (e.g. "निराश्रित महिला पेंशन योजना" for UP Destitute Women Pension) on cards AND the working checklist. Keep short acronyms like PM-KISAN, PMSBY, PMAY-G as is.
+3. Insurance schemes (PMSBY, PMJJBY) are costs to the family, not money owed: exclude them from the ₹ total and show them in a separate "सुरक्षा / Protection" section below the money cards, with premium and cover amount.
+Re-screenshot the results screen in both languages to confirm.
+</pasted_content id="da97">
+
+---
+
+<pasted_content id="da97">
+Three polish fixes, then commit and push. No real API calls.
+1. Results headline: lead with the total including likely-eligible, kept honest. Hindi: "आपके परिवार का ₹X/साल तक का हक़ बाकी है" with a line below "₹A पक्का · ₹B जाँच के बाद". English: "Up to ₹X/year your family is owed" with "₹A confirmed · ₹B after checks". Read-aloud must say the same.
+2. In Hindi mode, show official Hindi scheme names where they exist (e.g. "निराश्रित महिला पेंशन योजना" for UP Destitute Women Pension) on cards AND the working checklist. Keep short acronyms like PM-KISAN, PMSBY, PMAY-G as is.
+3. Insurance schemes (PMSBY, PMJJBY) are costs to the family, not money owed: exclude them from the ₹ total and show them in a separate "सुरक्षा / Protection" section below the money cards, with premium and cover amount.
+Re-screenshot the results screen in both languages to confirm.
+</pasted_content id="da97">
+
+---
+
+cd ~/Desktop/Hackathon_1 && .venv/bin/uvicorn app:app 
+  --host 127.0.0.1 --port 8000
+
+---
+
+<pasted_content id="da97">
+Run a full test of the app in two phases. Fix what breaks. Commit and push after each phase.
+
+PHASE 1 — FREE (stub server + link checks only, NO Anthropic API calls):
+A) Broken links: collect every URL the app can show (official source links, "where to apply" links, cached scheme rules, evals/families.json sources, any links in index.html). Check each with a real GET (browser user-agent, 15s timeout, 1 retry, follow redirects). Report a table: URL, status (OK / redirect / 404 / timeout / blocked). For every broken one, find a working OFFICIAL replacement (gov.in / nic.in / myscheme.gov.in) and verify it loads before swapping. Never replace an official link with an unofficial one.
+B) Stress the UI with Playwright against the stub server, in BOTH languages, at 360px, 390px and 768px widths:
+- empty input, gibberish, emoji-only, 2,000-character input, Hinglish, numbers only
+- mic permission denied; speech API unavailable (fallback must work)
+- rapid double/triple taps on every button; tapping "Next" with no family members selected
+- switching language mid-run and on the results screen
+- browser back button and page refresh during the working screen (must resume or restart cleanly, never hang)
+- server killed mid-run, then restarted; slow network (3G throttling); offline
+- 25 concurrent sessions hitting the stub server at once
+Report: every JS console error, every 4xx/5xx, any screen that hangs or shows a blank state, any text overflowing or cut off, any button that does nothing. Fix all of them and re-run Phase 1 until clean. Save failing screenshots to docs/stress/.
+
+PHASE 2 — REAL API, HARD CAP $2 TOTAL:
+Before starting, estimate the cost and tell me. Track spend as you go and STOP immediately if it would exceed $2.
+Run: (1) Hindi tap-builder family: mother widow, father farmer 2 acres, daughter student; (2) English typed family with a disabled grandfather; (3) the same as (1) with SIMULATE_FAILURE=1 to prove recovery; (4) 3 real runs at the same time to check for rate-limit or shared-state bugs.
+For each: report schemes found, confirmed vs check-needed, total ₹ shown, cost, time, neatlogs trace ID, and any error. Confirm every link on the real results screens loads.
+
+Finish with a short TEST_REPORT.md in the repo: what was tested, what broke, what was fixed, what's still open. Commit and push.
+</pasted_content id="da97">
+
+---
+
+<task-notification>
+<task-id>bej4h7d3g</task-id>
+<tool-use-id>toolu_011iAcc8zUGmt7XCDafgQoCS</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/tasks/bej4h7d3g.output</output-file>
+<status>completed</status>
+<summary>Background command ".venv/bin/python scripts/stress_ui.py 2&gt;&amp;1 | tail -60" completed (exit code 0)</summary>
+</task-notification>
+
+---
+
+pause
+
+---
+
+pause
+
+---
+
+continue check
+
+---
+
+<task-notification>
+<task-id>b0jrdo4jz</task-id>
+<tool-use-id>toolu_01BhmJ9aeHv4g9rZJdDyctAS</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/tasks/b0jrdo4jz.output</output-file>
+<status>failed</status>
+<summary>Background command ".venv/bin/python scripts/stress_ui.py &gt; /private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/scratchpad/stress2.log 2&gt;&amp;1" failed with exit code 1</summary>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>b19jt10be</task-id>
+<tool-use-id>toolu_01HUBPdTF2gXPLFLFAtYVZbz</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/tasks/b19jt10be.output</output-file>
+<status>completed</status>
+<summary>Background command ".venv/bin/python scripts/stress_ui.py &gt; /private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/scratchpad/stress3.log 2&gt;&amp;1" completed (exit code 0)</summary>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bo0n1pbuy</task-id>
+<summary>Monitor event: "Phase 2 live runs: per-scenario spend, status and errors"</summary>
+<event>== 1-hindi-builder: server cap $1.800 (spent so far $0.000)</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bo0n1pbuy</task-id>
+<summary>Monitor event: "Phase 2 live runs: per-scenario spend, status and errors"</summary>
+<event>"status": "done",
+server spend for 1-hindi-builder: $0.245111  | total so far $0.2451 of $2.00
+== 2-english-typed-disabled-grandfather: server cap $1.555 (spent so far $0.245)</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bo0n1pbuy</task-id>
+<summary>Monitor event: "Phase 2 live runs: per-scenario spend, status and errors"</summary>
+<event>"status": "done",
+server spend for 2-english-typed-disabled-grandfather: $0.245538  | total so far $0.4906 of $2.00
+== 3-hindi-builder-SIMULATE_FAILURE: server cap $1.309 (spent so far $0.491)</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bo0n1pbuy</task-id>
+<summary>Monitor event: "Phase 2 live runs: per-scenario spend, status and errors"</summary>
+<event>"status": "done",
+server spend for 3-hindi-builder-SIMULATE_FAILURE: $0.45658  | total so far $0.9472 of $2.00
+== 4-three-concurrent: server cap $0.453 (spent so far $0.947)</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bzw4dko9n</task-id>
+<tool-use-id>toolu_01SzPpxDJVMytdQG66fnThBw</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/tasks/bzw4dko9n.output</output-file>
+<status>completed</status>
+<summary>Background command ".venv/bin/python scripts/live_test.py --cap 2.00 &gt; /private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/scratchpad/live.log 2&gt;&amp;1" completed (exit code 0)</summary>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bo0n1pbuy</task-id>
+<summary>Monitor event: "Phase 2 live runs: per-scenario spend, status and errors"</summary>
+<event>"status": "failed",
+"run_error": "BudgetExceeded: spend cap reached: $0.4614 of $0.45",
+"status": "failed",
+"run_error": "RuntimeError: 1 scheme lookups failed (resume to retry): up_bocw: BudgetExceeded: spend cap reached: $0.4928 of $0.45",
+"status": "done",
+server spend for 4-three-concurrent: $0.507979  | total so far $1.4552 of $2.00
+TOTAL SPENT $1.4552 (cap $2.00). Saved /Users/rohitraj/Desktop/Hackathon_1/docs/stress/live-results.json</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>byzw340wh</task-id>
+<tool-use-id>toolu_017jDgCwj5MJeCPp2x5FpVEh</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/tasks/byzw340wh.output</output-file>
+<status>completed</status>
+<summary>Background command "cat &gt; /private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/scratchpad/resume4.py &lt;&lt;'EOF'
+import json, os, sys, time
+sys.path.insert(0, os.getcwd())
+import httpx
+sys.argv = ["x"]
+import scripts.live_test as lt
+CAP_LEFT = 2.0 - 1.4552
+budget = round(CAP_LEFT - 0.15, 3)
+print(f"server cap ${budget} (remaining under $2: ${CAP_LEFT:.4f})", flush=True)
+p = lt.start_server(8020, budget)
+base = "http://127.0.0.1:8020"
+hids = {"4a-concurrent-builder-en": "2021a924e6", "4b-concurrent-typed-en": "df30875aaf"}
+t0 = time.time()
+for hid in hids.values():
+    print(hid, httpx.post(f"{base}/api/households/{hid}/run").json(), flush=True)
+out = {}
+while time.time() - t0 &lt; 600 and len(out) &lt; 2:
+    for name, hid in hids.items():
+        if name in out: continue
+        d = httpx.get(f"{base}/api/households/{hid}?lang=en", timeout=120).json()
+        if d["run"]["status"] in ("done", "failed") and not d["running"]:
+            res = d["result"]
+            out[name] = {"status": d["run"]["status"], "error": d["run"]["error"], "seconds_after_resume": round(time.time() - t0, 1),
+                         "run_cost_usd_total": d["run"]["cost_usd"], "trace_ids": [t["trace_id"] for t in d["run"]["traces"]],
+                         "headline": res and {"up_to": res["owed_up_to_inr_per_year"], "confirmed": res["total_missing_inr_per_year"],
+                                              "after_checks": res["likely_extra_inr_per_year"], "one_time": res["one_time_inr"]},
+                         "confirmed": res and [f"{x['name']} ({x['member']})" for x in res["cards"] if x["category"] != "protection" and x["verification"] == "confirmed"],
+                         "check_needed": res and [f"{x['name']} ({x['member']}): {', '.join(x['check_needed'])}" for x in res["cards"] if x["category"] != "protection" and x["verification"] != "confirmed"],
+                         "protection": res and [f"{x['name']} ({x['member']})" for x in res["cards"] if x["category"] == "protection"],
+                         "links": res and sorted({u for x in res["cards"] for u in (x["official_url"], x["apply_url"]) if u and u.startswith("http")})}
+    time.sleep(3)
+spent = lt.stop_server(p, 8020)
+print(json.dumps(out, ensure_ascii=False, indent=1))
+print(f"resume spend ${spent} | grand total ${1.4552 + (spent or 0):.4f} of $2.00")
+d = json.load(open("docs/stress/live-results.json")); d["resume_4ab"] = {"spent_usd": spent, "runs": out}
+d["spent_usd"] = round(1.4552 + (spent or 0), 4)
+json.dump(d, open("docs/stress/live-results.json", "w"), indent=1, ensure_ascii=False)
+EOF
+.venv/bin/python /private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/scratchpad/resume4.py &gt; /private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/scratchpad/resume4.log 2&gt;&amp;1" completed (exit code 0)</summary>
+</task-notification>
+
+---
+
+show the results
+
+---
+
+committed these fixes
+
+---
+
+<task-notification>
+<task-id>b9iqki5cl</task-id>
+<tool-use-id>toolu_01LskH2VkcUnuyApikpXCocF</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/tasks/b9iqki5cl.output</output-file>
+<status>completed</status>
+<summary>Monitor "final stress re-run result" stream ended</summary>
+<event>STRESS DONE
+65 scenarios clean, 3 issues (1242s)
+[console-error] x3
+concurrency: 25/25 completed; time min/max 20.9s/25.8s</event>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>ba4ovo39c</task-id>
+<tool-use-id>toolu_01DPD1WAPFEtnhq5uW2km3MW</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/tasks/ba4ovo39c.output</output-file>
+<status>completed</status>
+<summary>Monitor "Phase 1 stress re-run (after money-display fixes) finished" stream ended</summary>
+<event>STRESS DONE
+65 scenarios clean, 3 issues (1242s)
+concurrency: 25/25 completed; time min/max 20.9s/25.8s</event>
+</task-notification>
+
+---
+
+Commit and push the Phase 2 fixes right now
+
+---
+
+start the app
+
+---
+
+<task-notification>
+<task-id>bo0n1pbuy</task-id>
+<summary>Monitor event: "Phase 2 live runs: per-scenario spend, status and errors"</summary>
+<event>[Monitor expired after 30m with 5 events delivered. Re-arm it if you still need the watch.]</event>
+</task-notification>
+
+---
+
+start from start window
+
+---
+
+<pasted_content id="da97">
+I've added the cfo.ai business plan exports to docs/businessplan/ (5 xlsx files). First rename them with git mv to simple names: assumptions.xlsx, monthly-plan.xlsx, economics.xlsx, calculation-checks.xlsx, forecast-dashboard.xlsx. Read the files themselves for the numbers — don't use numbers from memory.
+1. Create docs/businessplan/README.md: what each file is, in one line each.
+2. Add a "Business plan (made with cfo.ai)" section to README.md and EVIDENCE.md with: break-even month per scenario, minimum cash and funding needed per scenario, gross margin at ₹20 / ₹10 / ₹4 per check, the unit-economics table by customer type (CSC, CSR, employer), CSC price used, and the key risky assumptions. State clearly that ₹20 and ₹10 per check are MEASURED from neatlogs-traced runs and ₹4 is a target.
+3. One line on the business rule: citizens never pay and Haq never takes a cut of any benefit.
+4. If the three scenarios use different CSC prices, flag it to me.
+Commit and push.
+</pasted_content id="da97">
+
+---
+
+<pasted_content id="da97">
+Answers: (a) the unnamed sensitivity axis is "CSC operators at month 12" — label it in both READMEs. (b) Yes, add .DS_Store to .gitignore. (c) Where we quote cost per family, say "₹20–40 per family in test runs, depending on family size and cache" instead of a flat ₹20. Commit and push.
+
+Then the judge-review fixes. No real API calls; commit each separately and push:
+1. Follow-up questions should maximise money unlocked: before asking, rank unknown facts by the total ₹ they would move from "check needed" to "confirmed" (e.g. land in whose name → PM-KISAN; kachcha/pakka house → PMAY-G). Ask the top 1–2 as tap buttons. Income only if it's the highest-value unknown.
+2. Results headline: never show "₹0 confirmed". When confirmed is ₹0 or small, show "Confirm N things → up to ₹X/year" (Hindi: "N बातें पक्की करें → ₹X/साल तक") with the N items as tappable chips that jump to the cards. Keep the confirmed/after-checks split when confirmed > 0.
+3. Working screen: don't count insurance/protection schemes in "N schemes to check"; show them as a separate line.
+4. If not already done: PMMVY only when a pregnancy or child under 1 is mentioned; temperature 0 + deterministic ordering + a plain-code post-check for hard rules (land, age, already-receiving, one pension per person, one-time vs yearly).
+Re-screenshot the results screen in both languages and give me a 5-line summary.
+</pasted_content id="da97">
+
+---
+
+<pasted_content id="da97">
+Prepare Haq for a public AWS EC2 deployment. Don't deploy anything yourself and make no real Anthropic API calls; build the files and instructions. Commit and push.
+
+The server is Ubuntu 24.04 on a t3.small at 44.197.229.105. The domain will be 44-197-229-105.sslip.io (free HTTPS via Let's Encrypt; the mic needs HTTPS). The repo is public at https://github.com/rohitraj2496-source/Hackathon_1 and the server will git clone it.
+
+1. Modes: DEMO mode is the default for public visitors. It replays our real recorded runs (from docs/stress/live-results.json and the eval results) through the same UI with the live step-by-step animation, clearly labelled "Demo: recorded real run". LIVE mode needs a passcode (HAQ_LIVE_PASSCODE in .env) and has a hard daily spend cap (HAQ_DAILY_BUDGET_USD, default 1.00). When the cap is hit, fall back to demo with a friendly message in Hindi and English.
+2. Rate limit live runs per IP (e.g. 2 per hour). Never expose API keys, traces or server errors to the browser.
+3. deploy/setup.sh: installs Python 3.12 and git, creates a venv, installs requirements (plus Playwright Chromium and its system dependencies only if our fetcher needs it), installs the app as a systemd service on 127.0.0.1:8000 that restarts on failure and on reboot, and installs Caddy as an HTTPS reverse proxy for a domain passed as an argument (e.g. ./deploy/setup.sh 44-197-229-105.sslip.io). Make it safe to re-run.
+4. deploy/update.sh: git pull, reinstall requirements if they changed, restart the service.
+5. deploy/README.md: plain-English steps for a non-developer: how to SSH in (ssh -i ~/.ssh/haq-rsquare-key.pem ubuntu@44.197.229.105), how to clone the repo, how to create .env on the server with nano (ANTHROPIC_API_KEY, NEATLOGS_API_KEY, HAQ_LIVE_PASSCODE, HAQ_DAILY_BUDGET_USD) and never commit it, how to run setup.sh, how to check the app is running (systemctl status, journalctl logs), how to update after a git push, and a warning not to stop the instance before Oct 16 because the public IP would change.
+6. Add a /health endpoint that returns ok without calling any API.
+7. Test everything locally against the stub server where possible (demo mode, passcode gate, budget fallback, rate limit, /health). Then give me a 5-line summary.
+</pasted_content id="da97">
+
+---
+
+this is done?
+
+---
+
+<task-notification>
+<task-id>bpe1rnxzp</task-id>
+<tool-use-id>toolu_017Eeco9DwJEtFyicWQ8ufZ2</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/tasks/bpe1rnxzp.output</output-file>
+<status>failed</status>
+<summary>Monitor "stress suite against the new home/demo UI" script failed (exit 144)</summary>
+</task-notification>
+
+---
+
+<task-notification>
+<task-id>bvc79lvyl</task-id>
+<tool-use-id>toolu_01684WCixHUwaN559yQBzGhb</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/tasks/bvc79lvyl.output</output-file>
+<status>failed</status>
+<summary>Background command ".venv/bin/python scripts/stress_ui.py &gt; /private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/scratchpad/stress5.log 2&gt;&amp;1" failed with exit code 144</summary>
+</task-notification>
+
+---
+
+<pasted_content id="da97">
+Two fixes found on the real Ubuntu server — put them into the repo:
+1. python3.12-venv didn't exist and system Python was 3.14 (too new for neatlogs). Fixed with: install uv, then `uv venv --seed -p 3.12 .venv` before installing requirements. Make deploy/setup.sh do this and drop the python3.12 apt packages.
+2. Caddy failed with "permission denied" on /var/log/caddy/haq-access.log because `sudo caddy validate` created the log file as root. Fixed with `sudo chown -R caddy:caddy /var/log/caddy` before starting Caddy. Add that to setup.sh.
+Update deploy/README.md to match. Add "Try it: https://44-197-229-105.sslip.io" (demo mode for everyone, live mode with a passcode) near the top of README.md. Commit and push.
+</pasted_content id="da97">
