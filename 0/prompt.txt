@@ -1,0 +1,79 @@
+<pasted_content id="da97">
+Three polish fixes, then commit and push. No real API calls.
+1. Results headline: lead with the total including likely-eligible, kept honest. Hindi: "आपके परिवार का ₹X/साल तक का हक़ बाकी है" with a line below "₹A पक्का · ₹B जाँच के बाद". English: "Up to ₹X/year your family is owed" with "₹A confirmed · ₹B after checks". Read-aloud must say the same.
+2. In Hindi mode, show official Hindi scheme names where they exist (e.g. "निराश्रित महिला पेंशन योजना" for UP Destitute Women Pension) on cards AND the working checklist. Keep short acronyms like PM-KISAN, PMSBY, PMAY-G as is.
+3. Insurance schemes (PMSBY, PMJJBY) are costs to the family, not money owed: exclude them from the ₹ total and show them in a separate "सुरक्षा / Protection" section below the money cards, with premium and cover amount.
+Re-screenshot the results screen in both languages to confirm.
+</pasted_content id="da97">
+
+---
+
+<pasted_content id="da97">
+Three polish fixes, then commit and push. No real API calls.
+1. Results headline: lead with the total including likely-eligible, kept honest. Hindi: "आपके परिवार का ₹X/साल तक का हक़ बाकी है" with a line below "₹A पक्का · ₹B जाँच के बाद". English: "Up to ₹X/year your family is owed" with "₹A confirmed · ₹B after checks". Read-aloud must say the same.
+2. In Hindi mode, show official Hindi scheme names where they exist (e.g. "निराश्रित महिला पेंशन योजना" for UP Destitute Women Pension) on cards AND the working checklist. Keep short acronyms like PM-KISAN, PMSBY, PMAY-G as is.
+3. Insurance schemes (PMSBY, PMJJBY) are costs to the family, not money owed: exclude them from the ₹ total and show them in a separate "सुरक्षा / Protection" section below the money cards, with premium and cover amount.
+Re-screenshot the results screen in both languages to confirm.
+</pasted_content id="da97">
+
+---
+
+cd ~/Desktop/Hackathon_1 && .venv/bin/uvicorn app:app 
+  --host 127.0.0.1 --port 8000
+
+---
+
+<pasted_content id="da97">
+Run a full test of the app in two phases. Fix what breaks. Commit and push after each phase.
+
+PHASE 1 — FREE (stub server + link checks only, NO Anthropic API calls):
+A) Broken links: collect every URL the app can show (official source links, "where to apply" links, cached scheme rules, evals/families.json sources, any links in index.html). Check each with a real GET (browser user-agent, 15s timeout, 1 retry, follow redirects). Report a table: URL, status (OK / redirect / 404 / timeout / blocked). For every broken one, find a working OFFICIAL replacement (gov.in / nic.in / myscheme.gov.in) and verify it loads before swapping. Never replace an official link with an unofficial one.
+B) Stress the UI with Playwright against the stub server, in BOTH languages, at 360px, 390px and 768px widths:
+- empty input, gibberish, emoji-only, 2,000-character input, Hinglish, numbers only
+- mic permission denied; speech API unavailable (fallback must work)
+- rapid double/triple taps on every button; tapping "Next" with no family members selected
+- switching language mid-run and on the results screen
+- browser back button and page refresh during the working screen (must resume or restart cleanly, never hang)
+- server killed mid-run, then restarted; slow network (3G throttling); offline
+- 25 concurrent sessions hitting the stub server at once
+Report: every JS console error, every 4xx/5xx, any screen that hangs or shows a blank state, any text overflowing or cut off, any button that does nothing. Fix all of them and re-run Phase 1 until clean. Save failing screenshots to docs/stress/.
+
+PHASE 2 — REAL API, HARD CAP $2 TOTAL:
+Before starting, estimate the cost and tell me. Track spend as you go and STOP immediately if it would exceed $2.
+Run: (1) Hindi tap-builder family: mother widow, father farmer 2 acres, daughter student; (2) English typed family with a disabled grandfather; (3) the same as (1) with SIMULATE_FAILURE=1 to prove recovery; (4) 3 real runs at the same time to check for rate-limit or shared-state bugs.
+For each: report schemes found, confirmed vs check-needed, total ₹ shown, cost, time, neatlogs trace ID, and any error. Confirm every link on the real results screens loads.
+
+Finish with a short TEST_REPORT.md in the repo: what was tested, what broke, what was fixed, what's still open. Commit and push.
+</pasted_content id="da97">
+
+---
+
+<task-notification>
+<task-id>bej4h7d3g</task-id>
+<tool-use-id>toolu_011iAcc8zUGmt7XCDafgQoCS</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/tasks/bej4h7d3g.output</output-file>
+<status>completed</status>
+<summary>Background command ".venv/bin/python scripts/stress_ui.py 2&gt;&amp;1 | tail -60" completed (exit code 0)</summary>
+</task-notification>
+
+---
+
+pause
+
+---
+
+pause
+
+---
+
+continue check
+
+---
+
+<task-notification>
+<task-id>b0jrdo4jz</task-id>
+<tool-use-id>toolu_01BhmJ9aeHv4g9rZJdDyctAS</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/tasks/b0jrdo4jz.output</output-file>
+<status>failed</status>
+<summary>Background command ".venv/bin/python scripts/stress_ui.py &gt; /private/tmp/claude-501/-Users-rohitraj-Desktop-Hackathon-1/ea589cac-9458-4a9b-a0b6-65d04317dc8a/scratchpad/stress2.log 2&gt;&amp;1" failed with exit code 1</summary>
+</task-notification>
