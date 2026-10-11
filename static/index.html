@@ -124,6 +124,10 @@
   .headline .amt .unit { font-size: 22px; font-weight: 700; margin-left: 4px; letter-spacing: 0; }
   .headline .split { margin-top: 12px; font-size: 18px; font-weight: 600; background: rgba(255,255,255,.14);
                      border-radius: 12px; padding: 8px 12px; }
+  .check-chips { margin-top: 12px; gap: 8px; }
+  .check-chips .chip { min-height: 44px; font-size: 16px; padding: 0 12px; background: rgba(255,255,255,.95);
+                       border-color: transparent; color: var(--amber); }
+  .scheme.flash { outline: 4px solid var(--amber); outline-offset: 2px; transition: outline-color .6s; }
   .section-head { margin: 30px 4px 4px; }
   .section-head h2 { margin: 0; font-size: 24px; }
   .section-head p { margin: 4px 0 0; color: var(--muted); font-size: 16px; }
@@ -242,6 +246,7 @@
       <div class="l" id="headA"></div>
       <div class="amt"><span id="amt"></span><span class="unit" id="amtUnit"></span></div>
       <div class="l2" id="headB"></div>
+      <div class="chips check-chips hidden" id="checkChips"></div>
       <div class="split" id="split"></div>
       <div class="split hidden" id="oneTime"></div>
     </div>
@@ -270,6 +275,8 @@ const T = {
     whoLives: "घर में कौन-कौन है? छूकर जोड़िए", income: "परिवार की कमाई",
     working: "आपकी योजनाएँ ढूँढ रहे हैं…", retry: "फिर से कोशिश करें",
     headA: "आपके परिवार का", unit: "/साल तक", headB: "का हक़ बाकी है",
+    confirmN: (n) => `${n} बातें पक्की करें →`, oneTimeUnitUpTo: "तक एक बार की मदद",
+    sayConfirm: (n, x, items, oneTime) => `${n} बातें पक्की करें: ${items}. इससे ${x} ${oneTime ? "तक एक बार की मदद" : "प्रति साल तक"} पक्का हो सकता है.`,
     split: (a, b) => b ? `${a} पक्का · ${b} जाँच के बाद` : `${a} पक्का`,
     oneTimeLine: (x) => `+ ${x} एक बार मिलने वाली मदद (हर साल नहीं)`, oneTimeUnit: "एक बार",
     onePension: "एक व्यक्ति को एक ही पेंशन मिलती है — ऊपर की रकम में इनमें से एक ही जोड़ी है।",
@@ -309,6 +316,8 @@ const T = {
     whoLives: "Who lives in your home? Tap to add", income: "Family income",
     working: "Finding your schemes…", retry: "Try again",
     headA: "Up to", unit: "/year", headB: "your family is owed",
+    confirmN: (n) => `Confirm ${n} ${n === 1 ? "thing" : "things"} → up to`, oneTimeUnitUpTo: "one-time help",
+    sayConfirm: (n, x, items, oneTime) => `Confirm ${n} ${n === 1 ? "thing" : "things"}: ${items}. That could confirm up to ${x}${oneTime ? " of one-time help" : " a year"}.`,
     split: (a, b) => b ? `${a} confirmed · ${b} after checks` : `${a} confirmed`,
     oneTimeLine: (x) => `+ ${x} one-time help (not every year)`, oneTimeUnit: "one-time",
     onePension: "One person gets only one pension — only one of these is counted above.",
@@ -624,21 +633,55 @@ function checkText(c) { return c.check_needed.map(k => L().checks[k] || k).join(
 const lakh = (n) => n >= 100000 ? `₹${(n / 100000).toLocaleString("en-IN")} ${lang === "en" ? "lakh" : "लाख"}` : rupee(n);
 function totals(r) {
   const a = r.total_missing_inr_per_year || 0, b = r.likely_extra_inr_per_year || 0;
-  return { a, b, x: r.owed_up_to_inr_per_year ?? a + b };
+  const x = r.owed_up_to_inr_per_year ?? a + b, y = r.one_time_inr || 0;
+  // what still has to be confirmed: distinct facts across money cards that need a check ("income limit" and
+  // "family income" are one thing to a family), biggest money held up first
+  const atStake = {};
+  r.cards.filter(c => c.category !== "protection" && c.verification !== "confirmed" && !c.already_receiving)
+    .forEach(c => new Set(c.check_needed.map(checkKey)).forEach(k => atStake[k] = (atStake[k] || 0) + (c.annual_value_inr || 0)));
+  const checks = Object.keys(atStake).sort((p, q) => atStake[q] - atStake[p] || p.localeCompare(q));
+  // Never lead with "₹0 confirmed": when little is confirmed yet, lead with what confirming unlocks.
+  const confirmMode = checks.length > 0 && (a === 0 || a < 0.25 * x || x === 0);
+  return { a, b, x, y, checks, confirmMode, oneTimeOnly: x === 0 && y > 0 };
 }
 // Read-aloud says exactly what the headline shows.
 function headlineSpeech(r) {
   const t = totals(r);
-  return L().sayHeadline(rupee(t.x), rupee(t.a), t.b ? rupee(t.b) : "") + (r.one_time_inr ? " " + L().sayOneTime(rupee(r.one_time_inr)) : "");
+  if (t.confirmMode) {
+    const items = t.checks.map(k => L().checks[k] || k).join(", ");
+    return L().sayConfirm(t.checks.length, rupee(t.oneTimeOnly ? t.y : t.x), items, t.oneTimeOnly)
+      + (t.a ? " " + L().split(rupee(t.a), t.b ? rupee(t.b) : "").replace("·", ",") + "." : "")
+      + (!t.oneTimeOnly && t.y ? " " + L().sayOneTime(rupee(t.y)) : "");
+  }
+  return L().sayHeadline(rupee(t.x), rupee(t.a), t.b ? rupee(t.b) : "") + (t.y ? " " + L().sayOneTime(rupee(t.y)) : "");
+}
+function checkKey(k) { return k === "income_limit" ? "income" : k; }
+function jumpToCheck(key) {
+  const card = [...document.querySelectorAll("#cards .scheme")].find(el => (el.dataset.checks || "").split(",").map(checkKey).includes(key));
+  if (!card) return;
+  card.scrollIntoView({ behavior: "smooth", block: "start" });
+  card.classList.add("flash"); setTimeout(() => card.classList.remove("flash"), 1600);
 }
 function renderResults(r, say) {
   lastResult = r; show("s-results");
   const t = totals(r);
-  $("headA").textContent = L().headA; $("headB").textContent = L().headB;
-  $("amt").textContent = rupee(t.x); $("amtUnit").textContent = L().unit;
-  $("split").textContent = L().split(rupee(t.a), t.b ? rupee(t.b) : "");
-  $("oneTime").classList.toggle("hidden", !r.one_time_inr);
-  $("oneTime").textContent = r.one_time_inr ? L().oneTimeLine(rupee(r.one_time_inr)) : "";
+  const chips = $("checkChips"); chips.innerHTML = "";
+  if (t.confirmMode) {
+    $("headA").textContent = L().confirmN(t.checks.length); $("headB").textContent = "";
+    $("amt").textContent = rupee(t.oneTimeOnly ? t.y : t.x);
+    $("amtUnit").textContent = t.oneTimeOnly ? " " + L().oneTimeUnitUpTo : L().unit;
+    t.checks.forEach(k => chips.appendChild(chip("⚠️", L().checks[k] || k, false, () => jumpToCheck(k))));
+  } else {
+    $("headA").textContent = L().headA; $("headB").textContent = L().headB;
+    $("amt").textContent = rupee(t.x); $("amtUnit").textContent = L().unit;
+  }
+  chips.classList.toggle("hidden", !t.confirmMode);
+  // the confirmed / after-checks split only when something is confirmed (never "₹0 confirmed")
+  $("split").classList.toggle("hidden", !t.a);
+  $("split").textContent = t.a ? L().split(rupee(t.a), t.b ? rupee(t.b) : "") : "";
+  const showOneTime = t.y && !t.oneTimeOnly;
+  $("oneTime").classList.toggle("hidden", !showOneTime);
+  $("oneTime").textContent = showOneTime ? L().oneTimeLine(rupee(t.y)) : "";
   const box = $("cards"); box.innerHTML = "";
   const money = r.cards.filter(c => c.category !== "protection"), protection = r.cards.filter(c => c.category === "protection");
   if (!money.length) { const p = document.createElement("div"); p.className = "card scheme"; p.textContent = L().none; box.appendChild(p); }
@@ -655,6 +698,7 @@ function renderResults(r, say) {
 }
 function schemeCard(c) {
     const el = document.createElement("article"); el.className = "card scheme";
+    if (c.verification !== "confirmed") el.dataset.checks = c.check_needed.join(",");
     const top = document.createElement("div"); top.className = "scheme-top";
     const em = document.createElement("div"); em.className = "emoji"; em.textContent = c.emoji;
     const head = document.createElement("div"); head.style.flex = "1";
