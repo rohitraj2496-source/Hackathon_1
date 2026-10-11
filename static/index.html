@@ -162,6 +162,19 @@
   .bottom { display: grid; gap: 10px; margin-top: 22px; }
   .answer { margin-top: 14px; }
   .err { color: var(--warn); font-weight: 600; margin-top: 12px; }
+  .home { display: flex; flex-direction: column; gap: 6px; padding-top: 8px; }
+  .home .wordmark { text-align: center; } .home .promise { text-align: center; margin: 6px auto 14px; }
+  .muted-note { color: var(--muted); font-size: 16px; margin: 0 0 10px; }
+  .demo-list { display: grid; gap: 10px; }
+  .demo-card { display: flex; gap: 12px; align-items: flex-start; text-align: left; width: 100%; min-height: 64px;
+               background: var(--surface); border: 2px solid var(--line); border-radius: 18px; padding: 12px 14px; box-shadow: var(--shadow); }
+  .demo-card .e { font-size: 30px; line-height: 1; }
+  .demo-card .t { font-weight: 700; font-size: 17px; }
+  .demo-card .m { color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .demo-banner { margin: 4px 0 8px; background: var(--amber-soft); color: var(--amber); font-weight: 700; font-size: 15px;
+                 border-radius: 12px; padding: 8px 12px; }
+  #passBox { width: 100%; font: inherit; font-size: 22px; padding: 14px 16px; border-radius: 16px; border: 2px solid var(--line);
+             background: var(--surface); color: var(--ink); }
   .sticky-go .err { margin: 0 0 8px; background: var(--warn-soft); border-radius: 12px; padding: 8px 12px; }
   .conn { margin-top: 14px; background: var(--amber-soft); color: var(--amber); font-weight: 700; border-radius: 14px; padding: 12px 14px; }
   .ask-box textarea { min-height: 96px; }
@@ -179,6 +192,8 @@
     </div>
   </div>
 
+  <div class="demo-banner hidden" id="demoBanner" role="status"></div>
+
   <!-- 0. language -->
   <section class="screen" id="s-lang">
     <div class="lang-screen">
@@ -186,6 +201,29 @@
       <button class="big-choice hi" data-pick="hi">हिंदी</button>
       <button class="big-choice en" data-pick="en">English</button>
     </div>
+  </section>
+
+  <!-- 0b. home: watch a recorded real run (demo) or check your own family (live) -->
+  <section class="screen" id="s-home">
+    <div class="home">
+      <div class="wordmark">Haq<span>हक़</span></div>
+      <p class="promise" data-t="promise"></p>
+      <button class="primary" id="toLive" data-t="ownFamily"></button>
+      <div class="err hidden" id="liveNote" role="alert"></div>
+      <div class="section-label" data-t="watchDemo"></div>
+      <p class="muted-note" data-t="demoExplain"></p>
+      <div id="demoList" class="demo-list"></div>
+    </div>
+  </section>
+
+  <!-- 0c. passcode for live checks -->
+  <section class="screen" id="s-pass">
+    <h2 data-t="passTitle"></h2>
+    <p class="muted-note" data-t="passExplain"></p>
+    <input id="passBox" type="password" autocomplete="off" inputmode="text">
+    <div class="err hidden" id="passErr" role="alert"></div>
+    <button class="primary" id="passGo" data-t="unlock"></button>
+    <button class="text-btn" data-back="s-home" data-t="back"></button>
   </section>
 
   <!-- 1. start -->
@@ -198,6 +236,7 @@
       <div class="heard" id="heard"></div>
       <button class="link-btn" id="toBuilder" data-t="orTap"></button>
       <button class="text-btn" id="toType" data-t="orType"></button>
+      <button class="text-btn" data-back="s-home" data-t="backHome"></button>
       <div class="err hidden" id="startErr"></div>
     </div>
   </section>
@@ -289,6 +328,17 @@ const T = {
     perYear: "/ साल", whereApply: "कहाँ आवेदन करें", openSite: "वेबसाइट खोलें →", source: "सरकारी स्रोत ↗",
     forWho: "किसके लिए:", docs: "ज़रूरी कागज़:", err: "माफ़ कीजिए, कुछ गड़बड़ हुई। फिर से कोशिश करें।",
     offline: "इंटरनेट नहीं मिल रहा। जुड़ने पर फिर से कोशिश करें।",
+    ownFamily: "🔑 अपने परिवार की जाँच करें", watchDemo: "▶ असली रिकॉर्ड की गई जाँच देखें",
+    demoExplain: "ये असली जाँचें पहले चलाई गई थीं। यहाँ उन्हें दोबारा दिखाया जाता है — इसमें कोई खर्च नहीं।",
+    demoMeta: (d) => `${d.source === "live" ? "असली जाँच" : "टेस्ट परिवार की असली जाँच"} · ${d.recorded_seconds} सेकंड · ₹${d.cost_inr} खर्च हुआ था`,
+    demoBanner: (t) => `🎬 डेमो: रिकॉर्ड की गई असली जाँच — ${t}`,
+    passTitle: "पासकोड डालिए", passExplain: "अपने परिवार की लाइव जाँच के लिए पासकोड चाहिए। बिना पासकोड के रिकॉर्ड की गई असली जाँच देखिए।",
+    unlock: "आगे बढ़ें", backHome: "← शुरुआत पर जाएँ",
+    codes: { budget: "आज की लाइव जाँच की सीमा पूरी हो गई। तब तक रिकॉर्ड की गई असली जाँच देखिए — कल फिर कोशिश करें।",
+             rate_limit: "आप एक घंटे में कुछ ही लाइव जाँच कर सकते हैं। थोड़ी देर बाद फिर कोशिश करें, तब तक रिकॉर्ड की गई जाँच देखिए।",
+             busy: "अभी बहुत लोग जाँच कर रहे हैं। एक मिनट बाद फिर कोशिश करें।",
+             passcode: "पासकोड सही नहीं है।", live_off: "अभी लाइव जाँच बंद है। रिकॉर्ड की गई असली जाँच देखिए।" },
+    hindiOnly: "यह रिकॉर्ड की गई जाँच हिंदी में है।",
     needMore: "हम आपका परिवार समझ नहीं पाए। बताइए घर में कौन-कौन है और क्या काम करते हैं — या छूकर बताइए।",
     emptyText: "पहले कुछ लिखिए — घर में कौन-कौन है?", noMembers: "पहले परिवार के लोग जोड़िए (ऊपर छूकर)।",
     conn: "कनेक्शन टूट गया — फिर से जोड़ रहे हैं…", micBlocked: "माइक की इजाज़त नहीं है — लिखकर बताइए।",
@@ -331,6 +381,17 @@ const T = {
     perYear: "/ year", whereApply: "Where to apply", openSite: "Open website →", source: "Official source ↗",
     forWho: "For:", docs: "Documents:", err: "Sorry, something went wrong. Please try again.",
     offline: "No internet connection. Please try again when you are back online.",
+    ownFamily: "🔑 Check your own family", watchDemo: "▶ Watch a real recorded run",
+    demoExplain: "These real checks were run earlier and are replayed here step by step — no cost.",
+    demoMeta: (d) => `${d.source === "live" ? "Real run" : "Real run on a test family"} · ${d.recorded_seconds} s · cost ₹${d.cost_inr}`,
+    demoBanner: (t) => `🎬 Demo: recorded real run — ${t}`,
+    passTitle: "Enter the passcode", passExplain: "Live checks for your own family need a passcode. Without one, watch a real recorded run.",
+    unlock: "Continue", backHome: "← Back to start",
+    codes: { budget: "Today's live checks are used up. Meanwhile, watch a real recorded run — please try again tomorrow.",
+             rate_limit: "Only a few live checks are allowed per hour. Please try again a little later; meanwhile watch a recorded run.",
+             busy: "Many people are checking right now. Please try again in a minute.",
+             passcode: "That passcode is not right.", live_off: "Live checks are switched off right now. Watch a real recorded run instead." },
+    hindiOnly: "This recorded run is in Hindi only.",
     needMore: "We couldn't understand your family. Tell us who lives at home and what work they do — or tap to tell us.",
     emptyText: "Please type something first — who lives in your home?", noMembers: "Add your family members first (tap above).",
     conn: "Connection lost — reconnecting…", micBlocked: "Microphone is blocked — please type instead.",
@@ -436,8 +497,9 @@ function listen(onText, onUnavailable) {
 function show(id) {
   document.querySelectorAll(".screen").forEach(s => s.classList.toggle("on", s.id === id));
   current = id;
-  $("miniMark").classList.toggle("on", !["s-lang", "s-start"].includes(id));
+  $("miniMark").classList.toggle("on", !["s-lang", "s-start", "s-home"].includes(id));
   $("toggle").classList.toggle("hidden", id === "s-lang");
+  if (!["s-work", "s-results"].includes(id)) $("demoBanner").classList.add("hidden");
   window.scrollTo(0, 0);
 }
 function applyLang() {
@@ -446,6 +508,8 @@ function applyLang() {
   document.querySelectorAll("#toggle button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
   $("typeBox").placeholder = L().tellSpeak;
   renderBuilder();
+  if (current === "s-home") renderHome();
+  if (isDemo && lastPoll) showDemoBanner(lastPoll);
 }
 async function setLang(l) {
   lang = l; store.set("haq_lang", l); applyLang();
@@ -455,23 +519,79 @@ async function setLang(l) {
   if (current === "s-results" && hid) { await refresh(); }
   if (current === "s-work" && lastPoll) renderSteps(lastPoll);
 }
-document.querySelectorAll("[data-pick]").forEach(b => b.onclick = () => { setLang(b.dataset.pick); show("s-start"); speak(L().tellSpeak); });
+document.querySelectorAll("[data-pick]").forEach(b => b.onclick = () => { setLang(b.dataset.pick); goHome(); });
 document.querySelectorAll("#toggle button").forEach(b => b.onclick = () => setLang(b.dataset.lang));
 document.querySelectorAll("[data-back]").forEach(b => b.onclick = () => show(b.dataset.back));
 
 // ---------------------------------------------------------------- api
+class ApiError extends Error { constructor(status, code) { super(code || String(status)); this.status = status; this.code = code; } }
 async function api(path, body) {
-  const r = await fetch(path, { method: body === undefined ? "GET" : "POST", headers: { "Content-Type": "application/json" },
+  const headers = { "Content-Type": "application/json" };
+  const tok = store.get("haq_live"); if (tok) headers["X-Haq-Live"] = tok;
+  const r = await fetch(path, { method: body === undefined ? "GET" : "POST", headers,
                                 body: body === undefined ? undefined : JSON.stringify(body) });
-  if (!r.ok) throw new Error(await r.text());
+  if (!r.ok) { let code = null; try { code = (await r.json()).error || null; } catch {} throw new ApiError(r.status, code); }
   return r.json();
+}
+// A refusal from the server -> a friendly message in the chosen language (never server internals).
+function friendly(e) {
+  if (e && e.code && L().codes[e.code]) return L().codes[e.code];
+  return netErr(e) ? L().offline : L().err;
+}
+function goHome(message) {
+  clearInterval(pollTimer); store.del("haq_hid"); hid = null;
+  $("demoBanner").classList.add("hidden");
+  renderHome(); show("s-home");
+  if (message) msg("liveNote", message); else $("liveNote").classList.add("hidden");
 }
 async function ensureHousehold() {
   if (hid) return hid;
-  hid = (await api("/api/households", { lang })).id; store.set("haq_hid", hid); return hid;
+  hid = (await api("/api/households", { lang })).id; store.set("haq_hid", hid); isDemo = false; return hid;
 }
 
 // ---------------------------------------------------------------- intake
+let config = { live: { available: true, needs_passcode: false, reason: null }, demo: [] };
+let isDemo = false;
+function showDemoBanner(d) {
+  isDemo = !!(d && d.demo);
+  $("demoBanner").classList.toggle("hidden", !isDemo);
+  if (isDemo) $("demoBanner").textContent = L().demoBanner(d.demo.title[lang] || d.demo.title.hi);
+}
+function renderHome() {
+  const box = $("demoList"); box.innerHTML = "";
+  (config.demo || []).filter(d => d.langs.includes(lang || "hi")).forEach(d => {
+    const b = document.createElement("button"); b.className = "demo-card";
+    const e = document.createElement("span"); e.className = "e"; e.textContent = d.emoji;
+    const w = document.createElement("span");
+    const t = document.createElement("div"); t.className = "t"; t.textContent = d.title[lang] || d.title.hi;
+    const m = document.createElement("div"); m.className = "m"; m.textContent = L().demoMeta(d);
+    w.append(t, m); b.append(e, w); b.onclick = () => startDemo(d.id); box.appendChild(b);
+  });
+}
+async function startDemo(rid) {
+  if (busy) return; busy = true;
+  try {
+    const r = await api(`/api/demo/${rid}`, {});
+    hid = r.id; store.set("haq_hid", hid); isDemo = true; spokeWorking = false; startWorking();
+  } catch (e) { msg("liveNote", friendly(e)); }
+  finally { busy = false; }
+}
+$("toLive").onclick = async () => {
+  try { config = await api("/api/config"); } catch {}
+  const live = config.live || {};
+  if (!live.available && live.reason) { msg("liveNote", L().codes[live.reason === "budget" ? "budget" : "live_off"]); return; }
+  if (live.needs_passcode && !store.get("haq_live")) { show("s-pass"); $("passBox").focus(); return; }
+  show("s-start"); speak(L().tellSpeak);
+};
+$("passGo").onclick = async () => {
+  const code = $("passBox").value.trim();
+  if (!code || busy) return; busy = true; $("passErr").classList.add("hidden");
+  try {
+    const r = await api("/api/live/unlock", { passcode: code });
+    store.set("haq_live", r.token); $("passBox").value = ""; show("s-start"); speak(L().tellSpeak);
+  } catch (e) { msg("passErr", friendly(e)); }
+  finally { busy = false; }
+};
 let busy = false;   // one request at a time: double/triple taps must not send twice
 function msg(id, text) { const el = $(id); el.textContent = text; el.classList.toggle("hidden", !text); if (text) speak(text); }
 const netErr = (e) => e instanceof TypeError || !navigator.onLine;     // fetch() throws TypeError when offline
@@ -491,7 +611,8 @@ async function submitIntake(payload, from) {
     followups = r.followups; qIndex = 0; answers = {};
     if (followups.length) { show("s-follow"); renderQuestion(true); } else startWorking();
   } catch (e) {
-    const text = netErr(e) ? L().offline : L().err;
+    const text = friendly(e);
+    if (e && ["budget", "live_off", "passcode", "rate_limit"].includes(e.code)) { goHome(text); return; }
     if (current === "s-builder") msg("builderHint", text);
     else if (current === "s-type") msg("typeErr", text);
     else { show("s-start"); msg("startErr", text); }
@@ -569,8 +690,9 @@ async function answer(id, value) {
   busy = true;
   try { await api(`/api/households/${hid}/answers`, { lang, answers }); startWorking(); }
   catch (e) {                                         // let them tap again
+    if (e && ["budget", "live_off", "passcode", "rate_limit"].includes(e.code)) { goHome(friendly(e)); return; }
     qIndex = followups.length - 1; delete answers[followups[qIndex].id]; renderQuestion(false);
-    $("qText").textContent = netErr(e) ? L().offline : L().err;
+    $("qText").textContent = friendly(e);
   } finally { busy = false; }
 }
 
@@ -618,16 +740,18 @@ async function poll() {
   try { d = await api(`/api/households/${hid}?lang=${lang}`); }
   catch { if (++pollFails >= 2) msg("conn", L().conn); return; }   // keep polling; the run continues server-side
   if (pollFails) { pollFails = 0; $("conn").classList.add("hidden"); }
-  lastPoll = d; schemes = d.schemes || schemes; renderSteps(d);
+  lastPoll = d; schemes = d.schemes || schemes; showDemoBanner(d); renderSteps(d);
   if (d.run && d.run.status === "done" && d.result) { clearInterval(pollTimer); setTimeout(() => renderResults(d.result, true), 600); }
   else if (d.run && d.run.status === "failed" && !d.running) {
-    clearInterval(pollTimer); $("workErr").textContent = L().err; $("workErr").classList.remove("hidden"); $("retry").classList.remove("hidden");
+    clearInterval(pollTimer);
+    if (d.run.error_code === "budget") { goHome(L().codes.budget); return; }
+    $("workErr").textContent = L().err; $("workErr").classList.remove("hidden"); $("retry").classList.remove("hidden");
   }
 }
 $("retry").onclick = async () => {
   if (busy) return; busy = true;
   try { await api(`/api/households/${hid}/run`, {}); startWorking(); }
-  catch (e) { msg("workErr", netErr(e) ? L().offline : L().err); }
+  catch (e) { if (e && e.code === "budget") goHome(friendly(e)); else msg("workErr", friendly(e)); }
   finally { busy = false; }
 };
 
@@ -699,6 +823,8 @@ function renderResults(r, say) {
     protection.forEach(c => box.appendChild(schemeCard(c)));
   }
   $("answer").classList.add("hidden");
+  $("askBtn").classList.toggle("hidden", isDemo);            // follow-up questions call the model: live only
+  if (r.lang_note) { $("answer").textContent = L().hindiOnly; $("answer").classList.remove("hidden"); }
   if (say) speak(headlineSpeech(r));
 }
 function schemeCard(c) {
@@ -759,7 +885,7 @@ async function sendQuestion(text) {
     $("answer").textContent = r.answer; $("answer").classList.remove("hidden"); speak(r.answer);
     $("askBox").classList.add("hidden"); $("askText").value = "";
     if (r.rerun) setTimeout(startWorking, 2500);
-  } catch (e) { $("answer").textContent = netErr(e) ? L().offline : L().err; $("answer").classList.remove("hidden"); }
+  } catch (e) { $("answer").textContent = friendly(e); $("answer").classList.remove("hidden"); }
   finally { busy = false; $("askSend").classList.remove("busy"); }
 }
 function askByTyping(reason) {
@@ -772,7 +898,7 @@ $("restart").onclick = () => {
   clearInterval(pollTimer); store.del("haq_hid"); hid = null; builder = { members: [], income: null };
   spokeWorking = false; $("heard").textContent = ""; $("typeBox").value = ""; renderBuilder();
   ["startErr", "typeErr", "builderHint", "conn", "answer", "askBox"].forEach(id => $(id).classList.add("hidden"));
-  show("s-start");
+  goHome();
 };
 
 // ---------------------------------------------------------------- boot
@@ -783,20 +909,24 @@ async function refresh() {
   return d;
 }
 (async function boot() {
+  try { config = await api("/api/config"); } catch {}
   if (!lang) { applyLang(); show("s-lang"); return; }   // first visit: choose language (Hindi if they skip)
   applyLang();
   if (hid) {
     try {
       const d = await api(`/api/households/${hid}?lang=${lang}`);
-      schemes = d.schemes || {};
+      schemes = d.schemes || {}; showDemoBanner(d);
       if (d.result) { renderResults(d.result, false); return; }
-      if (d.interview_done) { if (!d.running && d.run && d.run.status !== "done") await api(`/api/households/${hid}/run`, {}); startWorking(); return; }
+      if (d.interview_done) {
+        if (!d.demo && !d.running && d.run && d.run.status !== "done") await api(`/api/households/${hid}/run`, {});
+        startWorking(); return;
+      }
     } catch { store.del("haq_hid"); hid = null; }
   }
-  show("s-start");
+  goHome();
 })();
 // Nothing chosen? Continue in Hindi after a short wait.
-setTimeout(() => { if (!lang && current === "s-lang") { setLang("hi"); show("s-start"); } }, 12000);
+setTimeout(() => { if (!lang && current === "s-lang") { setLang("hi"); goHome(); } }, 12000);
 </script>
 </body>
 </html>

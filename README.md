@@ -94,6 +94,22 @@ So the plan's flat ₹20 and ₹10 match **one-person** households. It was ₹20
 5. **CSR contracts at ₹5 lakh per district per year**, used fully (25,000 checks), ramping from 1 to 8 districts. **Employer contracts** grow from 10,000 to 50,000 workers at ₹50 per worker. None of these are signed.
 6. **A lean team.** One developer from month 1, a field lead from month 6, and founder pay from month 7. The whole ₹50,000 monthly marketing budget is assumed to offset CSC acquisition cost.
 
+## Public deployment (AWS EC2)
+
+A step-by-step guide for a non-developer is in [`deploy/README.md`](deploy/README.md). In short: clone the repo on
+an Ubuntu 24.04 server, create `.env` there, and run `./deploy/setup.sh <domain>` (systemd service plus Caddy for
+HTTPS). Later updates use `./deploy/update.sh`.
+
+- **DEMO mode (the default):** replays real recorded runs from [`demo/recorded_runs.json`](demo/recorded_runs.json),
+  built by `scripts/build_demo_data.py`. They play through the same UI step by step, labelled "Demo: recorded
+  real run". Demo mode makes no model calls.
+- **LIVE mode:** needs `HAQ_LIVE_PASSCODE`. It has a hard daily spend cap (`HAQ_DAILY_BUDGET_USD`, default $1.00)
+  and a per-IP limit (2 live checks an hour). When the cap is reached, visitors fall back to the demo with a
+  friendly message in Hindi or English.
+- **Kept private:** API keys, trace IDs and server error text never reach the browser.
+- **Health check:** `GET /health` returns `{"status":"ok"}` without calling any API.
+- **Tests:** `scripts/test_public.py` checks all of this against the stub server (29 checks).
+
 ## UI screenshots (no API calls)
 
 Phone-size (390×844) screenshots of every screen in Hindi and English are in

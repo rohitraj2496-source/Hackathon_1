@@ -2,6 +2,7 @@
 import json
 import os
 import threading
+import time
 
 from anthropic.types import Message
 
@@ -18,6 +19,36 @@ _spend_lock = threading.Lock()
 _spent_usd = 0.0
 BUDGET_USD = float(os.environ["HAQ_BUDGET_USD"]) if os.environ.get("HAQ_BUDGET_USD") else None
 
+# Daily cap (India date), persisted so a restart does not reset it. Default $1.00/day on a public server.
+DAILY_BUDGET_USD = (float(os.environ["HAQ_DAILY_BUDGET_USD"]) if os.environ.get("HAQ_DAILY_BUDGET_USD")
+                    else 1.00 if os.environ.get("HAQ_PUBLIC") == "1" else None)
+
+
+def _today() -> str:
+    return time.strftime("%Y-%m-%d", time.gmtime(time.time() + 5.5 * 3600))     # IST
+
+
+def _spend_file() -> str:
+    from .config import STATE_FILE
+    return os.path.join(os.path.dirname(STATE_FILE) or ".", "spend-by-day.json")
+
+
+def _daily_load() -> dict:
+    try:
+        with open(_spend_file(), encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+
+def daily_spent_usd() -> float:
+    with _spend_lock:
+        return round(_daily_load().get(_today(), 0.0), 6)
+
+
+def daily_remaining_usd() -> float | None:
+    return None if DAILY_BUDGET_USD is None else max(0.0, DAILY_BUDGET_USD - daily_spent_usd())
+
 
 def spent_usd() -> float:
     with _spend_lock:
@@ -28,6 +59,15 @@ def _record_spend(cost: float) -> None:
     global _spent_usd
     with _spend_lock:
         _spent_usd += cost
+        if DAILY_BUDGET_USD is not None:
+            data = _daily_load()
+            data[_today()] = round(data.get(_today(), 0.0) + cost, 6)
+            path = _spend_file()
+            os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+            tmp = f"{path}.{os.getpid()}.tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(data, f)
+            os.replace(tmp, path)
 
 
 def message_cost(msg: Message) -> tuple[dict, float]:
@@ -100,6 +140,8 @@ def create(usage: Usage | None, *, model: str = MODEL, effort: str | None = None
     one-shot calls leave it off (it would only pay the write premium on a unique tail)."""
     if BUDGET_USD is not None and spent_usd() >= BUDGET_USD:
         raise BudgetExceeded(f"spend cap reached: ${spent_usd():.4f} of ${BUDGET_USD:.2f}")
+    if DAILY_BUDGET_USD is not None and daily_spent_usd() >= DAILY_BUDGET_USD:
+        raise BudgetExceeded(f"daily spend cap reached (${DAILY_BUDGET_USD:.2f})")
     fallback = model in FALLBACK_MODELS
     if loop:
         kwargs["cache_control"] = CACHE

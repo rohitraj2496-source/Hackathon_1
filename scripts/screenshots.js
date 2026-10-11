@@ -76,6 +76,10 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
     await page.evaluate(() => { try { localStorage.clear(); } catch {} });
     await page.reload({ waitUntil: 'networkidle0' });
     await page.click(`[data-pick="${lang}"]`);
+    await page.waitForSelector('#s-home.on');
+    await shot(page, `${lang}-01b-home`);
+    await page.click('#toLive');
+    await page.waitForSelector('#s-start.on');
     await shot(page, `${lang}-02-start`, false);
 
     await page.click('#toBuilder');

@@ -29,7 +29,7 @@ results = []
 
 
 def start_server(port, budget, extra_env=None):
-    env = {**os.environ, "HAQ_STATE_FILE": STATE, "HAQ_BUDGET_USD": f"{budget:.4f}", **(extra_env or {})}
+    env = {**os.environ, "HAQ_STATE_FILE": STATE, "HAQ_BUDGET_USD": f"{budget:.4f}", "HAQ_DEBUG": "1", **(extra_env or {})}
     p = subprocess.Popen([os.path.join(ROOT, ".venv/bin/uvicorn"), "app:app", "--host", "127.0.0.1", "--port", str(port)],
                          cwd=ROOT, env=env, stdout=subprocess.DEVNULL, stderr=open(f"/tmp/haq-live-{port}.log", "w"),
                          start_new_session=True)

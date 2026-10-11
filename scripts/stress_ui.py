@@ -33,7 +33,9 @@ server = None
 # ------------------------------------------------------------------ stub server lifecycle
 def start_server(speed="3"):
     global server
-    env = {**os.environ, "STUB_STATE_FILE": STATE, "STUB_SPEED": speed, "PORT": str(PORT)}
+    env = {**os.environ, "STUB_STATE_FILE": STATE, "STUB_SPEED": speed, "PORT": str(PORT),
+           # one test machine plays every visitor: lift the per-IP and capacity limits (test_public.py tests them)
+           "HAQ_LIVE_RUNS_PER_HOUR": "100000", "HAQ_MODEL_CALLS_PER_HOUR": "100000", "HAQ_MAX_CONCURRENT_RUNS": "1000"}
     server = subprocess.Popen([os.path.join(ROOT, ".venv/bin/python"), "scripts/ui_stub_server.py"], cwd=ROOT, env=env,
                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
     for _ in range(60):
@@ -88,6 +90,9 @@ class Session:
         self.page.on("response", lambda r: self.bad.append(f"{r.status} {r.request.method} {r.url}")
                      if r.status >= 400 else None)
         self.page.goto(BASE, wait_until="domcontentloaded")
+        # home screen (watch a recorded run / check your own family): these tests drive the live flow
+        if self.wait_screen("s-home", 5000):
+            self.page.click("#toLive")
 
     def screen(self):
         return self.page.evaluate("() => (document.querySelector('.screen.on') || {}).id || ''")

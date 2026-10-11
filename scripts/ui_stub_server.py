@@ -38,6 +38,10 @@ def fake_run(hid, resume=True):
         state.add_event(hid, rid, t, **d)
         time.sleep(pause / SPEED)
 
+    if os.environ.get("STUB_FAIL_BUDGET") == "1":       # simulate the daily cap tripping mid-run
+        ev("understood", members=3)
+        state.update_run(hid, rid, lambda r: r.update(status="failed", error="BudgetExceeded: daily spend cap reached ($1.00)"))
+        return
     ev("understood", members=3)
     ev("planned", schemes=4, protection=2)
     ev("checking", scheme_id="pm_kisan", from_cache=False)
