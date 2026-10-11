@@ -32,6 +32,20 @@ an official page fail on purpose. You can then watch Haq retry with backoff and 
 source. The recovery appears in the progress bar ("🔁 … बार दूसरी सरकारी साइट से जाँचा"), in the run state,
 and in the neatlogs trace.
 
+## UI screenshots (no API calls)
+
+Phone-size (390×844) screenshots of every screen in Hindi and English are in
+[`docs/screenshots/`](docs/screenshots/), along with an automated layout report (`layout-report.json`). The
+report checks for horizontal overflow, clipped text, off-screen buttons, and tap targets under 44px. To
+regenerate the screenshots, run against the stub server, which fakes the agent (including a website failure
+and its recovery) and makes no model or web calls:
+
+```bash
+.venv/bin/python scripts/ui_stub_server.py &                 # http://127.0.0.1:8001
+npm install --prefix /tmp/haq-shots puppeteer-core@23.11.1   # uses your installed Chrome
+NODE_PATH=/tmp/haq-shots/node_modules node scripts/screenshots.js
+```
+
 ## Running the evals
 
 ```bash

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#F4EFE4">
 <title>Haq हक़</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%231F5E3B'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'%3EH%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -30,7 +31,7 @@
   .mini-mark { font-weight: 800; font-size: 20px; letter-spacing: -.01em; visibility: hidden; }
   .mini-mark.on { visibility: visible; }
   .toggle { display: flex; background: var(--surface); border: 1.5px solid var(--line); border-radius: 999px; padding: 3px; }
-  .toggle button { min-width: 48px; min-height: 40px; padding: 0 12px; border-radius: 999px; font-weight: 700; font-size: 16px; color: var(--muted); }
+  .toggle button { min-width: 52px; min-height: 44px; padding: 0 12px; border-radius: 999px; font-weight: 700; font-size: 16px; color: var(--muted); }
   .toggle button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
   .toggle.hidden { visibility: hidden; }
 
@@ -82,11 +83,17 @@
           font-size: 19px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
   .chip .e { font-size: 24px; }
   .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  #roleChips { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  #roleChips .chip { justify-content: flex-start; white-space: nowrap; font-size: 18px; padding: 0 12px; gap: 8px; min-width: 0; }
+  #roleChips .chip .e { font-size: 22px; }
   .section-label { font-size: 17px; font-weight: 700; color: var(--muted); margin: 22px 0 10px; }
   .member { margin-top: 12px; padding: 14px; }
   .member-head { display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 21px; margin-bottom: 10px; }
   .member-head .x { width: 44px; height: 44px; border-radius: 50%; background: var(--warn-soft); color: var(--warn); font-size: 22px; }
   .member .chip { min-height: 48px; font-size: 17px; padding: 0 12px; }
+  .sticky-go { position: sticky; bottom: 0; padding: 12px 0 calc(8px + env(safe-area-inset-bottom));
+               background: linear-gradient(to bottom, rgba(244, 239, 228, 0), var(--bg) 30%); }
+  .sticky-go .primary { margin-top: 0; }
 
   /* follow-up */
   .q-step { color: var(--muted); font-weight: 600; font-size: 16px; }
@@ -104,7 +111,8 @@
   .step .i { width: 26px; flex: none; text-align: center; font-size: 20px; line-height: 1.35; }
   .step.warn { background: var(--warn-soft); color: var(--warn); font-weight: 600; }
   .step.sub { margin-left: 24px; }
-  .spin { display: inline-block; animation: spin 1.2s linear infinite; }
+  .spin { display: inline-block; width: 18px; height: 18px; margin-top: 3px; border-radius: 50%;
+          border: 3px solid var(--line); border-top-color: var(--accent); animation: spin .9s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   /* results */
@@ -132,8 +140,9 @@
   .actions { display: flex; gap: 10px; align-items: center; margin-top: 14px; }
   .apply { flex: 1; min-height: 54px; border-radius: 16px; background: var(--ink); color: var(--bg); font-weight: 700; font-size: 18px; }
   .where { margin-top: 10px; font-size: 17px; background: var(--bg); border-radius: 14px; padding: 12px; }
-  .where a { display: inline-block; margin-top: 8px; font-weight: 700; color: var(--accent); }
-  .src { display: inline-block; margin-top: 10px; font-size: 14px; color: var(--muted); }
+  .where a { display: flex; align-items: center; justify-content: center; min-height: 48px; margin-top: 10px;
+             border-radius: 14px; border: 2px solid var(--accent); font-weight: 700; color: var(--accent); text-decoration: none; }
+  .src { display: inline-flex; align-items: center; min-height: 44px; margin-top: 4px; font-size: 15px; color: var(--muted); }
   .bottom { display: grid; gap: 10px; margin-top: 22px; }
   .answer { margin-top: 14px; }
   .err { color: var(--warn); font-weight: 600; margin-top: 12px; }
@@ -188,8 +197,8 @@
     <div id="members"></div>
     <div class="section-label" data-t="income"></div>
     <div class="chips" id="incomeChips"></div>
-    <button class="primary" id="builderGo" data-t="continue" disabled></button>
     <button class="text-btn" data-back="s-start" data-t="back"></button>
+    <div class="sticky-go"><button class="primary" id="builderGo" data-t="continue" disabled></button></div>
   </section>
 
   <!-- 1d. follow-up -->
@@ -297,8 +306,9 @@ const TAGS = [
 ];
 const INCOME = [["low", { hi: "कम", en: "Low" }], ["medium", { hi: "मध्यम", en: "Medium" }], ["high", { hi: "ज़्यादा", en: "High" }]];
 const DOC_ICONS = [
-  [/aadhaar|aadhar|आधार/i, "🪪"], [/bank|पासबुक|बैंक|khata|खाता/i, "🏦"], [/ration|राशन/i, "🍚"],
-  [/income|आय/i, "💰"], [/photo|फोटो|फ़ोटो/i, "📷"], [/land|khatauni|खतौनी|ज़मीन|जमीन|भूमि/i, "📜"],
+  [/aadhaar|aadhar|आधार/i, "🪪"], [/land|khatauni|खतौनी|ज़मीन|जमीन|भूमि/i, "📜"],
+  [/bank|पासबुक|बैंक|खाता/i, "🏦"], [/ration|राशन/i, "🧾"],
+  [/income|आय/i, "💰"], [/photo|फोटो|फ़ोटो/i, "📷"],
   [/death|मृत्यु/i, "🕊️"], [/disab|विकलांग|दिव्यांग/i, "♿"], [/caste|जाति/i, "📄"],
   [/residen|domicile|निवास/i, "🏠"], [/birth|जन्म/i, "👶"], [/mobile|मोबाइल|phone/i, "📱"],
   [/school|marksheet|विद्यालय|अंकपत्र|admission|प्रवेश/i, "🎓"],
@@ -419,7 +429,7 @@ function chip(emoji, label, pressed, onClick) {
 }
 function renderBuilder() {
   const rc = $("roleChips"); rc.innerHTML = "";
-  ROLES.forEach(([role, e, lab]) => rc.appendChild(chip(e, "+ " + lab[lang || "hi"], false, () => {
+  ROLES.forEach(([role, e, lab]) => rc.appendChild(chip(e, lab[lang || "hi"], false, () => {
     builder.members.push({ role, tags: [] }); renderBuilder();
   })));
   const box = $("members"); box.innerHTML = "";
@@ -496,7 +506,7 @@ function renderSteps(d) {
   items.forEach(([icon, text, cls, spinning]) => {
     const li = document.createElement("li"); li.className = "step " + (cls || "");
     const i = document.createElement("span"); i.className = "i";
-    if (spinning) { const s = document.createElement("span"); s.className = "spin"; s.textContent = "⏳"; i.appendChild(s); } else i.textContent = icon;
+    if (spinning) { const s = document.createElement("span"); s.className = "spin"; s.setAttribute("aria-label", "…"); i.appendChild(s); } else i.textContent = icon;
     const t = document.createElement("span"); t.textContent = text;
     li.append(i, t); ul.appendChild(li);
   });
@@ -552,7 +562,7 @@ function renderResults(r, say) {
     const where = document.createElement("div"); where.className = "where hidden";
     where.appendChild(document.createTextNode(c.where_to_apply));
     const url = /^https?:/.test(c.apply_url || "") ? c.apply_url : c.official_url;
-    if (url) { where.appendChild(document.createElement("br")); const a = document.createElement("a"); a.href = url; a.target = "_blank"; a.rel = "noopener"; a.textContent = L().openSite; where.appendChild(a); }
+    if (url) { const a = document.createElement("a"); a.href = url; a.target = "_blank"; a.rel = "noopener"; a.textContent = L().openSite; where.appendChild(a); }
     el.appendChild(where);
     ap.onclick = () => where.classList.toggle("hidden");
     const src = document.createElement("a"); src.className = "src"; src.href = c.official_url; src.target = "_blank"; src.rel = "noopener";

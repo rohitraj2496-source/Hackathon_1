@@ -1,0 +1,110 @@
+{
+  "errors": [],
+  "checks": [
+    {
+      "name": "01-language",
+      "overflowX": false,
+      "small": [],
+      "clipped": [],
+      "offscreen": []
+    },
+    {
+      "name": "hi-02-start",
+      "overflowX": false,
+      "small": [],
+      "clipped": [],
+      "offscreen": []
+    },
+    {
+      "name": "hi-03-builder",
+      "overflowX": false,
+      "small": [],
+      "clipped": [],
+      "offscreen": []
+    },
+    {
+      "name": "hi-03b-builder-scrolled",
+      "overflowX": false,
+      "small": [],
+      "clipped": [],
+      "offscreen": []
+    },
+    {
+      "name": "hi-04-followup",
+      "overflowX": false,
+      "small": [],
+      "clipped": [],
+      "offscreen": []
+    },
+    {
+      "name": "hi-05-working",
+      "overflowX": false,
+      "small": [],
+      "clipped": [],
+      "offscreen": []
+    },
+    {
+      "name": "hi-06-results",
+      "overflowX": false,
+      "small": [],
+      "clipped": [],
+      "offscreen": []
+    },
+    {
+      "name": "hi-07-results-where-to-apply",
+      "overflowX": false,
+      "small": [],
+      "clipped": [],
+      "offscreen": []
+    },
+    {
+      "name": "en-02-start",
+      "overflowX": false,
+      "small": [],
+      "clipped": [],
+      "offscreen": []
+    },
+    {
+      "name": "en-03-builder",
+      "overflowX": false,
+      "small": [],
+      "clipped": [],
+      "offscreen": []
+    },
+    {
+      "name": "en-03b-builder-scrolled",
+      "overflowX": false,
+      "small": [],
+      "clipped": [],
+      "offscreen": []
+    },
+    {
+      "name": "en-04-followup",
+      "overflowX": false,
+      "small": [],
+      "clipped": [],
+      "offscreen": []
+    },
+    {
+      "name": "en-05-working",
+      "overflowX": false,
+      "small": [],
+      "clipped": [],
+      "offscreen": []
+    },
+    {
+      "name": "en-06-results",
+      "overflowX": false,
+      "small": [],
+      "clipped": [],
+      "offscreen": []
+    },
+    {
+      "name": "en-07-results-where-to-apply",
+      "overflowX": false,
+      "small": [],
+      "clipped": [],
+      "offscreen": []
+    }
+  ]
+}
