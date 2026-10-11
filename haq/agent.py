@@ -16,7 +16,7 @@ import neatlogs
 from . import cache, catalog, fetcher, state
 from . import intake
 from .config import FAST_MODEL, VERIFY_MODEL, trace_ref
-from .llm import Usage, create, structured, system_blocks
+from .llm import BudgetExceeded, Usage, create, structured, system_blocks
 
 RESEARCH_WORKERS = 4
 MAX_RESEARCH_TURNS = 6
@@ -691,7 +691,7 @@ def _research_groups(groups, profile, usage, hid, rid, abort, errors):
                 # Not saved: the candidates stay unfinished so a resume retries them.
                 errors.append(f"{g[0]['scheme_id']}: {type(e).__name__}: {e}"[:300])
                 if isinstance(e, (anthropic.AuthenticationError, anthropic.PermissionDeniedError,
-                                  anthropic.BadRequestError)):
+                                  anthropic.BadRequestError, BudgetExceeded)):
                     abort.set()  # the same error will hit every call; other loops stop at their next turn
                 continue
 

@@ -1,0 +1,1 @@
+playwright==1.48.0   # scripts/stress_ui.py, scripts/check_links.py (uses installed Google Chrome)

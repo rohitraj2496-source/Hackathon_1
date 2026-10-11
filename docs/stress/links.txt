@@ -1,0 +1,63 @@
+OK    redirect  200  https://dosje.gov.in/schemes/pm-yasasvi  [browser: PM YASASVI – Department of Social Justice and Empowerment]  -> https://www.dosje.gov.in/schemes-and-services/pm-yasasvi/
+OK    redirect  200  https://pmuy.gov.in/  [browser: PMUY : Home]  -> https://pmuy.gov.in/index.aspx
+OK    redirect  200  https://upbocw.in/  [browser: UPBOCW]  -> https://website.upbocw.in
+OK    redirect  200  https://www.myscheme.gov.in/  [browser: myScheme]  -> https://www.myscheme.gov.in/hi
+OK    redirect  200  https://www.pib.gov.in/PressReleasePage.aspx?PRID=1811392  [browser: Press Release Page | Press Information Bureau]  -> https://www.pib.gov.in/PressReleasePage.aspx?PRID=1811392&reg=48&lang=2
+OK    tls_error      https://cmsvy.upsdc.gov.in/  [browser: मुख्यमंत्री सामूहिक विवाह योजना, समाज कल्याण विभाग, उत्तर प्]  (lenient TLS: loads)
+OK    tls_error      https://divyangjan.upsdc.gov.in/  [browser: दिव्यांगजन सशक्तीकरण विभाग]  (lenient TLS: loads)
+OK    tls_error      https://jansuraksha.gov.in  [browser: Jan-Dhan Se Jan Suraksha]  (lenient TLS: loads)
+OK    tls_error      https://jansuraksha.gov.in/  [browser: Jan-Dhan Se Jan Suraksha]  (lenient TLS: loads)
+OK    tls_error      https://labour.gov.in/  [browser: ]  (lenient TLS: loads)
+OK    tls_error      https://mahilakalyan.up.nic.in/  [browser: Child And Women Welfare]  (lenient TLS: loads)
+OK    tls_error      https://mksy.up.gov.in/  [browser: DEPARTMENT OF WOMEN & CHILD DEVELOPMENT]  (lenient TLS: loads)
+OK    tls_error      https://pmayg.dord.gov.in/  [browser: Home | Pradhan Mantri Awaas Yojana - Gramin | Ministry of Ru]  (lenient TLS: loads)
+OK    tls_error      https://pmayg.dord.gov.in/netiayHome/Uploaded/Guidelines-English_Book_Final.pdf  [browser: ]  (lenient TLS: loads)
+OK    tls_error      https://pmkisan.gov.in/  [browser: PM-Kisan Samman Nidhi]  (lenient TLS: loads)
+OK    tls_error      https://scholarship.up.gov.in/  [browser: Uttar Pradesh Scholarship Portal]  (lenient TLS: loads)
+OK    tls_error      https://scholarship.up.gov.in/pdfs/SC%20NIYAMAVALI14%20OCTOBER%202019%20ENF%20BY%202020-21.pdf  [browser: ]  (lenient TLS: loads)
+OK    tls_error      https://scholarship.up.gov.in/pdfs/go/OBC_Pre%20matrici%20Niyamawali%20(2016).pdf  [browser: ]  (lenient TLS: loads)
+OK    OK        200  https://agriwelfare.gov.in/
+OK    OK        200  https://beneficiary.nha.gov.in/
+OK    OK        200  https://dfpd.gov.in/
+OK    OK        200  https://digishakti.up.gov.in/
+OK    OK        200  https://eshram.gov.in/
+OK    OK        200  https://eshram.gov.in/faqs
+OK    OK        200  https://fcs.up.gov.in/
+OK    OK        200  https://financialservices.gov.in/pmsby
+OK    OK        200  https://financialservices.gov.in/pradhan-mantri-jeevan-jyoti-bima-yojana-pmjjby
+OK    OK        200  https://financialservices.gov.in/pradhan-mantri-suraksha-bima-yojana-pmsby
+OK    OK        200  https://maandhan.in/
+OK    OK        200  https://nfsa.gov.in/
+OK    OK        200  https://nfsa.gov.in/portal/nfsa-act
+OK    OK        200  https://nsap.dord.gov.in/
+OK    OK        200  https://pmfby.gov.in/
+OK    OK        200  https://pmfby.gov.in/pdf/Revamped%20Operational%20Guidelines_17th%20August%202020.pdf
+OK    OK        200  https://pmfby.gov.in/pdf/Revised_Operational_Guidelines.pdf
+OK    OK        200  https://pmmvy.wcd.gov.in/
+OK    OK        200  https://pmvishwakarma.gov.in/
+OK    OK        200  https://register.eshram.gov.in
+OK    OK        200  https://saharanpur.nic.in/scheme/divyang-pension-scheme/
+OK    OK        200  https://samajkalyan.up.gov.in/
+OK    OK        200  https://scholarships.gov.in/
+OK    OK        200  https://shadianudan.upsdc.gov.in/
+OK    OK        200  https://static.pib.gov.in/WriteReadData/userfiles/file/e-ShramPortal3NCD.pdf
+OK    OK        200  https://wcd.gov.in/
+OK    OK        200  https://wcd.gov.in/women/pradhan-mantri-matru-vandana-yojna
+OK    OK        200  https://www.india.gov.in/
+OK    OK        200  https://www.myscheme.gov.in/schemes/pm-kisan  [browser: Pradhan Mantri Kisan Samman Nidhi]
+OK    OK        200  https://www.myscheme.gov.in/schemes/pmay-g  [browser: Pradhan Mantri Awaas Yojana - Gramin]
+OK    OK        200  https://www.myscheme.gov.in/schemes/pmfby  [browser: Pradhan Mantri Fasal Bima Yojna (PMFBY)]
+OK    OK        200  https://www.myscheme.gov.in/schemes/pmjjby  [browser: Pradhan Mantri Jeevan Jyoti Bima Yojana]
+OK    OK        200  https://www.myscheme.gov.in/schemes/pmmvy  [browser: Pradhan Mantri Matru Vandana Yojana]
+OK    OK        200  https://www.myscheme.gov.in/schemes/pmsby  [browser: Pradhan Mantri Suraksha Bima Yojana]
+OK    OK        200  https://www.myscheme.gov.in/schemes/pmuy  [browser: Pradhan Mantri Ujjwala Yojana]
+OK    OK        200  https://www.pib.gov.in/PressNoteDetails.aspx?NoteId=154428&ModuleId=3&reg=3&lang=1
+OK    OK        200  https://www.pib.gov.in/PressReleaseIframePage.aspx?PRID=1922622&reg=48&lang=2
+OK    OK        200  https://www.pib.gov.in/PressReleasePage.aspx?PRID=2074713&reg=48&lang=2
+OK    OK        200  https://www.pib.gov.in/PressReleasePage.aspx?PRID=2082288&reg=48&lang=2
+OK    OK        200  https://www.pib.gov.in/PressReleasePage.aspx?PRID=2086193&reg=48&lang=2
+OK    OK        200  https://www.pib.gov.in/PressReleasePage.aspx?PRID=2127981&reg=48&lang=2
+OK    OK        200  https://www.pib.gov.in/PressReleasePage.aspx?PRID=2259251&reg=3&lang=1
+final (as a family's browser sees it): {'OK': 60, 'FAIL': 0}
+
+ {'redirect': 5, 'tls_error': 13, 'OK': 42} total 60

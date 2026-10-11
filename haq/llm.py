@@ -1,11 +1,50 @@
 """Thin helpers around the traced Anthropic client: one call site, cost accounting."""
 import json
+import os
 import threading
 
 from anthropic.types import Message
 
 from .config import (EFFORT, FALLBACK_BODY, FALLBACK_HEADERS, FALLBACK_MODELS, MODEL, PRICES,
                      WEB_SEARCH_USD, client)
+
+
+class BudgetExceeded(RuntimeError):
+    """The process-wide spend cap (HAQ_BUDGET_USD) has been reached; no further model calls are made."""
+
+
+# Process-wide spend, including calls not tied to a run (intake extraction, follow-ups, translation).
+_spend_lock = threading.Lock()
+_spent_usd = 0.0
+BUDGET_USD = float(os.environ["HAQ_BUDGET_USD"]) if os.environ.get("HAQ_BUDGET_USD") else None
+
+
+def spent_usd() -> float:
+    with _spend_lock:
+        return round(_spent_usd, 6)
+
+
+def _record_spend(cost: float) -> None:
+    global _spent_usd
+    with _spend_lock:
+        _spent_usd += cost
+
+
+def message_cost(msg: Message) -> tuple[dict, float]:
+    u = msg.usage
+    price = PRICES.get(msg.model) or PRICES.get(MODEL) or PRICES["claude-opus-5-5"]
+    searches = getattr(getattr(u, "server_tool_use", None), "web_search_requests", 0) or 0
+    vals = {
+        "input_tokens": u.input_tokens or 0,
+        "output_tokens": u.output_tokens or 0,
+        "cache_read_input_tokens": u.cache_read_input_tokens or 0,
+        "cache_creation_input_tokens": u.cache_creation_input_tokens or 0,
+        "web_search_requests": searches,
+    }
+    cost = (vals["input_tokens"] * price["in"] + vals["output_tokens"] * price["out"]
+            + vals["cache_read_input_tokens"] * price["cache_read"]
+            + vals["cache_creation_input_tokens"] * price["cache_write"]) / 1e6
+    return vals, cost + searches * WEB_SEARCH_USD
 
 
 class Usage:
@@ -24,20 +63,7 @@ class Usage:
             self.by_model = {m: dict(v) for m, v in (initial.get("by_model") or {}).items()}
 
     def add(self, msg: Message) -> None:
-        u = msg.usage
-        price = PRICES.get(msg.model) or PRICES.get(MODEL) or PRICES["claude-opus-5-5"]
-        searches = getattr(getattr(u, "server_tool_use", None), "web_search_requests", 0) or 0
-        vals = {
-            "input_tokens": u.input_tokens or 0,
-            "output_tokens": u.output_tokens or 0,
-            "cache_read_input_tokens": u.cache_read_input_tokens or 0,
-            "cache_creation_input_tokens": u.cache_creation_input_tokens or 0,
-            "web_search_requests": searches,
-        }
-        cost = (vals["input_tokens"] * price["in"] + vals["output_tokens"] * price["out"]
-                + vals["cache_read_input_tokens"] * price["cache_read"]
-                + vals["cache_creation_input_tokens"] * price["cache_write"]) / 1e6
-        cost += searches * WEB_SEARCH_USD
+        vals, cost = message_cost(msg)
         with self._lock:
             for k, v in vals.items():
                 self.totals[k] += v
@@ -72,6 +98,8 @@ def create(usage: Usage | None, *, model: str = MODEL, effort: str | None = None
     Prompt caching: explicit breakpoints on the system blocks always. loop=True also turns on
     top-level automatic caching so a multi-turn tool loop re-reads its growing history from cache;
     one-shot calls leave it off (it would only pay the write premium on a unique tail)."""
+    if BUDGET_USD is not None and spent_usd() >= BUDGET_USD:
+        raise BudgetExceeded(f"spend cap reached: ${spent_usd():.4f} of ${BUDGET_USD:.2f}")
     fallback = model in FALLBACK_MODELS
     if loop:
         kwargs["cache_control"] = CACHE
@@ -85,6 +113,7 @@ def create(usage: Usage | None, *, model: str = MODEL, effort: str | None = None
         extra_body=FALLBACK_BODY if fallback else None,
         **kwargs,
     )
+    _record_spend(message_cost(msg)[1])
     if usage is not None:
         usage.add(msg)
     return msg

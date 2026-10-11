@@ -57,6 +57,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 Lang = Literal["hi", "en"]
+MAX_TEXT = 3000
 
 
 class Create(BaseModel):
@@ -117,11 +118,16 @@ def submit_intake(hid: str, body: Intake):
         profile = intake.profile_from_builder(body.builder)
         source = {"role": "user", "builder": body.builder}
     elif body.text and body.text.strip():
-        out = intake.extract_from_text(body.text.strip(), body.lang, hid)
+        text = body.text.strip()[:MAX_TEXT]          # one description; anything longer adds cost, not information
+        out = intake.extract_from_text(text, body.lang, hid)
         profile, trace = out["profile"], out["trace"]
-        source = {"role": "user", "text": body.text.strip()}
+        source = {"role": "user", "text": text}
     else:
         raise HTTPException(400, "send text or builder")
+    if not profile["members"]:
+        # Nothing about a family could be understood (gibberish, emoji, only numbers, empty builder):
+        # ask again instead of searching schemes for nobody.
+        return {"followups": [], "started": False, "members": 0, "need_more": True}
     followups = intake.pick_followups(profile, body.lang)
 
     def _save(h):
@@ -190,6 +196,13 @@ def get_household(hid: str, lang: Lang = "hi"):
             "running": hid in _running,
             "schemes": {s["id"]: {"name": catalog.display_name(s["id"], lang) or s["name_en"], "emoji": s["emoji"]}
                         for s in catalog.SCHEMES}}
+
+
+@app.get("/api/debug/spend")
+def debug_spend():
+    """Model spend of this server process (all calls), and the cap if HAQ_BUDGET_USD is set."""
+    from haq import llm
+    return {"spent_usd": llm.spent_usd(), "budget_usd": llm.BUDGET_USD}
 
 
 @app.post("/api/households/{hid}/run")

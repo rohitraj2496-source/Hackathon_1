@@ -183,14 +183,18 @@
           "member": "self",
           "official_source_url": "https://sspy-up.gov.in/",
           "rule_basis": "UP integrated pension portal: निराश्रित महिला पेंशन for women aged 18+ after the death of the husband (पति की मृत्यु उपरान्त निराश्रित महिलायें जिनकी आयु 18 व उससे अधिक है).",
-          "needs_human_check": true
+          "needs_human_check": true,
+          "browser_url": "https://mahilakalyan.up.nic.in/",
+          "browser_url_note": "official_source_url is the evidence the rule was read from; it fails in browsers (certificate warning / dead domain / myScheme 'Page not found'), so browser_url is the working official page for the same scheme (checked in Chrome 2026-10-11)"
         },
         {
           "scheme_id": "pmjay",
           "member": "household",
           "official_source_url": "https://www.myscheme.gov.in/schemes/ab-pmjay",
           "rule_basis": "AB PM-JAY covers SECC-deprived families and Antyodaya Anna Yojana (AAY) card holders; Rs 5 lakh/family/yr. Case note: AAY card",
-          "needs_human_check": true
+          "needs_human_check": true,
+          "browser_url": "https://beneficiary.nha.gov.in/",
+          "browser_url_note": "official_source_url is the evidence the rule was read from; it fails in browsers (certificate warning / dead domain / myScheme 'Page not found'), so browser_url is the working official page for the same scheme (checked in Chrome 2026-10-11)"
         },
         {
           "scheme_id": "pmay_g",
@@ -275,7 +279,9 @@
           "member": "self and wife",
           "official_source_url": "https://sspy-up.gov.in/",
           "rule_basis": "UP integrated pension portal: old-age pension for persons 60+ living below the poverty line (गरीबी रेखा के नीचे जीवन यापन करने वाले 60 वर्ष से अधिक आयु के वृद्धजन). Case note: both 60+, income 30k",
-          "needs_human_check": true
+          "needs_human_check": true,
+          "browser_url": "https://samajkalyan.up.gov.in/",
+          "browser_url_note": "official_source_url is the evidence the rule was read from; it fails in browsers (certificate warning / dead domain / myScheme 'Page not found'), so browser_url is the working official page for the same scheme (checked in Chrome 2026-10-11)"
         },
         {
           "scheme_id": "ayushman_vay_vandana",
@@ -290,7 +296,9 @@
           "official_source_urls": {
             "ayushman_vay_vandana": "https://www.myscheme.gov.in/schemes/abpmjayvv",
             "pmjay": "https://www.myscheme.gov.in/schemes/ab-pmjay"
-          }
+          },
+          "browser_url": "https://beneficiary.nha.gov.in/",
+          "browser_url_note": "official_source_url is the evidence the rule was read from; it fails in browsers (certificate warning / dead domain / myScheme 'Page not found'), so browser_url is the working official page for the same scheme (checked in Chrome 2026-10-11)"
         }
       ],
       "acceptable_extra": [
@@ -365,7 +373,9 @@
           "member": "son",
           "official_source_url": "https://sspy-up.gov.in/",
           "rule_basis": "UP integrated pension portal: दिव्यांग पेंशन for persons with 40% or more disability (40 प्रतिशत या उससे अधिक प्रत्यक्ष दिव्यांग). Case note: 60% disability, income 50k urban",
-          "needs_human_check": true
+          "needs_human_check": true,
+          "browser_url": "https://divyangjan.upsdc.gov.in/",
+          "browser_url_note": "official_source_url is the evidence the rule was read from; it fails in browsers (certificate warning / dead domain / myScheme 'Page not found'), so browser_url is the working official page for the same scheme (checked in Chrome 2026-10-11)"
         }
       ],
       "acceptable_extra": [
@@ -815,7 +825,9 @@
           "official_source_urls": {
             "up_widow_pension": "https://sspy-up.gov.in/",
             "up_old_age_pension": "https://sspy-up.gov.in/"
-          }
+          },
+          "browser_url": "https://mahilakalyan.up.nic.in/",
+          "browser_url_note": "official_source_url is the evidence the rule was read from; it fails in browsers (certificate warning / dead domain / myScheme 'Page not found'), so browser_url is the working official page for the same scheme (checked in Chrome 2026-10-11)"
         },
         {
           "scheme_id": "pmjay",
@@ -830,7 +842,9 @@
           "official_source_urls": {
             "pmjay": "https://www.myscheme.gov.in/schemes/ab-pmjay",
             "ayushman_vay_vandana": "https://www.myscheme.gov.in/schemes/abpmjayvv"
-          }
+          },
+          "browser_url": "https://beneficiary.nha.gov.in/",
+          "browser_url_note": "official_source_url is the evidence the rule was read from; it fails in browsers (certificate warning / dead domain / myScheme 'Page not found'), so browser_url is the working official page for the same scheme (checked in Chrome 2026-10-11)"
         },
         {
           "scheme_id": "pmay_g",
@@ -1327,14 +1341,18 @@
           "member": "self",
           "official_source_url": "https://sspy-up.gov.in/",
           "rule_basis": "UP integrated pension portal: निराश्रित महिला पेंशन for women aged 18+ after the death of the husband (पति की मृत्यु उपरान्त निराश्रित महिलायें जिनकी आयु 18 व उससे अधिक है).",
-          "needs_human_check": true
+          "needs_human_check": true,
+          "browser_url": "https://mahilakalyan.up.nic.in/",
+          "browser_url_note": "official_source_url is the evidence the rule was read from; it fails in browsers (certificate warning / dead domain / myScheme 'Page not found'), so browser_url is the working official page for the same scheme (checked in Chrome 2026-10-11)"
         },
         {
           "scheme_id": "up_divyang_pension",
           "member": "son",
           "official_source_url": "https://sspy-up.gov.in/",
           "rule_basis": "UP integrated pension portal: दिव्यांग पेंशन for persons with 40% or more disability (40 प्रतिशत या उससे अधिक प्रत्यक्ष दिव्यांग). Case note: 80% visual disability",
-          "needs_human_check": true
+          "needs_human_check": true,
+          "browser_url": "https://divyangjan.upsdc.gov.in/",
+          "browser_url_note": "official_source_url is the evidence the rule was read from; it fails in browsers (certificate warning / dead domain / myScheme 'Page not found'), so browser_url is the working official page for the same scheme (checked in Chrome 2026-10-11)"
         },
         {
           "scheme_id": "up_scholarship",
@@ -1348,7 +1366,9 @@
           "member": "household",
           "official_source_url": "https://www.myscheme.gov.in/schemes/ab-pmjay",
           "rule_basis": "AB PM-JAY covers SECC-deprived families and Antyodaya Anna Yojana (AAY) card holders; Rs 5 lakh/family/yr. Case note: AAY card",
-          "needs_human_check": true
+          "needs_human_check": true,
+          "browser_url": "https://beneficiary.nha.gov.in/",
+          "browser_url_note": "official_source_url is the evidence the rule was read from; it fails in browsers (certificate warning / dead domain / myScheme 'Page not found'), so browser_url is the working official page for the same scheme (checked in Chrome 2026-10-11)"
         }
       ],
       "acceptable_extra": [
@@ -1620,7 +1640,9 @@
           "official_source_urls": {
             "up_old_age_pension": "https://sspy-up.gov.in/",
             "up_divyang_pension": "https://sspy-up.gov.in/"
-          }
+          },
+          "browser_url": "https://samajkalyan.up.gov.in/",
+          "browser_url_note": "official_source_url is the evidence the rule was read from; it fails in browsers (certificate warning / dead domain / myScheme 'Page not found'), so browser_url is the working official page for the same scheme (checked in Chrome 2026-10-11)"
         },
         {
           "scheme_id": "ayushman_vay_vandana",
@@ -1635,14 +1657,18 @@
           "official_source_urls": {
             "ayushman_vay_vandana": "https://www.myscheme.gov.in/schemes/abpmjayvv",
             "pmjay": "https://www.myscheme.gov.in/schemes/ab-pmjay"
-          }
+          },
+          "browser_url": "https://beneficiary.nha.gov.in/",
+          "browser_url_note": "official_source_url is the evidence the rule was read from; it fails in browsers (certificate warning / dead domain / myScheme 'Page not found'), so browser_url is the working official page for the same scheme (checked in Chrome 2026-10-11)"
         },
         {
           "scheme_id": "up_widow_pension",
           "member": "daughter-in-law",
           "official_source_url": "https://sspy-up.gov.in/",
           "rule_basis": "UP integrated pension portal: निराश्रित महिला पेंशन for women aged 18+ after the death of the husband (पति की मृत्यु उपरान्त निराश्रित महिलायें जिनकी आयु 18 व उससे अधिक है).",
-          "needs_human_check": true
+          "needs_human_check": true,
+          "browser_url": "https://mahilakalyan.up.nic.in/",
+          "browser_url_note": "official_source_url is the evidence the rule was read from; it fails in browsers (certificate warning / dead domain / myScheme 'Page not found'), so browser_url is the working official page for the same scheme (checked in Chrome 2026-10-11)"
         },
         {
           "scheme_id": "pmay_g",

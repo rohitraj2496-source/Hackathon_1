@@ -35,8 +35,8 @@ SCHEMES = [
         "id": "pmjay", "level": "central", "emoji": "🏥",
         "name_hi": "आयुष्मान भारत (PM-JAY)", "name_en": "Ayushman Bharat PM-JAY",
         "hint": "Rs 5 lakh/family/yr cashless hospital cover for SECC-deprived / NFSA (Antyodaya, eligible household ration card) families; in UP also linked to ration cards.",
-        "official_urls": ["https://nha.gov.in/PM-JAY", "https://beneficiary.nha.gov.in/"],
-        "fallback_urls": ["https://pmjay.gov.in/", "https://www.myscheme.gov.in/schemes/ab-pmjay"],
+        "official_urls": ["https://beneficiary.nha.gov.in/", "https://nha.gov.in/PM-JAY"],
+        "fallback_urls": [],
         "aliases": ["ayushman_bharat", "ab_pmjay", "ayushman"],
     },
     {
@@ -44,7 +44,7 @@ SCHEMES = [
         "name_hi": "आयुष्मान वय वंदना (70+)", "name_en": "Ayushman Vay Vandana (PM-JAY 70+)",
         "hint": "Every citizen aged 70+ gets Rs 5 lakh/yr health cover regardless of income.",
         "official_urls": ["https://beneficiary.nha.gov.in/", "https://nha.gov.in/PM-JAY"],
-        "fallback_urls": ["https://www.myscheme.gov.in/schemes/abpmjayvv"],
+        "fallback_urls": [],
         "aliases": ["vay_vandana", "pmjay_70"],
     },
     {
@@ -53,7 +53,7 @@ SCHEMES = [
         "hint": "Rural homeless / kutcha-house families; Rs 1.2 lakh (plains) one-time for a pucca house.",
         "official_urls": ["https://pmayg.dord.gov.in/"],
         "rules_docs": ["https://pmayg.dord.gov.in/netiayHome/Uploaded/Guidelines-English_Book_Final.pdf"],
-        "fallback_urls": ["https://pmayg.nic.in/", "https://www.myscheme.gov.in/schemes/pmay-g"],
+        "fallback_urls": ["https://www.myscheme.gov.in/schemes/pmay-g"],
         "aliases": ["pmayg", "awas_gramin"],
     },
     {
@@ -85,7 +85,7 @@ SCHEMES = [
         "name_hi": "प्रधानमंत्री श्रम योगी मानधन", "name_en": "PM Shram Yogi Maandhan",
         "hint": "Unorganised workers aged 18-40 with income up to Rs 15,000/month; contributory, Rs 3,000/month pension at 60.",
         "official_urls": ["https://maandhan.in/"],
-        "fallback_urls": ["https://www.myscheme.gov.in/schemes/pmsym", "https://labour.gov.in/"],
+        "fallback_urls": ["https://labour.gov.in/"],
         "aliases": ["pmsym", "shram_yogi_maandhan"],
     },
     {
@@ -93,7 +93,7 @@ SCHEMES = [
         "name_hi": "प्रधानमंत्री किसान मानधन", "name_en": "PM Kisan Maandhan",
         "hint": "Small/marginal farmers aged 18-40; contributory, Rs 3,000/month pension at 60.",
         "official_urls": ["https://maandhan.in/"],
-        "fallback_urls": ["https://www.myscheme.gov.in/schemes/pmkmy", "https://pmkisan.gov.in/"],
+        "fallback_urls": ["https://pmkisan.gov.in/"],
         "aliases": ["pmkmy"],
     },
     {
@@ -133,7 +133,7 @@ SCHEMES = [
         "name_hi": "पीएम विश्वकर्मा", "name_en": "PM Vishwakarma",
         "hint": "Artisans in 18 traditional trades (carpenter, potter, tailor, cobbler, barber, mason...) aged 18+; toolkit Rs 15,000 e-voucher, training stipend, cheap credit.",
         "official_urls": ["https://pmvishwakarma.gov.in/"],
-        "fallback_urls": ["https://www.myscheme.gov.in/schemes/pmvs"],
+        "fallback_urls": [],
         "aliases": ["vishwakarma"],
     },
     {
@@ -150,7 +150,8 @@ SCHEMES = [
         "name_hi": "वृद्धावस्था पेंशन (उ.प्र.)", "name_en": "UP Old Age Pension (with NSAP IGNOAPS)",
         "hint": "UP residents aged 60+ below poverty line / within income limit; Rs 1,000/month via sspy-up.gov.in.",
         "official_urls": ["https://sspy-up.gov.in/"],
-        "fallback_urls": ["https://nsap.nic.in/", "https://www.myscheme.gov.in/schemes/oaps-up"],
+        "fallback_urls": ["https://nsap.dord.gov.in/", "https://samajkalyan.up.gov.in/"],
+        "display_url": "https://samajkalyan.up.gov.in/",
         "aliases": ["ignoaps", "old_age_pension", "vridha_pension"],
     },
     {
@@ -158,7 +159,8 @@ SCHEMES = [
         "name_hi": "निराश्रित महिला (विधवा) पेंशन", "name_en": "UP Destitute Women (Widow) Pension",
         "hint": "Women 18+ whose husband has died, UP resident, family income within limit; Rs 1,000/month.",
         "official_urls": ["https://sspy-up.gov.in/"],
-        "fallback_urls": ["https://mahilakalyan.up.nic.in/", "https://nsap.nic.in/"],
+        "fallback_urls": ["https://mahilakalyan.up.nic.in/", "https://nsap.dord.gov.in/"],
+        "display_url": "https://mahilakalyan.up.nic.in/",
         "aliases": ["ignwps", "widow_pension", "nirashrit_mahila_pension"],
     },
     {
@@ -166,7 +168,8 @@ SCHEMES = [
         "name_hi": "दिव्यांग पेंशन (उ.प्र.)", "name_en": "UP Divyang (Disability) Pension",
         "hint": "40%+ disability certificate, UP resident, income within limit; Rs 1,000/month.",
         "official_urls": ["https://sspy-up.gov.in/"],
-        "fallback_urls": ["https://divyangjan.upsdc.gov.in/", "https://nsap.nic.in/"],
+        "fallback_urls": ["https://divyangjan.upsdc.gov.in/", "https://nsap.dord.gov.in/"],
+        "display_url": "https://divyangjan.upsdc.gov.in/",
         "aliases": ["igndps", "disability_pension", "viklang_pension"],
     },
     {
@@ -174,7 +177,7 @@ SCHEMES = [
         "name_hi": "मुख्यमंत्री कन्या सुमंगला योजना", "name_en": "Mukhyamantri Kanya Sumangala Yojana",
         "hint": "Girls in UP families with income <= Rs 3 lakh, max 2 girls/family; Rs 25,000 over 6 stages (birth, vaccination, class 1, 6, 9, graduation/diploma).",
         "official_urls": ["https://mksy.up.gov.in/"],
-        "fallback_urls": ["https://www.myscheme.gov.in/schemes/mksy", "https://mahilakalyan.up.nic.in/"],
+        "fallback_urls": ["https://mahilakalyan.up.nic.in/"],
         "aliases": ["kanya_sumangala", "mksy"],
     },
     {
@@ -217,7 +220,7 @@ SCHEMES = [
         "id": "up_abhyudaya", "level": "up", "emoji": "🧑‍🎓",
         "name_hi": "मुख्यमंत्री अभ्युदय योजना", "name_en": "Mukhyamantri Abhyudaya Yojana",
         "hint": "Free coaching for competitive exams (UPSC, NEET, JEE...) for UP students.",
-        "official_urls": ["https://abhyuday.up.gov.in/"],
+        "official_urls": ["https://samajkalyan.up.gov.in/"],
         "fallback_urls": ["https://www.myscheme.gov.in/"],
         "aliases": ["abhyudaya"],
     },
@@ -268,6 +271,52 @@ PROTECTION = {
 }
 
 BY_ID = {s["id"]: s for s in SCHEMES}
+
+
+# Links a family's browser cannot open (dead domain, certificate warning, myScheme "Page not found" or the
+# wrong scheme), each mapped to an official page verified in Chrome on 2026-10-11. Research may still have
+# cited the old URL (the fetcher can read some of them with lenient TLS); families are shown the replacement.
+LINK_REPLACEMENTS = {
+    "https://pmjay.gov.in": "https://beneficiary.nha.gov.in/",
+    "https://nha.gov.in/PM-JAY": "https://beneficiary.nha.gov.in/",
+    "https://www.myscheme.gov.in/schemes/ab-pmjay": "https://beneficiary.nha.gov.in/",
+    "https://www.myscheme.gov.in/schemes/abpmjayvv": "https://beneficiary.nha.gov.in/",
+    "https://www.myscheme.gov.in/schemes/oaps-up": "https://samajkalyan.up.gov.in/",
+    "https://nsap.nic.in": "https://nsap.dord.gov.in/",
+    "https://pmayg.nic.in": "https://pmayg.dord.gov.in/",
+    "https://pmkmy.gov.in": "https://pmkisan.gov.in/",
+    "https://www.myscheme.gov.in/schemes/pmkmy": "https://pmkisan.gov.in/",
+    "https://www.myscheme.gov.in/schemes/pmsym": "https://maandhan.in/",
+    "https://www.myscheme.gov.in/schemes/mksy": "https://mksy.up.gov.in/",          # was Kisan Sahay, not Sumangala
+    "https://www.myscheme.gov.in/schemes/pmvs": "https://pmvishwakarma.gov.in/",    # was PM-Vidyalaxmi
+    "https://abhyuday.up.gov.in": "https://samajkalyan.up.gov.in/",
+    "https://www.financialservices.gov.in/beta/index.php/en/pmsby":
+        "https://financialservices.gov.in/pradhan-mantri-suraksha-bima-yojana-pmsby",
+    "https://old.financialservices.gov.in/insurance-divisions/Government-Sponsored-Socially-Oriented-Insurance-"
+    "Schemes/Pradhan-Mantri-Jeevan-Jyoti-Bima-Yojana(PMJJBY)":
+        "https://financialservices.gov.in/pradhan-mantri-jeevan-jyoti-bima-yojana-pmjjby",
+}
+# Hosts that show browsers a certificate warning or never answer: any page on them is replaced by the
+# scheme's display_url (or its first working official URL).
+BROKEN_HOSTS = {"sspy-up.gov.in", "pmkmy.gov.in", "pmjay.gov.in", "nsap.nic.in", "pmayg.nic.in",
+                "abhyuday.up.gov.in", "old.financialservices.gov.in"}
+
+
+def display_link(url: str, scheme_id: str | None = None) -> str:
+    """The link to show a family for `url` (unchanged unless it is known to be broken in browsers)."""
+    if not url:
+        return url
+    key = url.strip().rstrip("/")
+    if key in LINK_REPLACEMENTS:
+        return LINK_REPLACEMENTS[key]
+    host = (urlparse(url).hostname or "").lower()
+    if host in BROKEN_HOSTS or (host.startswith("www.") and host[4:] in BROKEN_HOSTS):
+        s = BY_ID.get(canonical_id(scheme_id or ""))
+        if s:
+            for u in [s.get("display_url")] + s["official_urls"] + s["fallback_urls"]:
+                if u and (urlparse(u).hostname or "") not in BROKEN_HOSTS:
+                    return u
+    return url
 
 
 def display_name(scheme_id: str, lang: str) -> str | None:

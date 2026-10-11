@@ -1,0 +1,848 @@
+[
+ {
+  "url": "https://dosje.gov.in/schemes/pm-yasasvi",
+  "status": "redirect",
+  "code": 200,
+  "final": "https://www.dosje.gov.in/schemes-and-services/pm-yasasvi/",
+  "browser": "OK",
+  "detail": "PM YASASVI – Department of Social Justice and Empowerment",
+  "final_verdict": "OK",
+  "sources": [
+   "results-screen:nsp_scholarship",
+   "rules-cache:nsp_scholarship",
+   "rules-cache:nsp_scholarship:rule"
+  ]
+ },
+ {
+  "url": "https://pmuy.gov.in/",
+  "status": "redirect",
+  "code": 200,
+  "final": "https://pmuy.gov.in/index.aspx",
+  "browser": "OK",
+  "detail": "PMUY : Home",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:pmuy:official_urls",
+   "evals:h02:pmuy",
+   "evals:h05:pmuy",
+   "evals:h07:pmuy",
+   "evals:h09:pmuy",
+   "evals:h13:pmuy",
+   "evals:h17:pmuy",
+   "evals:h19:pmuy",
+   "results-screen:pmuy",
+   "results-screen:pmuy:apply",
+   "rules-cache:pmuy",
+   "rules-cache:pmuy:apply",
+   "rules-cache:pmuy:rule"
+  ]
+ },
+ {
+  "url": "https://upbocw.in/",
+  "status": "redirect",
+  "code": 200,
+  "final": "https://website.upbocw.in",
+  "browser": "OK",
+  "detail": "UPBOCW",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:up_bocw:official_urls",
+   "evals:h05:up_bocw",
+   "evals:h12:up_bocw"
+  ]
+ },
+ {
+  "url": "https://www.myscheme.gov.in/",
+  "status": "redirect",
+  "code": 200,
+  "final": "https://www.myscheme.gov.in/hi",
+  "browser": "OK",
+  "detail": "myScheme",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:up_abhyudaya:fallback_urls",
+   "catalog:up_bocw:fallback_urls",
+   "catalog:up_digishakti:fallback_urls",
+   "catalog:up_samuhik_vivah:fallback_urls",
+   "catalog:up_shadi_anudan:fallback_urls"
+  ]
+ },
+ {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=1811392",
+  "status": "redirect",
+  "code": 200,
+  "final": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=1811392&reg=48&lang=2",
+  "browser": "OK",
+  "detail": "Press Release Page | Press Information Bureau",
+  "final_verdict": "OK",
+  "sources": [
+   "rules-cache:pmmvy:rule"
+  ]
+ },
+ {
+  "url": "https://cmsvy.upsdc.gov.in/",
+  "status": "tls_error",
+  "code": null,
+  "final": null,
+  "detail": "मुख्यमंत्री सामूहिक विवाह योजना, समाज कल्याण विभाग, उत्तर प्",
+  "loads_with_lenient_tls": true,
+  "browser": "OK",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:up_samuhik_vivah:official_urls"
+  ]
+ },
+ {
+  "url": "https://divyangjan.upsdc.gov.in/",
+  "status": "tls_error",
+  "code": null,
+  "final": null,
+  "detail": "दिव्यांगजन सशक्तीकरण विभाग",
+  "loads_with_lenient_tls": true,
+  "browser": "OK",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:up_divyang_pension:display_url",
+   "catalog:up_divyang_pension:fallback_urls",
+   "catalog:up_divyang_pension:official_urls",
+   "evals:h04:up_divyang_pension",
+   "evals:h14:up_divyang_pension",
+   "results-screen:up_divyang_pension",
+   "results-screen:up_divyang_pension:apply",
+   "rules-cache:up_divyang_pension",
+   "rules-cache:up_divyang_pension:apply",
+   "rules-cache:up_divyang_pension:rule"
+  ]
+ },
+ {
+  "url": "https://jansuraksha.gov.in",
+  "status": "tls_error",
+  "code": null,
+  "final": null,
+  "detail": "Jan-Dhan Se Jan Suraksha",
+  "loads_with_lenient_tls": true,
+  "browser": "OK",
+  "final_verdict": "OK",
+  "sources": [
+   "results-screen:pmsby:apply"
+  ]
+ },
+ {
+  "url": "https://jansuraksha.gov.in/",
+  "status": "tls_error",
+  "code": null,
+  "final": null,
+  "detail": "Jan-Dhan Se Jan Suraksha",
+  "loads_with_lenient_tls": true,
+  "browser": "OK",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:pmjjby:official_urls",
+   "catalog:pmsby:official_urls",
+   "results-screen:pmjjby:apply",
+   "results-screen:pmsby:apply",
+   "rules-cache:pmjjby:apply",
+   "rules-cache:pmsby:apply",
+   "scripts/ui_stub_server.py"
+  ]
+ },
+ {
+  "url": "https://labour.gov.in/",
+  "status": "tls_error",
+  "code": null,
+  "final": null,
+  "detail": "",
+  "loads_with_lenient_tls": true,
+  "browser": "OK",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:eshram:fallback_urls",
+   "catalog:pm_sym:fallback_urls"
+  ]
+ },
+ {
+  "url": "https://mahilakalyan.up.nic.in/",
+  "status": "tls_error",
+  "code": null,
+  "final": null,
+  "detail": "Child And Women Welfare",
+  "loads_with_lenient_tls": true,
+  "browser": "OK",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:up_kanya_sumangala:fallback_urls",
+   "catalog:up_widow_pension:display_url",
+   "catalog:up_widow_pension:fallback_urls",
+   "catalog:up_widow_pension:official_urls",
+   "evals:h02:up_widow_pension",
+   "evals:h09:up_widow_pension",
+   "evals:h14:up_widow_pension",
+   "evals:h17:up_widow_pension",
+   "results-screen:up_widow_pension",
+   "results-screen:up_widow_pension:apply",
+   "rules-cache:up_widow_pension",
+   "rules-cache:up_widow_pension:apply",
+   "rules-cache:up_widow_pension:rule",
+   "scripts/ui_stub_server.py"
+  ]
+ },
+ {
+  "url": "https://mksy.up.gov.in/",
+  "status": "tls_error",
+  "code": null,
+  "final": null,
+  "detail": "DEPARTMENT OF WOMEN & CHILD DEVELOPMENT",
+  "loads_with_lenient_tls": true,
+  "browser": "OK",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:up_kanya_sumangala:official_urls",
+   "evals:h01:up_kanya_sumangala",
+   "evals:h02:up_kanya_sumangala",
+   "evals:h06:up_kanya_sumangala",
+   "evals:h10:up_kanya_sumangala",
+   "evals:h12:up_kanya_sumangala",
+   "evals:h20:up_kanya_sumangala",
+   "results-screen:up_kanya_sumangala",
+   "results-screen:up_kanya_sumangala:apply",
+   "rules-cache:up_kanya_sumangala",
+   "rules-cache:up_kanya_sumangala:apply",
+   "rules-cache:up_kanya_sumangala:rule"
+  ]
+ },
+ {
+  "url": "https://pmayg.dord.gov.in/",
+  "status": "tls_error",
+  "code": null,
+  "final": null,
+  "detail": "Home | Pradhan Mantri Awaas Yojana - Gramin | Ministry of Ru",
+  "loads_with_lenient_tls": true,
+  "browser": "OK",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:pmay_g:official_urls",
+   "evals:h01:pmay_g",
+   "evals:h02:pmay_g",
+   "evals:h07:pmay_g",
+   "evals:h09:pmay_g",
+   "evals:h11:pmay_g",
+   "evals:h12:pmay_g",
+   "evals:h17:pmay_g",
+   "evals:h19:pmay_g",
+   "results-screen:pmay_g:apply",
+   "rules-cache:pmay_g:apply",
+   "scripts/ui_stub_server.py"
+  ]
+ },
+ {
+  "url": "https://pmayg.dord.gov.in/netiayHome/Uploaded/Guidelines-English_Book_Final.pdf",
+  "status": "tls_error",
+  "code": null,
+  "final": null,
+  "detail": "",
+  "loads_with_lenient_tls": true,
+  "browser": "OK",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:pmay_g:rules_docs",
+   "results-screen:pmay_g"
+  ]
+ },
+ {
+  "url": "https://pmkisan.gov.in/",
+  "status": "tls_error",
+  "code": null,
+  "final": null,
+  "detail": "PM-Kisan Samman Nidhi",
+  "loads_with_lenient_tls": true,
+  "browser": "OK",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:pm_kisan:official_urls",
+   "catalog:pm_kisan_maandhan:fallback_urls",
+   "evals:h01:pm_kisan",
+   "evals:h08:pm_kisan",
+   "evals:h12:pm_kisan",
+   "evals:h16:pm_kisan",
+   "results-screen:pm_kisan",
+   "results-screen:pm_kisan:apply",
+   "results-screen:pm_kisan_maandhan",
+   "results-screen:pm_kisan_maandhan:apply",
+   "rules-cache:pm_kisan",
+   "rules-cache:pm_kisan:apply",
+   "rules-cache:pm_kisan:rule",
+   "rules-cache:pm_kisan_maandhan",
+   "rules-cache:pm_kisan_maandhan:apply",
+   "rules-cache:pm_kisan_maandhan:rule",
+   "scripts/ui_stub_server.py"
+  ]
+ },
+ {
+  "url": "https://scholarship.up.gov.in/",
+  "status": "tls_error",
+  "code": null,
+  "final": null,
+  "detail": "Uttar Pradesh Scholarship Portal",
+  "loads_with_lenient_tls": true,
+  "browser": "OK",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:up_scholarship:official_urls",
+   "evals:h01:up_scholarship",
+   "evals:h06:up_scholarship",
+   "evals:h10:up_scholarship",
+   "evals:h12:up_scholarship",
+   "evals:h14:up_scholarship",
+   "evals:h16:up_scholarship",
+   "evals:h17:up_scholarship",
+   "results-screen:up_scholarship",
+   "results-screen:up_scholarship:apply",
+   "rules-cache:up_scholarship:apply",
+   "rules-cache:up_scholarship:rule"
+  ]
+ },
+ {
+  "url": "https://scholarship.up.gov.in/pdfs/SC%20NIYAMAVALI14%20OCTOBER%202019%20ENF%20BY%202020-21.pdf",
+  "status": "tls_error",
+  "code": null,
+  "final": null,
+  "detail": "",
+  "loads_with_lenient_tls": true,
+  "browser": "OK",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:up_scholarship:rules_docs"
+  ]
+ },
+ {
+  "url": "https://scholarship.up.gov.in/pdfs/go/OBC_Pre%20matrici%20Niyamawali%20(2016).pdf",
+  "status": "tls_error",
+  "code": null,
+  "final": null,
+  "detail": "",
+  "loads_with_lenient_tls": true,
+  "browser": "OK",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:up_scholarship:rules_docs",
+   "results-screen:up_scholarship",
+   "rules-cache:up_scholarship",
+   "rules-cache:up_scholarship:rule"
+  ]
+ },
+ {
+  "url": "https://agriwelfare.gov.in/",
+  "status": "OK",
+  "code": 200,
+  "final": "https://agriwelfare.gov.in/",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:pm_kisan:fallback_urls"
+  ]
+ },
+ {
+  "url": "https://beneficiary.nha.gov.in/",
+  "status": "OK",
+  "code": 200,
+  "final": "https://beneficiary.nha.gov.in/",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:ayushman_vay_vandana:official_urls",
+   "catalog:pmjay:official_urls",
+   "evals:h02:pmjay",
+   "evals:h03:ayushman_vay_vandana",
+   "evals:h09:pmjay",
+   "evals:h14:pmjay",
+   "evals:h17:ayushman_vay_vandana",
+   "results-screen:ayushman_vay_vandana:apply",
+   "results-screen:pmjay",
+   "results-screen:pmjay:apply",
+   "rules-cache:ayushman_vay_vandana:apply",
+   "rules-cache:pmjay",
+   "rules-cache:pmjay:apply",
+   "rules-cache:pmjay:rule"
+  ]
+ },
+ {
+  "url": "https://dfpd.gov.in/",
+  "status": "OK",
+  "code": 200,
+  "final": "https://dfpd.gov.in/",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:nfsa_ration:fallback_urls"
+  ]
+ },
+ {
+  "url": "https://digishakti.up.gov.in/",
+  "status": "OK",
+  "code": 200,
+  "final": "https://digishakti.up.gov.in/",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:up_digishakti:official_urls"
+  ]
+ },
+ {
+  "url": "https://eshram.gov.in/",
+  "status": "OK",
+  "code": 200,
+  "final": "https://eshram.gov.in/",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:eshram:official_urls",
+   "results-screen:eshram:apply"
+  ]
+ },
+ {
+  "url": "https://eshram.gov.in/faqs",
+  "status": "OK",
+  "code": 200,
+  "final": "https://eshram.gov.in/faqs",
+  "final_verdict": "OK",
+  "sources": [
+   "results-screen:eshram",
+   "rules-cache:eshram",
+   "rules-cache:eshram:rule"
+  ]
+ },
+ {
+  "url": "https://fcs.up.gov.in/",
+  "status": "OK",
+  "code": 200,
+  "final": "https://fcs.up.gov.in/",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:nfsa_ration:official_urls",
+   "evals:h05:nfsa_ration",
+   "evals:h07:nfsa_ration",
+   "evals:h13:nfsa_ration",
+   "evals:h19:nfsa_ration",
+   "results-screen:nfsa_ration:apply",
+   "rules-cache:nfsa_ration:apply",
+   "rules-cache:nfsa_ration:rule"
+  ]
+ },
+ {
+  "url": "https://financialservices.gov.in/pmsby",
+  "status": "OK",
+  "code": 200,
+  "final": "https://financialservices.gov.in/pmsby",
+  "final_verdict": "OK",
+  "sources": [
+   "results-screen:pmsby"
+  ]
+ },
+ {
+  "url": "https://financialservices.gov.in/pradhan-mantri-jeevan-jyoti-bima-yojana-pmjjby",
+  "status": "OK",
+  "code": 200,
+  "final": "https://financialservices.gov.in/pradhan-mantri-jeevan-jyoti-bima-yojana-pmjjby",
+  "final_verdict": "OK",
+  "sources": [
+   "results-screen:pmjjby"
+  ]
+ },
+ {
+  "url": "https://financialservices.gov.in/pradhan-mantri-suraksha-bima-yojana-pmsby",
+  "status": "OK",
+  "code": 200,
+  "final": "https://financialservices.gov.in/pradhan-mantri-suraksha-bima-yojana-pmsby",
+  "final_verdict": "OK",
+  "sources": [
+   "results-screen:pmsby",
+   "rules-cache:pmsby",
+   "rules-cache:pmsby:rule"
+  ]
+ },
+ {
+  "url": "https://maandhan.in/",
+  "status": "OK",
+  "code": 200,
+  "final": "https://maandhan.in/",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:pm_kisan_maandhan:official_urls",
+   "catalog:pm_sym:official_urls",
+   "results-screen:pm_sym",
+   "results-screen:pm_sym:apply",
+   "rules-cache:pm_sym",
+   "rules-cache:pm_sym:apply",
+   "rules-cache:pm_sym:rule"
+  ]
+ },
+ {
+  "url": "https://nfsa.gov.in/",
+  "status": "OK",
+  "code": 200,
+  "final": "https://nfsa.gov.in/",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:nfsa_ration:official_urls",
+   "rules-cache:nfsa_ration:rule"
+  ]
+ },
+ {
+  "url": "https://nfsa.gov.in/portal/nfsa-act",
+  "status": "OK",
+  "code": 200,
+  "final": "https://nfsa.gov.in/portal/nfsa-act",
+  "final_verdict": "OK",
+  "sources": [
+   "results-screen:nfsa_ration",
+   "rules-cache:nfsa_ration",
+   "rules-cache:nfsa_ration:rule"
+  ]
+ },
+ {
+  "url": "https://nsap.dord.gov.in/",
+  "status": "OK",
+  "code": 200,
+  "final": "https://nsap.dord.gov.in/",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:up_divyang_pension:fallback_urls",
+   "catalog:up_old_age_pension:fallback_urls",
+   "catalog:up_widow_pension:fallback_urls"
+  ]
+ },
+ {
+  "url": "https://pmfby.gov.in/",
+  "status": "OK",
+  "code": 200,
+  "final": "https://pmfby.gov.in/",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:pmfby:official_urls",
+   "results-screen:pmfby:apply",
+   "rules-cache:pmfby:apply"
+  ]
+ },
+ {
+  "url": "https://pmfby.gov.in/pdf/Revamped%20Operational%20Guidelines_17th%20August%202020.pdf",
+  "status": "OK",
+  "code": 200,
+  "final": "https://pmfby.gov.in/pdf/Revamped%20Operational%20Guidelines_17th%20August%202020.pdf",
+  "final_verdict": "OK",
+  "sources": [
+   "results-screen:pmfby",
+   "rules-cache:pmfby",
+   "rules-cache:pmfby:rule"
+  ]
+ },
+ {
+  "url": "https://pmfby.gov.in/pdf/Revised_Operational_Guidelines.pdf",
+  "status": "OK",
+  "code": 200,
+  "final": "https://pmfby.gov.in/pdf/Revised_Operational_Guidelines.pdf",
+  "final_verdict": "OK",
+  "sources": [
+   "results-screen:pmfby"
+  ]
+ },
+ {
+  "url": "https://pmmvy.wcd.gov.in/",
+  "status": "OK",
+  "code": 200,
+  "final": "https://pmmvy.wcd.gov.in/",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:pmmvy:official_urls",
+   "evals:h05:pmmvy",
+   "evals:h19:pmmvy",
+   "results-screen:pmmvy:apply",
+   "rules-cache:pmmvy:apply"
+  ]
+ },
+ {
+  "url": "https://pmvishwakarma.gov.in/",
+  "status": "OK",
+  "code": 200,
+  "final": "https://pmvishwakarma.gov.in/",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:pm_vishwakarma:official_urls",
+   "evals:h10:pm_vishwakarma",
+   "evals:h18:pm_vishwakarma",
+   "results-screen:pm_vishwakarma",
+   "results-screen:pm_vishwakarma:apply",
+   "rules-cache:pm_vishwakarma",
+   "rules-cache:pm_vishwakarma:apply",
+   "rules-cache:pm_vishwakarma:rule"
+  ]
+ },
+ {
+  "url": "https://register.eshram.gov.in",
+  "status": "OK",
+  "code": 200,
+  "final": "https://register.eshram.gov.in",
+  "final_verdict": "OK",
+  "sources": [
+   "results-screen:eshram:apply",
+   "rules-cache:eshram:apply"
+  ]
+ },
+ {
+  "url": "https://saharanpur.nic.in/scheme/divyang-pension-scheme/",
+  "status": "OK",
+  "code": 200,
+  "final": "https://saharanpur.nic.in/scheme/divyang-pension-scheme/",
+  "final_verdict": "OK",
+  "sources": [
+   "rules-cache:up_divyang_pension:rule"
+  ]
+ },
+ {
+  "url": "https://samajkalyan.up.gov.in/",
+  "status": "OK",
+  "code": 200,
+  "final": "https://samajkalyan.up.gov.in/",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:up_abhyudaya:official_urls",
+   "catalog:up_old_age_pension:display_url",
+   "catalog:up_old_age_pension:fallback_urls",
+   "catalog:up_old_age_pension:official_urls",
+   "evals:h03:up_old_age_pension",
+   "evals:h17:up_old_age_pension",
+   "results-screen:up_old_age_pension",
+   "results-screen:up_old_age_pension:apply",
+   "rules-cache:up_old_age_pension",
+   "rules-cache:up_old_age_pension:apply",
+   "rules-cache:up_old_age_pension:rule"
+  ]
+ },
+ {
+  "url": "https://scholarships.gov.in/",
+  "status": "OK",
+  "code": 200,
+  "final": "https://scholarships.gov.in/",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:nsp_scholarship:official_urls",
+   "catalog:up_scholarship:fallback_urls",
+   "results-screen:nsp_scholarship:apply",
+   "rules-cache:nsp_scholarship:apply"
+  ]
+ },
+ {
+  "url": "https://shadianudan.upsdc.gov.in/",
+  "status": "OK",
+  "code": 200,
+  "final": "https://shadianudan.upsdc.gov.in/",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:up_shadi_anudan:official_urls",
+   "results-screen:up_shadi_anudan",
+   "results-screen:up_shadi_anudan:apply",
+   "rules-cache:up_shadi_anudan",
+   "rules-cache:up_shadi_anudan:apply",
+   "rules-cache:up_shadi_anudan:rule"
+  ]
+ },
+ {
+  "url": "https://static.pib.gov.in/WriteReadData/userfiles/file/e-ShramPortal3NCD.pdf",
+  "status": "OK",
+  "code": 200,
+  "final": "https://static.pib.gov.in/WriteReadData/userfiles/file/e-ShramPortal3NCD.pdf",
+  "final_verdict": "OK",
+  "sources": [
+   "results-screen:eshram"
+  ]
+ },
+ {
+  "url": "https://wcd.gov.in/",
+  "status": "OK",
+  "code": 200,
+  "final": "https://wcd.gov.in/",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:pmmvy:fallback_urls"
+  ]
+ },
+ {
+  "url": "https://wcd.gov.in/women/pradhan-mantri-matru-vandana-yojna",
+  "status": "OK",
+  "code": 200,
+  "final": "https://wcd.gov.in/women/pradhan-mantri-matru-vandana-yojna",
+  "final_verdict": "OK",
+  "sources": [
+   "results-screen:pmmvy",
+   "rules-cache:pmmvy",
+   "rules-cache:pmmvy:rule"
+  ]
+ },
+ {
+  "url": "https://www.india.gov.in/",
+  "status": "OK",
+  "code": 200,
+  "final": "https://www.india.gov.in/",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:nsp_scholarship:fallback_urls"
+  ]
+ },
+ {
+  "url": "https://www.myscheme.gov.in/schemes/pm-kisan",
+  "status": "OK",
+  "code": 200,
+  "final": "https://www.myscheme.gov.in/schemes/pm-kisan",
+  "browser": "OK",
+  "detail": "Pradhan Mantri Kisan Samman Nidhi",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:pm_kisan:fallback_urls",
+   "scripts/ui_stub_server.py"
+  ]
+ },
+ {
+  "url": "https://www.myscheme.gov.in/schemes/pmay-g",
+  "status": "OK",
+  "code": 200,
+  "final": "https://www.myscheme.gov.in/schemes/pmay-g",
+  "browser": "OK",
+  "detail": "Pradhan Mantri Awaas Yojana - Gramin",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:pmay_g:fallback_urls"
+  ]
+ },
+ {
+  "url": "https://www.myscheme.gov.in/schemes/pmfby",
+  "status": "OK",
+  "code": 200,
+  "final": "https://www.myscheme.gov.in/schemes/pmfby",
+  "browser": "OK",
+  "detail": "Pradhan Mantri Fasal Bima Yojna (PMFBY)",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:pmfby:fallback_urls"
+  ]
+ },
+ {
+  "url": "https://www.myscheme.gov.in/schemes/pmjjby",
+  "status": "OK",
+  "code": 200,
+  "final": "https://www.myscheme.gov.in/schemes/pmjjby",
+  "browser": "OK",
+  "detail": "Pradhan Mantri Jeevan Jyoti Bima Yojana",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:pmjjby:fallback_urls"
+  ]
+ },
+ {
+  "url": "https://www.myscheme.gov.in/schemes/pmmvy",
+  "status": "OK",
+  "code": 200,
+  "final": "https://www.myscheme.gov.in/schemes/pmmvy",
+  "browser": "OK",
+  "detail": "Pradhan Mantri Matru Vandana Yojana",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:pmmvy:fallback_urls"
+  ]
+ },
+ {
+  "url": "https://www.myscheme.gov.in/schemes/pmsby",
+  "status": "OK",
+  "code": 200,
+  "final": "https://www.myscheme.gov.in/schemes/pmsby",
+  "browser": "OK",
+  "detail": "Pradhan Mantri Suraksha Bima Yojana",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:pmsby:fallback_urls"
+  ]
+ },
+ {
+  "url": "https://www.myscheme.gov.in/schemes/pmuy",
+  "status": "OK",
+  "code": 200,
+  "final": "https://www.myscheme.gov.in/schemes/pmuy",
+  "browser": "OK",
+  "detail": "Pradhan Mantri Ujjwala Yojana",
+  "final_verdict": "OK",
+  "sources": [
+   "catalog:pmuy:fallback_urls"
+  ]
+ },
+ {
+  "url": "https://www.pib.gov.in/PressNoteDetails.aspx?NoteId=154428&ModuleId=3&reg=3&lang=1",
+  "status": "OK",
+  "code": 200,
+  "final": "https://www.pib.gov.in/PressNoteDetails.aspx?NoteId=154428&ModuleId=3&reg=3&lang=1",
+  "final_verdict": "OK",
+  "sources": [
+   "results-screen:pmjjby",
+   "rules-cache:pmjjby",
+   "rules-cache:pmjjby:rule"
+  ]
+ },
+ {
+  "url": "https://www.pib.gov.in/PressReleaseIframePage.aspx?PRID=1922622&reg=48&lang=2",
+  "status": "OK",
+  "code": 200,
+  "final": "https://www.pib.gov.in/PressReleaseIframePage.aspx?PRID=1922622&reg=48&lang=2",
+  "final_verdict": "OK",
+  "sources": [
+   "results-screen:pmjjby",
+   "results-screen:pmsby",
+   "rules-cache:pmsby:rule"
+  ]
+ },
+ {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2074713&reg=48&lang=2",
+  "status": "OK",
+  "code": 200,
+  "final": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2074713&reg=48&lang=2",
+  "final_verdict": "OK",
+  "sources": [
+   "results-screen:pmay_g",
+   "rules-cache:pmay_g",
+   "rules-cache:pmay_g:rule"
+  ]
+ },
+ {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2082288&reg=48&lang=2",
+  "status": "OK",
+  "code": 200,
+  "final": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2082288&reg=48&lang=2",
+  "final_verdict": "OK",
+  "sources": [
+   "results-screen:ayushman_vay_vandana",
+   "rules-cache:ayushman_vay_vandana",
+   "rules-cache:ayushman_vay_vandana:rule"
+  ]
+ },
+ {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2086193&reg=48&lang=2",
+  "status": "OK",
+  "code": 200,
+  "final": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2086193&reg=48&lang=2",
+  "final_verdict": "OK",
+  "sources": [
+   "results-screen:eshram"
+  ]
+ },
+ {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2127981&reg=48&lang=2",
+  "status": "OK",
+  "code": 200,
+  "final": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2127981&reg=48&lang=2",
+  "final_verdict": "OK",
+  "sources": [
+   "results-screen:pmsby"
+  ]
+ },
+ {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2259251&reg=3&lang=1",
+  "status": "OK",
+  "code": 200,
+  "final": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2259251&reg=3&lang=1",
+  "final_verdict": "OK",
+  "sources": [
+   "results-screen:pmsby"
+  ]
+ }
+]

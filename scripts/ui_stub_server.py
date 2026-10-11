@@ -15,7 +15,10 @@ import time
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 os.environ.update(NEATLOGS_API_KEY="", ANTHROPIC_API_KEY="stub-no-calls",
-                  HAQ_STATE_FILE=os.path.join(tempfile.mkdtemp(prefix="haq-stub-"), "state.json"))
+                  # STUB_STATE_FILE keeps state across a kill/restart (stress tests); default is a fresh temp file
+                  HAQ_STATE_FILE=os.environ.get("STUB_STATE_FILE")
+                  or os.path.join(tempfile.mkdtemp(prefix="haq-stub-"), "state.json"))
+SPEED = float(os.environ.get("STUB_SPEED", "1"))     # >1 = faster fake run
 sys.path.insert(0, ROOT)
 os.chdir(ROOT)
 
@@ -23,6 +26,7 @@ import app as appmod  # noqa: E402
 from haq import agent, intake, present, state  # noqa: E402
 
 release = threading.Event()
+release.set()      # runs flow straight through unless /stub/reset puts a hold on them
 
 
 def fake_run(hid, resume=True):
@@ -32,7 +36,7 @@ def fake_run(hid, resume=True):
 
     def ev(t, pause=0.35, **d):
         state.add_event(hid, rid, t, **d)
-        time.sleep(pause)
+        time.sleep(pause / SPEED)
 
     ev("understood", members=3)
     ev("planned", schemes=5)
@@ -68,7 +72,7 @@ def fake_run(hid, resume=True):
                  "https://pmkisan.gov.in/"),
             card("up_widow_pension", "🙏", "निराश्रित महिला पेंशन", "grandmother", "हर महीने ₹1,000 पेंशन, सीधे बैंक खाते में।",
                  12000, "likely", ["income_limit"], ["आधार कार्ड", "पति का मृत्यु प्रमाण पत्र", "आय प्रमाण पत्र", "बैंक पासबुक"],
-                 False, csc, "https://sspy-up.gov.in/"),
+                 False, csc, "https://mahilakalyan.up.nic.in/"),
             card("pmay_g", "🏠", "पीएम आवास (ग्रामीण)", "household", "पक्का घर बनाने के लिए ₹1.2 लाख की मदद।", 0, "likely",
                  ["house", "area"], ["आधार कार्ड", "राशन कार्ड", "बैंक पासबुक"], False, csc, "https://pmayg.dord.gov.in/"),
             card("pmsby", "🦺", "PMSBY", "father", "सिर्फ़ ₹20 सालाना में ₹2 लाख का दुर्घटना बीमा।", 0, "confirmed", [],
@@ -106,13 +110,27 @@ def fake_translate(hid, result):
                       for i, c in enumerate(result["cards"])]}
 
 
+FAMILY_WORDS = ("papa", "father", "mother", "maa", "mummy", "farmer", "kisan", "widow", "vidhwa", "son", "daughter",
+                "beta", "beti", "family", "पापा", "पिता", "माँ", "मां", "किसान", "विधवा", "बेटा", "बेटी", "परिवार", "दादा", "दादी")
+
+
 def fake_extract(usage, **kw):
-    p = {**intake.empty_profile(),
-         "members": [intake._member(relation="self", age=40, gender="male", occupation="farmer")]}
+    """Like the real extractor: a description with family words yields members, anything else yields none."""
+    text = (kw.get("user") or "").split("\n", 1)[-1].lower()   # drop the "Family's description:" prefix
+    members = [intake._member(relation="self", age=40, gender="male", occupation="farmer")] \
+        if any(w in text for w in FAMILY_WORDS) else []
+    p = {**intake.empty_profile(), "members": members}
     return {k: v for k, v in p.items() if k not in ("state", "assumptions")}
 
 
+def fake_followup(hid, question, lang="hi"):
+    answer = ("हाँ, आपकी माँ के लिए निराश्रित महिला पेंशन की जाँच कीजिए।" if lang == "hi"
+              else "Yes — check the UP Destitute Women Pension for your mother.")
+    return {"answer": answer, "profile_changed": False, "profile": state.get(hid)["profile"]}
+
+
 agent.run = fake_run
+agent.followup = fake_followup
 present._translate = fake_translate
 intake.structured = fake_extract
 

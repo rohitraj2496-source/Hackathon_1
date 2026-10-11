@@ -14,13 +14,19 @@ import uuid
 from .config import STATE_FILE
 
 _lock = threading.RLock()
+_mem: dict | None = None   # parsed once per process; every change is still written to disk atomically
 
 
 def _load() -> dict:
-    if not os.path.exists(STATE_FILE):
-        return {"households": {}}
-    with open(STATE_FILE, encoding="utf-8") as f:
-        return json.load(f)
+    global _mem
+    with _lock:
+        if _mem is None:
+            if os.path.exists(STATE_FILE):
+                with open(STATE_FILE, encoding="utf-8") as f:
+                    _mem = json.load(f)
+            else:
+                _mem = {"households": {}}
+        return _mem
 
 
 def _save(data: dict) -> None:

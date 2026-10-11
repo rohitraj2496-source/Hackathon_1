@@ -68,7 +68,8 @@ def _view(result: dict, lang: str, tr: dict | None) -> dict:
             "counts_toward_total": c["counts_toward_total"] and not protection,
             "counts_toward_likely_total": c.get("counts_toward_likely_total", False) and not protection,
             "already_receiving": c["already_receiving"],
-            "apply_url": c["apply_url"], "official_url": c["official_url"],
+            "apply_url": catalog.display_link(c["apply_url"], c["scheme_id"]),
+            "official_url": catalog.display_link(c["official_url"], c["scheme_id"]),
         })
     # Recomputed from the cards so insurance is never in the total, also for results saved earlier.
     confirmed = sum(c["annual_value_inr"] for c in cards if c["counts_toward_total"])

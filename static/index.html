@@ -71,6 +71,7 @@
   .primary { width: 100%; min-height: 64px; border-radius: 18px; background: var(--accent); color: var(--accent-ink);
              font-weight: 700; font-size: 22px; margin-top: 18px; }
   .primary:disabled { opacity: .45; }
+  .option:disabled { opacity: .5; }
   .ghost { min-height: 52px; padding: 0 18px; border-radius: 16px; border: 2px solid var(--line); background: var(--surface); font-weight: 600; }
   textarea { width: 100%; min-height: 160px; font: inherit; font-size: 20px; padding: 16px; border-radius: 18px;
              border: 2px solid var(--line); background: var(--surface); color: var(--ink); resize: vertical; }
@@ -131,7 +132,8 @@
   html[lang="hi"] .cover .pay, html[lang="hi"] .cover .get { font-family: var(--font-hi); }
   .cover .pay { background: var(--warn-soft); color: var(--warn); }
   .cover .get { background: var(--accent-soft); color: var(--accent); }
-  .headline .speak { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,.18); color: #fff; }
+  .headline .speak { position: absolute; top: 16px; right: 16px; z-index: 2; background: rgba(255,255,255,.18); color: #fff; }
+  .headline .l { padding-right: 56px; }   /* keep text clear of the read-aloud button */
   .scheme { margin-top: 14px; padding: 18px; }
   .scheme-top { display: flex; gap: 12px; align-items: flex-start; }
   .scheme .emoji { font-size: 46px; line-height: 1; }
@@ -156,6 +158,10 @@
   .bottom { display: grid; gap: 10px; margin-top: 22px; }
   .answer { margin-top: 14px; }
   .err { color: var(--warn); font-weight: 600; margin-top: 12px; }
+  .sticky-go .err { margin: 0 0 8px; background: var(--warn-soft); border-radius: 12px; padding: 8px 12px; }
+  .conn { margin-top: 14px; background: var(--amber-soft); color: var(--amber); font-weight: 700; border-radius: 14px; padding: 12px 14px; }
+  .ask-box textarea { min-height: 96px; }
+  .primary.busy { opacity: .6; pointer-events: none; }
   @media (max-width: 360px) { .wordmark { font-size: 46px; } .headline .amt { font-size: 42px; } .mic { width: 148px; height: 148px; } }
 </style>
 </head>
@@ -196,6 +202,7 @@
   <section class="screen" id="s-type">
     <h2 data-t="tell"></h2>
     <textarea id="typeBox"></textarea>
+    <div class="err hidden" id="typeErr" role="alert"></div>
     <button class="primary" id="typeGo" data-t="continue"></button>
     <button class="text-btn" data-back="s-start" data-t="back"></button>
   </section>
@@ -208,7 +215,8 @@
     <div class="section-label" data-t="income"></div>
     <div class="chips" id="incomeChips"></div>
     <button class="text-btn" data-back="s-start" data-t="back"></button>
-    <div class="sticky-go"><button class="primary" id="builderGo" data-t="continue" disabled></button></div>
+    <div class="sticky-go"><div class="err hidden" id="builderHint" role="alert"></div>
+      <button class="primary" id="builderGo" data-t="continue"></button></div>
   </section>
 
   <!-- 1d. follow-up -->
@@ -222,6 +230,7 @@
   <section class="screen" id="s-work">
     <h2 data-t="working"></h2>
     <ul class="steps" id="steps"></ul>
+    <div class="conn hidden" id="conn" role="status"></div>
     <div class="err hidden" id="workErr"></div>
     <button class="primary hidden" id="retry" data-t="retry"></button>
   </section>
@@ -238,6 +247,10 @@
     <div id="cards"></div>
     <div class="bottom">
       <button class="ghost" id="askBtn" data-t="ask"></button>
+      <div class="ask-box hidden" id="askBox">
+        <textarea id="askText" rows="3"></textarea>
+        <button class="primary" id="askSend" data-t="send"></button>
+      </div>
       <div class="card answer hidden" id="answer"></div>
       <button class="text-btn" id="restart" data-t="newFamily"></button>
     </div>
@@ -264,6 +277,11 @@ const T = {
     confirmed: "✓ पक्का (सरकारी स्रोत)", check: "जाँच ज़रूरी:", have: "पहले से मिल रही",
     perYear: "/ साल", whereApply: "कहाँ आवेदन करें", openSite: "वेबसाइट खोलें →", source: "सरकारी स्रोत ↗",
     forWho: "किसके लिए:", docs: "ज़रूरी कागज़:", err: "माफ़ कीजिए, कुछ गड़बड़ हुई। फिर से कोशिश करें।",
+    offline: "इंटरनेट नहीं मिल रहा। जुड़ने पर फिर से कोशिश करें।",
+    needMore: "हम आपका परिवार समझ नहीं पाए। बताइए घर में कौन-कौन है और क्या काम करते हैं — या छूकर बताइए।",
+    emptyText: "पहले कुछ लिखिए — घर में कौन-कौन है?", noMembers: "पहले परिवार के लोग जोड़िए (ऊपर छूकर)।",
+    conn: "कनेक्शन टूट गया — फिर से जोड़ रहे हैं…", micBlocked: "माइक की इजाज़त नहीं है — लिखकर बताइए।",
+    send: "भेजें", askPlaceholder: "अपना सवाल लिखिए…",
     none: "अभी कोई पक्की योजना नहीं मिली।",
     ev: {
       understood: "आपका परिवार समझ लिया", planned: (n) => `${n} योजनाएँ जाँचनी हैं`,
@@ -295,6 +313,11 @@ const T = {
     confirmed: "✓ Confirmed (official source)", check: "Check needed:", have: "Already receiving",
     perYear: "/ year", whereApply: "Where to apply", openSite: "Open website →", source: "Official source ↗",
     forWho: "For:", docs: "Documents:", err: "Sorry, something went wrong. Please try again.",
+    offline: "No internet connection. Please try again when you are back online.",
+    needMore: "We couldn't understand your family. Tell us who lives at home and what work they do — or tap to tell us.",
+    emptyText: "Please type something first — who lives in your home?", noMembers: "Add your family members first (tap above).",
+    conn: "Connection lost — reconnecting…", micBlocked: "Microphone is blocked — please type instead.",
+    send: "Send", askPlaceholder: "Type your question…",
     none: "No confirmed schemes yet.",
     ev: {
       understood: "Understood your family", planned: (n) => `${n} schemes to check`,
@@ -360,8 +383,8 @@ function speak(text) {
   speechSynthesis.speak(u);
 }
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-function listen(onText) {
-  if (!SR) { $("heard").textContent = L().noMic; show("s-type"); return; }
+function listen(onText, onUnavailable) {
+  if (!SR) { onUnavailable(L().noMic); return; }
   speechSynthesis.cancel();
   const rec = new SR();
   rec.lang = lang === "en" ? "en-IN" : "hi-IN";
@@ -373,7 +396,12 @@ function listen(onText) {
     for (const r of e.results) { if (r.isFinal) finalText += r[0].transcript; else interim += r[0].transcript; }
     $("heard").textContent = (finalText + " " + interim).trim() || L().listening;
   };
-  rec.onerror = () => { $("heard").textContent = L().heardNothing; };
+  rec.onerror = (e) => {
+    $("mic").classList.remove("listening");
+    if (e && (e.error === "not-allowed" || e.error === "service-not-allowed" || e.error === "audio-capture")) {
+      finalText = ""; onUnavailable(L().micBlocked);
+    } else $("heard").textContent = L().heardNothing;
+  };
   rec.onend = () => {
     $("mic").classList.remove("listening");
     if (finalText.trim()) onText(finalText.trim()); else if ($("heard").textContent === L().listening) $("heard").textContent = L().heardNothing;
@@ -421,20 +449,39 @@ async function ensureHousehold() {
 }
 
 // ---------------------------------------------------------------- intake
-async function submitIntake(payload) {
-  $("startErr").classList.add("hidden");
+let busy = false;   // one request at a time: double/triple taps must not send twice
+function msg(id, text) { const el = $(id); el.textContent = text; el.classList.toggle("hidden", !text); if (text) speak(text); }
+const netErr = (e) => e instanceof TypeError || !navigator.onLine;     // fetch() throws TypeError when offline
+async function submitIntake(payload, from) {
+  if (busy) return;
+  busy = true; ["startErr", "typeErr", "builderHint"].forEach(id => $(id).classList.add("hidden"));
+  const btn = from && $(from); if (btn) btn.classList.add("busy");
   try {
     await ensureHousehold();
     const r = await api(`/api/households/${hid}/intake`, { lang, ...payload });
+    if (r.need_more) {                        // nothing about a family was understood
+      if (payload.builder) msg("builderHint", L().noMembers);
+      else if (current === "s-type") msg("typeErr", L().needMore);
+      else { show("s-start"); msg("startErr", L().needMore); }
+      return;
+    }
     followups = r.followups; qIndex = 0; answers = {};
     if (followups.length) { show("s-follow"); renderQuestion(true); } else startWorking();
   } catch (e) {
-    show("s-start"); $("startErr").textContent = L().err; $("startErr").classList.remove("hidden"); speak(L().err);
-  }
+    const text = netErr(e) ? L().offline : L().err;
+    if (current === "s-builder") msg("builderHint", text);
+    else if (current === "s-type") msg("typeErr", text);
+    else { show("s-start"); msg("startErr", text); }
+  } finally { busy = false; if (btn) btn.classList.remove("busy"); }
 }
-$("mic").onclick = () => listen(text => submitIntake({ text }));
+function typeInstead(reason) { show("s-type"); if (reason) msg("typeErr", reason); $("typeBox").focus(); }
+$("mic").onclick = () => listen(text => submitIntake({ text }), typeInstead);
 $("toType").onclick = () => { show("s-type"); $("typeBox").focus(); };
-$("typeGo").onclick = () => { const t = $("typeBox").value.trim(); if (t) submitIntake({ text: t }); };
+$("typeGo").onclick = () => {
+  const t = $("typeBox").value.trim();
+  if (!t) { msg("typeErr", L().emptyText); return; }
+  submitIntake({ text: t }, "typeGo");
+};
 $("toBuilder").onclick = () => { show("s-builder"); speak(L().whoLives); };
 
 function chip(emoji, label, pressed, onClick) {
@@ -468,9 +515,12 @@ function renderBuilder() {
   INCOME.forEach(([v, lab]) => ic.appendChild(chip(null, lab[lang || "hi"], builder.income === v, () => {
     builder.income = builder.income === v ? null : v; renderBuilder();
   })));
-  $("builderGo").disabled = builder.members.length === 0;
+  if (builder.members.length) $("builderHint").classList.add("hidden");
 }
-$("builderGo").onclick = () => submitIntake({ builder });
+$("builderGo").onclick = () => {
+  if (!builder.members.length) { msg("builderHint", L().noMembers); return; }
+  submitIntake({ builder }, "builderGo");
+};
 
 // ---------------------------------------------------------------- follow-ups (tap only, max 2)
 function renderQuestion(say) {
@@ -480,16 +530,22 @@ function renderQuestion(say) {
   const box = $("qOptions"); box.innerHTML = "";
   q.options.forEach(o => {
     const b = document.createElement("button"); b.className = "option"; b.textContent = o.label;
-    b.onclick = () => answer(q.id, o.value); box.appendChild(b);
+    b.onclick = () => { box.querySelectorAll("button").forEach(x => x.disabled = true); answer(q.id, o.value); };
+    box.appendChild(b);
   });
   if (say) speak(q.question + " " + q.options.map(o => o.label).join(", "));
 }
 $("qSpeak").onclick = () => { const q = followups[qIndex]; if (q) speak(q.question + " " + q.options.map(o => o.label).join(", ")); };
 async function answer(id, value) {
+  if (answers[id] !== undefined || busy) return;      // a second tap on the same question is ignored
   answers[id] = value; qIndex++;
   if (qIndex < followups.length) { renderQuestion(true); return; }
+  busy = true;
   try { await api(`/api/households/${hid}/answers`, { lang, answers }); startWorking(); }
-  catch { $("qText").textContent = L().err; }
+  catch (e) {                                         // let them tap again
+    qIndex = followups.length - 1; delete answers[followups[qIndex].id]; renderQuestion(false);
+    $("qText").textContent = netErr(e) ? L().offline : L().err;
+  } finally { busy = false; }
 }
 
 // ---------------------------------------------------------------- working (live checklist)
@@ -527,15 +583,24 @@ function renderSteps(d) {
     li.append(i, t); ul.appendChild(li);
   });
 }
+let pollFails = 0;
 async function poll() {
-  let d; try { d = await api(`/api/households/${hid}?lang=${lang}`); } catch { return; }
+  let d;
+  try { d = await api(`/api/households/${hid}?lang=${lang}`); }
+  catch { if (++pollFails >= 2) msg("conn", L().conn); return; }   // keep polling; the run continues server-side
+  if (pollFails) { pollFails = 0; $("conn").classList.add("hidden"); }
   lastPoll = d; schemes = d.schemes || schemes; renderSteps(d);
   if (d.run && d.run.status === "done" && d.result) { clearInterval(pollTimer); setTimeout(() => renderResults(d.result, true), 600); }
   else if (d.run && d.run.status === "failed" && !d.running) {
     clearInterval(pollTimer); $("workErr").textContent = L().err; $("workErr").classList.remove("hidden"); $("retry").classList.remove("hidden");
   }
 }
-$("retry").onclick = async () => { await api(`/api/households/${hid}/run`, {}); startWorking(); };
+$("retry").onclick = async () => {
+  if (busy) return; busy = true;
+  try { await api(`/api/households/${hid}/run`, {}); startWorking(); }
+  catch (e) { msg("workErr", netErr(e) ? L().offline : L().err); }
+  finally { busy = false; }
+};
 
 // ---------------------------------------------------------------- results
 const rupee = (n) => "₹" + Number(n || 0).toLocaleString("en-IN");
@@ -616,16 +681,27 @@ function schemeCard(c) {
     return el;
 }
 $("sayHeadline").onclick = () => lastResult && speak(headlineSpeech(lastResult));
-$("askBtn").onclick = () => listen(async (text) => {
+async function sendQuestion(text) {
+  if (busy || !text) return; busy = true; $("askSend").classList.add("busy");
   try {
     const r = await api(`/api/households/${hid}/ask`, { lang, text });
     $("answer").textContent = r.answer; $("answer").classList.remove("hidden"); speak(r.answer);
+    $("askBox").classList.add("hidden"); $("askText").value = "";
     if (r.rerun) setTimeout(startWorking, 2500);
-  } catch { $("answer").textContent = L().err; $("answer").classList.remove("hidden"); }
-});
+  } catch (e) { $("answer").textContent = netErr(e) ? L().offline : L().err; $("answer").classList.remove("hidden"); }
+  finally { busy = false; $("askSend").classList.remove("busy"); }
+}
+function askByTyping(reason) {
+  $("askBox").classList.remove("hidden"); $("askText").placeholder = L().askPlaceholder; $("askText").focus();
+  if (reason) { $("answer").textContent = reason; $("answer").classList.remove("hidden"); }
+}
+$("askBtn").onclick = () => listen(sendQuestion, askByTyping);
+$("askSend").onclick = () => sendQuestion($("askText").value.trim());
 $("restart").onclick = () => {
   clearInterval(pollTimer); store.del("haq_hid"); hid = null; builder = { members: [], income: null };
-  spokeWorking = false; $("heard").textContent = ""; $("typeBox").value = ""; renderBuilder(); show("s-start");
+  spokeWorking = false; $("heard").textContent = ""; $("typeBox").value = ""; renderBuilder();
+  ["startErr", "typeErr", "builderHint", "conn", "answer", "askBox"].forEach(id => $(id).classList.add("hidden"));
+  show("s-start");
 };
 
 // ---------------------------------------------------------------- boot
