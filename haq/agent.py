@@ -6,9 +6,9 @@ the state file after each step so a crashed run resumes where it stopped.
 """
 import contextvars
 import json
+import queue
 import threading
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import anthropic
 import neatlogs
@@ -24,6 +24,11 @@ MAX_SEARCHES = 2            # web searches per scheme lookup
 BUDGET_NOTE = ("SEARCH BUDGET USED UP (2 searches): do not call web_search again. Use fetch_official_page on "
                "official URLs you already found, then finish with record_verified or drop_scheme.")
 RESEARCH_DEADLINE_S = 420   # wall-clock budget for one scheme's research loop
+
+
+# Set when the server is shutting down: research loops stop at their next step and the run stays
+# 'running' so the restarted server resumes it.
+SHUTDOWN = threading.Event()
 
 
 class RunAborted(Exception):
@@ -366,6 +371,8 @@ def research_scheme(profile: dict, cands: list[dict], usage: Usage, hid: str, ru
     with neatlogs.trace(f"research:{scheme_id}", kind="AGENT", session_id=hid,
                         members=[c["member"] for c in cands]):
         for turn in range(MAX_RESEARCH_TURNS):
+            if SHUTDOWN.is_set():
+                raise RunAborted("server shutting down; the run resumes after restart")
             if abort is not None and abort.is_set():
                 raise RunAborted("run aborted after a fatal API error in another lookup")
             if time.time() - started > RESEARCH_DEADLINE_S:
@@ -680,43 +687,74 @@ def run(hid: str, resume: bool = True) -> dict:
             return state.update_run(hid, rid, lambda r: r.update(
                 result=result, stage="done", status="done", finished_at=time.time(), usage=usage.snapshot()))
         except Exception as e:
+            if SHUTDOWN.is_set():      # interrupted by a restart, not a failure: leave it 'running' to resume
+                state.update_run(hid, rid, lambda r: r.update(usage=usage.snapshot()))
+                raise
             state.update_run(hid, rid, lambda r: r.update(status="failed", error=f"{type(e).__name__}: {e}",
                                                           usage=usage.snapshot()))
             raise
 
 
+def _parallel(fn, items, workers):
+    """Run fn(item) on up to `workers` daemon threads; yield (item, result, exception) as each finishes.
+
+    Daemon threads on purpose: a ThreadPoolExecutor's workers are joined when Python exits, so a research
+    call stuck in a slow model or government-site request kept the server from stopping on SIGTERM."""
+    todo, done = queue.Queue(), queue.Queue()
+    for it in items:
+        todo.put(it)
+
+    def worker(ctx):
+        while True:
+            try:
+                it = todo.get_nowait()
+            except queue.Empty:
+                return
+            try:
+                done.put((it, ctx.run(fn, it), None))
+            except BaseException as e:            # noqa: BLE001 - reported to the caller
+                done.put((it, None, e))
+    for _ in range(min(workers, len(items))):
+        threading.Thread(target=worker, args=(contextvars.copy_context(),), daemon=True).start()
+    for _ in range(len(items)):
+        while True:
+            try:
+                yield done.get(timeout=0.5)
+                break
+            except queue.Empty:
+                if SHUTDOWN.is_set():
+                    raise RunAborted("server shutting down; the run resumes after restart")
+
+
 def _research_groups(groups, profile, usage, hid, rid, abort, errors):
     """Research schemes in parallel; save each scheme's member records as soon as it completes."""
-    with ThreadPoolExecutor(RESEARCH_WORKERS) as pool:
-        futs = {pool.submit(contextvars.copy_context().run, research_scheme, profile, g, usage, hid, rid,
-                            abort): g
-                for g in groups}
-        for fut in as_completed(futs):
-            g = futs[fut]
-            try:
-                recs = fut.result()
-            except Exception as e:
-                # Not saved: the candidates stay unfinished so a resume retries them.
-                errors.append(f"{g[0]['scheme_id']}: {type(e).__name__}: {e}"[:300])
-                if isinstance(e, (anthropic.AuthenticationError, anthropic.PermissionDeniedError,
-                                  anthropic.BadRequestError, BudgetExceeded)):
-                    abort.set()  # the same error will hit every call; other loops stop at their next turn
-                continue
+    for g, recs, exc in _parallel(lambda g: research_scheme(profile, g, usage, hid, rid, abort),
+                                  groups, RESEARCH_WORKERS):
+        try:
+            if exc:
+                raise exc
+        except Exception as e:
+            # Not saved: the candidates stay unfinished so a resume retries them.
+            errors.append(f"{g[0]['scheme_id']}: {type(e).__name__}: {e}"[:300])
+            if isinstance(e, (anthropic.AuthenticationError, anthropic.PermissionDeniedError,
+                              anthropic.BadRequestError, BudgetExceeded)):
+                abort.set()  # the same error will hit every call; other loops stop at their next turn
+            continue
 
-            def _save(r, recs=recs, scheme=g[0]["scheme_id"]):
-                r["research"].update(recs)
-                first = next(iter(recs.values()))   # loop-level logs are shared by the scheme's members
-                r["conflicts"].extend({**x, "scheme": scheme} for x in first.get("conflicts", []))
-                r["recovery_log"].extend({**x, "scheme": scheme} for x in first.get("recovery_log", []))
-                r.setdefault("unofficial_claims", []).extend(
-                    {**x, "scheme": scheme} for x in first.get("unofficial_claims", []))
-                r["usage"] = usage.snapshot()
-                statuses = {x.get("status") for x in recs.values()}
-                outcome = ("confirmed" if "verified" in statuses else "likely" if "likely" in statuses
-                           else "not_eligible")
-                r.setdefault("events", []).append({"t": time.time(), "type": "scheme_done", "scheme_id": scheme,
-                                                   "outcome": outcome})
-            state.update_run(hid, rid, _save)
+        def _save(r, recs=recs, scheme=g[0]["scheme_id"]):
+            r["research"].update(recs)
+            first = next(iter(recs.values()))   # loop-level logs are shared by the scheme's members
+            r["conflicts"].extend({**x, "scheme": scheme} for x in first.get("conflicts", []))
+            r["recovery_log"].extend({**x, "scheme": scheme} for x in first.get("recovery_log", []))
+            r.setdefault("unofficial_claims", []).extend(
+                {**x, "scheme": scheme} for x in first.get("unofficial_claims", []))
+            r["usage"] = usage.snapshot()
+            statuses = {x.get("status") for x in recs.values()}
+            outcome = ("confirmed" if "verified" in statuses else "likely" if "likely" in statuses
+                       else "not_eligible")
+            r.setdefault("events", []).append({"t": time.time(), "type": "scheme_done", "scheme_id": scheme,
+                                               "outcome": outcome})
+        state.update_run(hid, rid, _save)
 
 
 # --------------------------------------------------------------------------

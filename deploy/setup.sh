@@ -96,9 +96,13 @@ WorkingDirectory=${APP_DIR}
 Environment=HAQ_PUBLIC=1
 Environment=PYTHONUNBUFFERED=1
 # One worker: rate limits and the in-memory state cache live in this process.
-ExecStart=${APP_DIR}/.venv/bin/uvicorn app:app --host 127.0.0.1 --port 8000 --workers 1 --proxy-headers --forwarded-allow-ips 127.0.0.1
+ExecStart=${APP_DIR}/.venv/bin/uvicorn app:app --host 127.0.0.1 --port 8000 --workers 1 --proxy-headers --forwarded-allow-ips 127.0.0.1 --timeout-graceful-shutdown 5
 Restart=on-failure
 RestartSec=5
+# Stop fast on restart: uvicorn gets SIGTERM, has 5 s to finish open requests, the app flushes traces
+# (2 s) and exits; anything still alive after 10 s is killed. Interrupted runs resume after the restart.
+TimeoutStopSec=10
+KillMode=mixed
 NoNewPrivileges=true
 PrivateTmp=true
 

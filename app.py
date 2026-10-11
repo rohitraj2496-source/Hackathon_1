@@ -5,13 +5,15 @@ Public deployment: see deploy/README.md (HAQ_PUBLIC=1, passcode-gated LIVE mode,
 """
 import json
 import logging
+import os
 import threading
 import time
 from contextlib import asynccontextmanager
 
-from haq import config  # noqa: F401  (loads .env, initialises neatlogs before anything else)
+os.environ.setdefault("HAQ_SERVER", "1")   # this process owns SIGTERM handling (see haq/config.py)
 
-import os
+from haq import config  # noqa: F401,E402  (loads .env, initialises neatlogs before anything else)
+
 from typing import Literal
 
 import neatlogs
@@ -56,8 +58,11 @@ async def lifespan(_app):
         if run and run["status"] == "running" and time.time() - run.get("started_at", 0) < RESUME_WITHIN_S:
             _run_in_background(hid)
     yield
-    neatlogs.flush()
-    neatlogs.shutdown()
+    # Stopping (systemctl restart/stop): research loops end at their next step and their runs stay
+    # 'running' so the restarted server resumes them; worker threads are daemons, so nothing blocks exit.
+    agent.SHUTDOWN.set()
+    neatlogs.flush(timeout_millis=2000)
+    neatlogs.shutdown(timeout_millis=2000)
 
 
 app = FastAPI(title="Haq", lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)

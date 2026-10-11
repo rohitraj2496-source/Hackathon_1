@@ -18,6 +18,9 @@ neatlogs.init(
     api_key=os.environ.get("NEATLOGS_API_KEY"),
     workflow_name=WORKFLOW_NAME,
     tags=["haq", "schemes", "uttar-pradesh"],
+    # The web server handles SIGTERM itself (fast flush in app.py's shutdown). neatlogs' own handler would
+    # run a 30 s shutdown and then exit Python while research threads are mid-request.
+    register_shutdown_handlers=os.environ.get("HAQ_SERVER") != "1",
 )
 
 from anthropic import Anthropic  # noqa: E402
