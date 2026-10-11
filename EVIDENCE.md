@@ -25,7 +25,7 @@ fully correct in the baseline and was not re-run. The "after" column uses the wa
 | Recall | 0.64 | **0.89** |
 | Wrong schemes (FP) | 8 | **1** |
 | Missed schemes (FN) | 10 | **3** |
-| Cost per household | $0.93 (≈ ₹82) | **$0.22 (≈ ₹20)** |
+| Cost per household | $0.93 (≈ ₹82) | **$0.22 (≈ ₹20)** average; ₹20–40 per family in test runs, depending on family size and cache |
 | Total cost for 9 households | $8.35 (≈ ₹735) | **$2.00 (≈ ₹176)** |
 | Time per household | 147 s | **59 s** |
 
@@ -179,11 +179,11 @@ In this table, a "check" is one family search. "Margin" is the contribution afte
   - At ₹4: month 16, 13 or 5.
   - At ₹10: month 24, 17 or 11.
   - At **₹20: never** within the forecast.
-  - The three values in each row are for 100 / 300 / 1,000 of a second driver, which the export does not name.
+  - The three values in each row are for 100 / 300 / 1,000 **CSC operators at month 12**.
 
 ### Where the per-check costs come from
 
-**₹20 per check (uncached) and ₹10 per check (cached) are MEASURED** from neatlogs-traced runs, and the plan marks them MEASURED. **₹4 per check is a TARGET**, not yet measured.
+**Measured cost: ₹20–40 per family in test runs, depending on family size and cache** (one-person families with a warm cache measured about ₹10). The plan's per-check costs of ₹20 (uncached) and ₹10 (cached) are **MEASURED** from neatlogs-traced runs, and the plan marks them MEASURED. **₹4 per check is a TARGET**, not yet measured.
 
 The runs recorded in this repo, converted at ₹88/$:
 
@@ -194,12 +194,12 @@ The runs recorded in this repo, converted at ₹88/$:
 | Three-member families, cached | ₹21.4 to ₹21.6 (8-household average ₹20.8) | traces `7ad95bd365bfdb0f4c49652228f19c2d`, `86f478b4537648b5e25dd329456e6391` |
 | Three-member family, uncached | **₹40.2** | trace `28204345122d65f99265fd532cb580c2` |
 
-So ₹20 and ₹10 match **one-person** households. Multi-member families cost about twice as much (see the risks below).
+So the plan's flat ₹20 and ₹10 match **one-person** households. It was ₹20–40 per family in test runs, depending on family size and cache (see the risks below).
 
 ### Key risky assumptions
 
-1. **AI cost falls to ₹4 per check from month 10.** This is a target. At the measured ₹20 the plan never breaks even, and CSC and CSR checks lose money. The Conservative case, which stays at ₹10, needs ₹24.7 lakh of extra funding.
-2. **₹20 and ₹10 are per one-person household.** The measured three-member families cost ₹21 (cached) to ₹40 (uncached). The plan sheet also notes these numbers are user-reported and not independently audited.
+1. **AI cost falls to ₹4 per check from month 10.** This is a target. At ₹20 per check, the low end of the ₹20–40 per family in test runs, depending on family size and cache, the plan never breaks even, and CSC and CSR checks lose money. The Conservative case, which stays at ₹10, needs ₹24.7 lakh of extra funding.
+2. **The plan's flat ₹20 and ₹10 assume a one-person household.** It was ₹20–40 per family in test runs, depending on family size and cache: three-member families measured ₹21 (cached) to ₹40 (uncached). The plan sheet also notes these numbers are user-reported and not independently audited.
 3. **100% annual renewal** for CSR and employer contracts, paid **upfront with no collection delay**.
 4. **CSC growth of 20% a month gross with 5% churn**, from 50 operators at launch (month 4) to 818 by month 24. Growth needs ₹1.22 crore of extra acquisition spend at ₹2,000 per operator.
 5. **CSR contracts at ₹5 lakh per district per year**, used fully (25,000 checks), ramping from 1 to 8 districts. **Employer contracts** grow from 10,000 to 50,000 workers at ₹50 per worker. None of these are signed.

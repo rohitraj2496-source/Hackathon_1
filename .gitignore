@@ -13,3 +13,6 @@ data/
 
 # claude / entire local files
 .claude/settings.local.json
+
+# macOS Finder files
+.DS_Store
