@@ -88,10 +88,13 @@ HAQ_DAILY_BUDGET_USD=1.00
 
 This takes a few minutes. It:
 
-1. installs Python 3.12
-2. creates the app's own Python environment and installs its libraries
+1. installs **uv**, a small tool that downloads a private Python 3.12 just for Haq. The server's own Python is
+   too new (3.14) for one of Haq's libraries, and Ubuntu's `python3.12-venv` package may not exist, so Haq
+   does not use the system Python.
+2. creates the app's own Python 3.12 environment (`.venv`) and installs its libraries
 3. sets Haq up as a background service that starts by itself after a crash or a reboot
-4. installs **Caddy**, which gets the HTTPS certificate and forwards visitors to the app
+4. installs **Caddy**, which gets the HTTPS certificate and forwards visitors to the app. It also gives Caddy
+   ownership of its log folder (`/var/log/caddy`).
 
 You can run it again at any time: it only changes what is missing.
 
@@ -138,6 +141,13 @@ This server's public IP (**44.197.229.105**) is not reserved. If you **stop** th
   `sudo systemctl status caddy`.
 - **"Certificate" errors in the browser.** Wait a minute and refresh. Caddy retries automatically. Its log:
   `sudo journalctl -u caddy -n 50 --no-pager`.
+- **Caddy will not start and its log says "permission denied" on `/var/log/caddy/haq-access.log`.** The log
+  file was created by root. Run `sudo chown -R caddy:caddy /var/log/caddy`, then
+  `sudo systemctl restart caddy`. `setup.sh` now does this for you.
+- **The app will not start and its log mentions the Python version or `neatlogs`.** The `.venv` was built
+  with the wrong Python. Run `rm -rf .venv` and then `./deploy/setup.sh 44-197-229-105.sslip.io` again;
+  it rebuilds `.venv` with Python 3.12 using uv. You can check the version with `.venv/bin/python -V`
+  (it should say 3.12).
 - **The page loads but live checks say they are switched off.** `.env` is missing the API key or the
   passcode. Fix `.env`, then run `sudo systemctl restart haq`.
 - **Live checks say "used up for today".** The daily limit was reached. It resets at midnight India time. To

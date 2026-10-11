@@ -2,6 +2,9 @@
 
 **Haq finds the government schemes a whole family is entitled to, and how much money they are missing each year.**
 
+**Try it: https://44-197-229-105.sslip.io**. Demo mode is open to everyone: it replays real recorded runs step
+by step, at no cost. Live mode checks your own family and needs a passcode.
+
 It is built for people who can't read. Haq asks short questions in Hindi by voice, researches central and
 Uttar Pradesh schemes on official government websites, checks every eligibility rule against an official
 page, and reads the result aloud. Each result is a large card showing the scheme, the ₹ per year, which family

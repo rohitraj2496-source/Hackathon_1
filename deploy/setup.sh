@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Set up Haq on a fresh Ubuntu 24.04 server: Python venv, systemd service on 127.0.0.1:8000,
+# Set up Haq on a fresh Ubuntu 24.04 server: uv + Python 3.12 venv, systemd service on 127.0.0.1:8000,
 # and Caddy as the HTTPS reverse proxy (free Let's Encrypt certificate) for the given domain.
 #
 #   ./deploy/setup.sh 44-197-229-105.sslip.io
@@ -25,9 +25,9 @@ if [[ "$APP_USER" == "root" ]]; then
   exit 1
 fi
 
-step "System packages (Python 3.12, venv, git, curl)"
+step "System packages (git, curl)"
 sudo apt-get update -y
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3.12 python3.12-venv git curl ca-certificates \
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y git curl ca-certificates \
   debian-keyring debian-archive-keyring apt-transport-https gnupg
 
 step "Swap file (t3.small has 2 GB RAM; 1 GB swap avoids out-of-memory during installs)"
@@ -41,10 +41,26 @@ else
   echo "swap already on"
 fi
 
-step "Python virtual environment and requirements"
-if [[ ! -x .venv/bin/python ]]; then
-  python3.12 -m venv .venv
+step "uv (installs the Python 3.12 that Haq needs)"
+# The server's own Python can be newer than neatlogs supports (3.14 on this image), and the
+# python3.12-venv apt package may not exist. uv downloads a private Python 3.12 just for Haq.
+UV="$(command -v uv || true)"
+[[ -z "$UV" && -x "$HOME/.local/bin/uv" ]] && UV="$HOME/.local/bin/uv"
+if [[ -z "$UV" ]]; then
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  UV="$HOME/.local/bin/uv"
 fi
+echo "uv: $("$UV" --version)"
+
+step "Python 3.12 virtual environment and requirements"
+if [[ -x .venv/bin/python ]] && ! .venv/bin/python -c 'import sys; sys.exit(sys.version_info[:2] != (3, 12))'; then
+  echo "existing .venv is not Python 3.12 ($(.venv/bin/python -V 2>&1)): recreating it"
+  rm -rf .venv
+fi
+if [[ ! -x .venv/bin/python ]]; then
+  "$UV" venv --seed -p 3.12 .venv
+fi
+echo "venv: $(.venv/bin/python -V)"
 .venv/bin/pip install --quiet --upgrade pip
 .venv/bin/pip install --quiet -r requirements.txt
 sha256sum requirements.txt | cut -d' ' -f1 > .venv/.requirements.sha256
@@ -134,6 +150,10 @@ if [[ "$(sudo cat /etc/caddy/Caddyfile 2>/dev/null)" != "$(printf "%s" "$CADDYFI
   echo "Caddyfile written for ${DOMAIN}"
 fi
 sudo caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null
+# 'sudo caddy validate' can create the access log as root; Caddy runs as user 'caddy' and must own it,
+# otherwise it fails with "permission denied" on /var/log/caddy/haq-access.log.
+sudo mkdir -p /var/log/caddy
+sudo chown -R caddy:caddy /var/log/caddy
 sudo systemctl enable caddy >/dev/null
 sudo systemctl reload caddy 2>/dev/null || sudo systemctl restart caddy
 
