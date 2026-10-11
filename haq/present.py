@@ -9,7 +9,7 @@ import threading
 
 import neatlogs
 
-from . import catalog, intake, state
+from . import catalog, intake, rules, state
 from .config import FAST_MODEL
 from .llm import structured
 
@@ -49,7 +49,11 @@ def _member_label(member: str, lang: str) -> str | None:
 
 def _view(result: dict, lang: str, tr: dict | None, profile: dict | None = None) -> dict:
     cards = []
+    # results saved before a rule existed get the same plain-code check (translations stay index-aligned)
+    allowed = {id(c) for c in rules.post_check(result["cards"], profile)[0]}
     for i, c in enumerate(result["cards"]):
+        if id(c) not in allowed:
+            continue
         # facts still assumed/unknown for this family (also applied to results saved before this check existed)
         check = list(dict.fromkeys((c.get("check_needed") or (["income_limit"] if c["verification"] == "likely" else []))
                                    + (intake.assumed_facts_for(c["scheme_id"], profile) if profile else [])))

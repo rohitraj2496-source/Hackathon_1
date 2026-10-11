@@ -13,7 +13,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import anthropic
 import neatlogs
 
-from . import cache, catalog, fetcher, state
+from . import cache, catalog, fetcher, rules, state
 from . import intake
 from .config import FAST_MODEL, VERIFY_MODEL, trace_ref
 from .llm import BudgetExceeded, Usage, create, structured, system_blocks
@@ -147,7 +147,7 @@ PLAN_SCHEMA = {
 def plan(profile: dict, usage: Usage, hid: str) -> list[dict]:
     with neatlogs.trace("plan", kind="CHAIN", session_id=hid):
         out = structured(usage, model=FAST_MODEL, system=PLAN_SYSTEM, effort="medium", schema=PLAN_SCHEMA,
-                         user=f"Household profile:\n{json.dumps(profile, ensure_ascii=False, indent=1)}")
+                         user=f"Household profile:\n{json.dumps(profile, ensure_ascii=False, indent=1, sort_keys=True)}")
     seen, cands = set(), []
     have = already_has(profile)
     for c in out["candidates"]:
@@ -156,11 +156,13 @@ def plan(profile: dict, usage: Usage, hid: str) -> list[dict]:
             continue  # one per family, and this family already gets it
         if c["scheme_id"] in MARRIAGE_GRANTS and not marriage_planned(profile):
             continue  # one-time grant for a wedding nobody mentioned
+        if rules.violation(c["scheme_id"], c["member"], profile):
+            continue  # breaks a hard rule (age, pregnancy, land...): not worth researching
         key = f"{c['scheme_id']}:{c['member'].strip().lower()}"
         if key not in seen:
             seen.add(key)
             cands.append({**c, "key": key})
-    return cands
+    return sorted(cands, key=lambda c: c["key"])     # deterministic order, whatever order the model listed them
 
 
 # --------------------------------------------------------------------------
@@ -326,7 +328,7 @@ def research_scheme(profile: dict, cands: list[dict], usage: Usage, hid: str, ru
                            + ("\n\n" + rules_block(cached_rules) if cached_rules else ""))
     members_txt = "\n".join(f"- member \"{c['member']}\": {c['why']}" for c in cands)
     user = (f"Scheme to verify: {scheme_id}\nDecide each of these members (use the member value exactly):\n"
-            f"{members_txt}\n\nHousehold profile:\n{json.dumps(profile, ensure_ascii=False)}")
+            f"{members_txt}\n\nHousehold profile:\n{json.dumps(profile, ensure_ascii=False, sort_keys=True)}")
     messages = [{"role": "user", "content": user}]
     ctx = {
         "read_official": set(),     # official URLs successfully read (fetch or search result)
@@ -564,7 +566,7 @@ def write(profile: dict, research: dict, usage: Usage, hid: str) -> dict:
     with neatlogs.trace("write", kind="CHAIN", session_id=hid):
         received = already_has(profile)
         cards = []
-        for rec in research.values():
+        for _, rec in sorted(research.items()):          # deterministic: not the order lookups finished in
             if rec.get("status") not in ("verified", "likely"):
                 continue
             # What the family still has to confirm: an income limit no official page states, and/or a fact
@@ -601,8 +603,10 @@ def write(profile: dict, research: dict, usage: Usage, hid: str) -> dict:
                 "rules_checked": rec["rules_checked"],
                 "assumptions_hi": rec["assumptions_hi"],
             })
+        # plain-code hard rules (land, age, pregnancy, ...) after the model: deterministic
+        cards, dropped_by_rules = rules.post_check(cards, profile)
         cards.sort(key=lambda c: (c["verification"] != "confirmed", -int(c["counts_toward_total"]),
-                                  -c["annual_value_inr"]))
+                                  -c["annual_value_inr"], c["scheme_id"], str(c["member"])))
         total = sum(c["annual_value_inr"] for c in cards if c["counts_toward_total"])
         likely_total = sum(c["annual_value_inr"] for c in cards if c["counts_toward_likely_total"])
         brief = [{"name": c["name_hi"], "member": c["member"], "benefit": c["benefit_hi"],
@@ -621,7 +625,7 @@ def write(profile: dict, research: dict, usage: Usage, hid: str) -> dict:
                              "schemes": brief}, ensure_ascii=False),
         )["summary_hi"]
     return {"total_missing_inr_per_year": total, "likely_extra_inr_per_year": likely_total,
-            "cards": cards, "summary_hi": summary}
+            "cards": cards, "summary_hi": summary, "dropped_by_rules": dropped_by_rules}
 
 
 # --------------------------------------------------------------------------
@@ -663,7 +667,7 @@ def run(hid: str, resume: bool = True) -> dict:
             groups: dict[str, list[dict]] = {}
             for c in todo:
                 groups.setdefault(c["scheme_id"], []).append(c)
-            _research_groups(list(groups.values()), profile, usage, hid, rid, abort, errors)
+            _research_groups([groups[k] for k in sorted(groups)], profile, usage, hid, rid, abort, errors)
             if errors:
                 raise RuntimeError(f"{len(errors)} scheme lookups failed (resume to retry): {errors[0]}")
 
