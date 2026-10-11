@@ -73,8 +73,10 @@ def fake_run(hid, resume=True):
             card("up_widow_pension", "🙏", "निराश्रित महिला पेंशन", "grandmother", "हर महीने ₹1,000 पेंशन, सीधे बैंक खाते में।",
                  12000, "likely", ["income_limit"], ["आधार कार्ड", "पति का मृत्यु प्रमाण पत्र", "आय प्रमाण पत्र", "बैंक पासबुक"],
                  False, csc, "https://mahilakalyan.up.nic.in/"),
-            card("pmay_g", "🏠", "पीएम आवास (ग्रामीण)", "household", "पक्का घर बनाने के लिए ₹1.2 लाख की मदद।", 0, "likely",
+            card("pmay_g", "🏠", "पीएम आवास (ग्रामीण)", "household", "पक्का घर बनाने के लिए ₹1.2 लाख की मदद।", 120000, "likely",
                  ["house", "area"], ["आधार कार्ड", "राशन कार्ड", "बैंक पासबुक"], False, csc, "https://pmayg.dord.gov.in/"),
+            card("up_old_age_pension", "🧓", "वृद्धावस्था पेंशन", "grandmother", "हर महीने ₹1,000 पेंशन।", 12000, "likely",
+                 ["income_limit"], ["आधार कार्ड", "आयु प्रमाण पत्र", "बैंक पासबुक"], False, csc, "https://samajkalyan.up.gov.in/"),
             card("pmsby", "🦺", "PMSBY", "father", "सिर्फ़ ₹20 सालाना में ₹2 लाख का दुर्घटना बीमा।", 0, "confirmed", [],
                  ["आधार कार्ड", "बैंक खाता", "मोबाइल नंबर"], False, "अपने बैंक की शाखा में फ़ॉर्म भरें।",
                  "https://jansuraksha.gov.in/"),
@@ -91,14 +93,16 @@ EN = {
     "benefit": ["₹6,000 every year in three instalments, straight to your bank account.",
                 "₹1,000 pension every month, straight to the bank.",
                 "₹1.2 lakh to help build a pucca house.",
+                "₹1,000 pension every month.",
                 "₹2 lakh accident cover for just ₹20 a year.",
                 "₹2 lakh life cover for ₹436 a year."],
     "docs": [["Aadhaar card", "Bank passbook", "Khatauni (land record)"],
              ["Aadhaar card", "Husband's death certificate", "Income certificate", "Bank passbook"],
              ["Aadhaar card", "Ration card", "Bank passbook"],
+             ["Aadhaar card", "Age certificate", "Bank passbook"],
              ["Aadhaar card", "Bank account", "Mobile number"],
              ["Aadhaar card", "Bank account"]],
-    "where": ["Apply at the nearest Common Service Centre (CSC) or block office."] * 3
+    "where": ["Apply at the nearest Common Service Centre (CSC) or block office."] * 4
              + ["Fill the form at your bank branch."] * 2,
 }
 

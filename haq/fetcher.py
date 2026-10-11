@@ -32,6 +32,9 @@ PDF_DEADLINE = 90.0
 MAX_BYTES = 25_000_000
 MAX_CHARS = 12000
 UA = "Mozilla/5.0 (HaqBot; +https://github.com/rohitraj2496-source/Hackathon_1) welfare-eligibility-research"
+# Some portals (e.g. pib.gov.in) answer 403 to anything that is not a browser. The pages are public.
+BROWSER_UA = ("Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) "
+              "Chrome/129.0.0.0 Mobile Safari/537.36")
 
 _sim_lock = threading.Lock()
 _sim_fired = False
@@ -94,10 +97,10 @@ def _get_with_deadline(http: httpx.Client, url: str, deadline_s: float) -> httpx
         return resp
 
 
-def _get(url: str, legacy: bool, verify: bool) -> str:
+def _get(url: str, legacy: bool, verify: bool, browser_ua: bool = False) -> str:
     with httpx.Client(timeout=PDF_TIMEOUT if url.lower().endswith(".pdf") else TIMEOUT,
                       follow_redirects=True, verify=_tls(legacy, verify),
-                      headers={"User-Agent": UA, "Accept-Language": "hi,en;q=0.8"}) as http:
+                      headers={"User-Agent": BROWSER_UA if browser_ua else UA, "Accept-Language": "hi,en;q=0.8"}) as http:
         resp = _get_with_deadline(http, url, PDF_DEADLINE if url.lower().endswith(".pdf") else PAGE_DEADLINE)
         resp.raise_for_status()
         if not catalog.is_official(str(resp.url)):
@@ -110,7 +113,7 @@ def _get(url: str, legacy: bool, verify: bool) -> str:
 @neatlogs.span(kind="TOOL", tool_name="fetch_url_with_retry")
 def _fetch_one(url: str, log: list) -> str:
     """Retry one URL with exponential backoff. Raises LookupFailed after MAX_ATTEMPTS."""
-    legacy, verify = False, True
+    legacy, verify, browser_ua = False, True, False
     last = None
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
@@ -119,7 +122,7 @@ def _fetch_one(url: str, log: list) -> str:
             if cached is not None:
                 log.append({"url": url, "attempt": attempt, "ok": True, "cache": True})
                 return cached
-            text = _get(url, legacy, verify)
+            text = _get(url, legacy, verify, browser_ua)
             if len(text) < 1000:
                 raise LookupFailed("page returned almost no text (JS-only page or error page)")
             cache.put_page(url, text)
@@ -143,6 +146,14 @@ def _fetch_one(url: str, log: list) -> str:
                             "error": "tls_certificate_invalid -> retrying without verification"})
                 continue
             log.append({"url": url, "attempt": attempt, "ok": False, "error": f"connect: {e}"[:200]})
+        except httpx.HTTPStatusError as e:
+            last = e
+            if e.response.status_code in (401, 403, 429) and not browser_ua:
+                browser_ua = True       # blocked as a bot: retry once as a normal browser
+                log.append({"url": url, "attempt": attempt, "ok": False,
+                            "error": f"http_{e.response.status_code}_blocked_bot -> retrying with a browser user-agent"})
+                continue
+            log.append({"url": url, "attempt": attempt, "ok": False, "error": f"HTTPStatusError: {e}"[:200]})
         except (httpx.HTTPError, LookupFailed) as e:
             last = e
             log.append({"url": url, "attempt": attempt, "ok": False, "error": f"{type(e).__name__}: {e}"[:200]})

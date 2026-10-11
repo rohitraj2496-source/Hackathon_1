@@ -1,0 +1,598 @@
+{
+ "cap_usd": 2.0,
+ "spent_usd": 1.5166,
+ "runs": [
+  {
+   "scenario": "1-hindi-builder",
+   "lang": "hi",
+   "error": null,
+   "household_id": "8936735b31",
+   "followups_asked": [
+    [
+     "ration_card",
+     "क्या आपके पास राशन कार्ड है?"
+    ],
+    [
+     "land",
+     "क्या खेती की ज़मीन परिवार के नाम पर है?"
+    ]
+   ],
+   "followup_answers": {
+    "ration_card": "eligible_household",
+    "land": "yes"
+   },
+   "seconds": 48.2,
+   "status": "done",
+   "run_error": null,
+   "cost_usd": 0.245116,
+   "neatlogs": {
+    "session_id": "8936735b31",
+    "trace_ids": [
+     "7ad95bd365bfdb0f4c49652228f19c2d"
+    ]
+   },
+   "recovery_events": [
+    {
+     "t": 1791705131.471084,
+     "type": "recovered",
+     "scheme_id": "up_widow_pension",
+     "requested": "https://mahilakalyan.up.nic.in/",
+     "served_by": "https://mahilakalyan.up.nic.in/",
+     "fell_back": false
+    }
+   ],
+   "headline": {
+    "up_to": 152050,
+    "confirmed": 18000,
+    "after_checks": 134050
+   },
+   "confirmed": [
+    "मुख्यमंत्री कन्या सुमंगला योजना (बेटी)",
+    "PM-KISAN (पापा)",
+    "प्रधानमंत्री फसल बीमा योजना (पापा)",
+    "ई-श्रम कार्ड (माँ)",
+    "ई-श्रम कार्ड (पापा)"
+   ],
+   "check_needed": [
+    "PMAY-G (पूरा परिवार): area, house",
+    "निराश्रित महिला पेंशन योजना (माँ): income_limit",
+    "प्रधानमंत्री उज्ज्वला योजना (माँ): income_limit, lpg",
+    "आयुष्मान भारत (PM-JAY) (पूरा परिवार): income_limit"
+   ],
+   "protection": [
+    "PMJJBY (पापा)",
+    "PMSBY (पापा)",
+    "PMSBY (माँ)"
+   ],
+   "links": [
+    "https://beneficiary.nha.gov.in/",
+    "https://eshram.gov.in/faqs",
+    "https://financialservices.gov.in/pradhan-mantri-suraksha-bima-yojana-pmsby",
+    "https://jansuraksha.gov.in/",
+    "https://mahilakalyan.up.nic.in/",
+    "https://mksy.up.gov.in/",
+    "https://pmayg.dord.gov.in/",
+    "https://pmfby.gov.in/",
+    "https://pmfby.gov.in/pdf/Revamped%20Operational%20Guidelines_17th%20August%202020.pdf",
+    "https://pmkisan.gov.in/",
+    "https://pmuy.gov.in/",
+    "https://register.eshram.gov.in",
+    "https://www.pib.gov.in/PressNoteDetails.aspx?NoteId=154428&ModuleId=3&reg=3&lang=1",
+    "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2074713&reg=48&lang=2"
+   ],
+   "group": "1-hindi-builder"
+  },
+  {
+   "scenario": "2-english-typed",
+   "lang": "en",
+   "error": null,
+   "household_id": "3860bdfa10",
+   "followups_asked": [
+    [
+     "house",
+     "Is your house pucca or kutcha?"
+    ],
+    [
+     "lpg",
+     "Does your home have an LPG gas connection?"
+    ]
+   ],
+   "followup_answers": {
+    "house": "kutcha",
+    "lpg": "no"
+   },
+   "seconds": 74.6,
+   "status": "done",
+   "run_error": null,
+   "cost_usd": 0.243445,
+   "neatlogs": {
+    "session_id": "3860bdfa10",
+    "trace_ids": [
+     "86f478b4537648b5e25dd329456e6391"
+    ]
+   },
+   "recovery_events": [
+    {
+     "t": 1791705188.843262,
+     "type": "recovered",
+     "scheme_id": "up_bocw",
+     "requested": "https://upbocw.in/",
+     "served_by": "https://www.myscheme.gov.in/",
+     "fell_back": true
+    },
+    {
+     "t": 1791705207.231317,
+     "type": "recovered",
+     "scheme_id": "up_bocw",
+     "requested": "https://upbocw.in/UPBOCWWeb/Pages/Eligibility.aspx",
+     "served_by": "https://www.myscheme.gov.in/",
+     "fell_back": true
+    }
+   ],
+   "headline": {
+    "up_to": 152050,
+    "confirmed": 120000,
+    "after_checks": 32050
+   },
+   "confirmed": [
+    "PMAY-G (Whole family)",
+    "Ayushman Vay Vandana (Father)",
+    "PM Shram Yogi Maandhan (You)",
+    "e-Shram card (You)"
+   ],
+   "check_needed": [
+    "UP Old Age Pension (Father): income_limit",
+    "UP Divyang Pension (Father): income_limit",
+    "PM-KISAN (Whole family): income_limit",
+    "PM Ujjwala Yojana (Wife): income_limit",
+    "Ayushman Bharat (PM-JAY) (Whole family): income_limit"
+   ],
+   "protection": [
+    "PMJJBY (You)",
+    "PMSBY (You)"
+   ],
+   "links": [
+    "https://beneficiary.nha.gov.in/",
+    "https://divyangjan.upsdc.gov.in/",
+    "https://eshram.gov.in/faqs",
+    "https://financialservices.gov.in/pradhan-mantri-suraksha-bima-yojana-pmsby",
+    "https://jansuraksha.gov.in/",
+    "https://maandhan.in/",
+    "https://pmayg.dord.gov.in/",
+    "https://pmkisan.gov.in/",
+    "https://pmuy.gov.in/",
+    "https://register.eshram.gov.in",
+    "https://samajkalyan.up.gov.in/",
+    "https://www.pib.gov.in/PressNoteDetails.aspx?NoteId=154428&ModuleId=3&reg=3&lang=1",
+    "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2074713&reg=48&lang=2",
+    "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2082288&reg=48&lang=2"
+   ],
+   "group": "2-english-typed-disabled-grandfather"
+  },
+  {
+   "scenario": "3-simulate-failure",
+   "lang": "hi",
+   "error": null,
+   "household_id": "b850d82182",
+   "followups_asked": [
+    [
+     "ration_card",
+     "क्या आपके पास राशन कार्ड है?"
+    ],
+    [
+     "land",
+     "क्या खेती की ज़मीन परिवार के नाम पर है?"
+    ]
+   ],
+   "followup_answers": {
+    "ration_card": "eligible_household",
+    "land": "yes"
+   },
+   "seconds": 87.5,
+   "status": "done",
+   "run_error": null,
+   "cost_usd": 0.456579,
+   "neatlogs": {
+    "session_id": "b850d82182",
+    "trace_ids": [
+     "28204345122d65f99265fd532cb580c2"
+    ]
+   },
+   "recovery_events": [
+    {
+     "t": 1791705246.6171892,
+     "type": "recovered",
+     "scheme_id": "pm_kisan",
+     "requested": "https://www.myscheme.gov.in/schemes/pm-kisan",
+     "served_by": "https://pmkisan.gov.in/",
+     "fell_back": true
+    },
+    {
+     "t": 1791705246.717477,
+     "type": "recovered",
+     "scheme_id": "pmuy",
+     "requested": "https://www.myscheme.gov.in/schemes/pmuy",
+     "served_by": "https://pmuy.gov.in/",
+     "fell_back": true
+    },
+    {
+     "t": 1791705247.4754372,
+     "type": "source_failed",
+     "scheme_id": "pmjay",
+     "requested": "https://nha.gov.in/PM-JAY",
+     "served_by": null,
+     "fell_back": false
+    },
+    {
+     "t": 1791705249.912321,
+     "type": "recovered",
+     "scheme_id": "pmay_g",
+     "requested": "https://pmayg.dord.gov.in/netiayHome/Uploaded/Guidelines-English_Book_Final.pdf",
+     "served_by": "https://pmayg.dord.gov.in/netiayHome/Uploaded/Guidelines-English_Book_Final.pdf",
+     "fell_back": false
+    },
+    {
+     "t": 1791705256.9610932,
+     "type": "source_failed",
+     "scheme_id": "pmfby",
+     "requested": "https://www.myscheme.gov.in/schemes/pmfby",
+     "served_by": null,
+     "fell_back": false
+    },
+    {
+     "t": 1791705259.428651,
+     "type": "recovered",
+     "scheme_id": "up_widow_pension",
+     "requested": "https://sspy-up.gov.in/",
+     "served_by": "https://sspy-up.gov.in/",
+     "fell_back": false
+    },
+    {
+     "t": 1791705262.6243541,
+     "type": "recovered",
+     "scheme_id": "up_kanya_sumangala",
+     "requested": "https://mksy.up.gov.in/",
+     "served_by": "https://mksy.up.gov.in/",
+     "fell_back": false
+    },
+    {
+     "t": 1791705274.860152,
+     "type": "recovered",
+     "scheme_id": "up_scholarship",
+     "requested": "https://scholarship.up.gov.in/pdfs/go/OBC_Pre%20matrici%20Niyamawali%20(2016).pdf",
+     "served_by": "https://scholarship.up.gov.in/pdfs/go/OBC_Pre%20matrici%20Niyamawali%20(2016).pdf",
+     "fell_back": false
+    },
+    {
+     "t": 1791705288.2942588,
+     "type": "source_failed",
+     "scheme_id": "eshram",
+     "requested": "https://eshram.gov.in/",
+     "served_by": null,
+     "fell_back": false
+    },
+    {
+     "t": 1791705289.634569,
+     "type": "source_failed",
+     "scheme_id": "pmjjby",
+     "requested": "https://www.myscheme.gov.in/schemes/pmjjby",
+     "served_by": null,
+     "fell_back": false
+    },
+    {
+     "t": 1791705295.145091,
+     "type": "source_failed",
+     "scheme_id": "pmsby",
+     "requested": "https://www.myscheme.gov.in/schemes/pmsby",
+     "served_by": null,
+     "fell_back": false
+    },
+    {
+     "t": 1791705297.190857,
+     "type": "source_failed",
+     "scheme_id": "pmjay",
+     "requested": "https://pmjay.gov.in/about/pmjay",
+     "served_by": null,
+     "fell_back": false
+    },
+    {
+     "t": 1791705299.703976,
+     "type": "source_failed",
+     "scheme_id": "pmjay",
+     "requested": "https://www.myscheme.gov.in/schemes/ab-pmjay",
+     "served_by": null,
+     "fell_back": false
+    },
+    {
+     "t": 1791705307.845345,
+     "type": "source_failed",
+     "scheme_id": "pmjjby",
+     "requested": "https://financialservices.gov.in/beta/en/pmjjby",
+     "served_by": null,
+     "fell_back": false
+    },
+    {
+     "t": 1791705308.852288,
+     "type": "source_failed",
+     "scheme_id": "pmsby",
+     "requested": "https://financialservices.gov.in/beta/en/pmsby",
+     "served_by": null,
+     "fell_back": false
+    }
+   ],
+   "headline": {
+    "up_to": 145300,
+    "confirmed": 11250,
+    "after_checks": 134050
+   },
+   "confirmed": [
+    "PM-KISAN (पापा)",
+    "मुख्यमंत्री कन्या सुमंगला योजना (बेटी)",
+    "पूर्वदशम एवं दशमोत्तर छात्रवृत्ति (उ.प्र.) (बेटी)",
+    "प्रधानमंत्री फसल बीमा योजना (पापा)",
+    "प्रधानमंत्री श्रम योगी मान-धन योजना (माँ)"
+   ],
+   "check_needed": [
+    "PMAY-G (पूरा परिवार): income_limit, area, house",
+    "निराश्रित महिला पेंशन योजना (माँ): income_limit",
+    "प्रधानमंत्री उज्ज्वला योजना (माँ): income_limit, lpg",
+    "ई-श्रम कार्ड (माँ): income_limit"
+   ],
+   "protection": [],
+   "links": [
+    "https://eshram.gov.in/",
+    "https://maandhan.in/",
+    "https://mahilakalyan.up.nic.in/",
+    "https://mksy.up.gov.in/",
+    "https://pmayg.dord.gov.in/",
+    "https://pmayg.dord.gov.in/netiayHome/Uploaded/Guidelines-English_Book_Final.pdf",
+    "https://pmfby.gov.in/",
+    "https://pmfby.gov.in/pdf/Revised_Operational_Guidelines.pdf",
+    "https://pmkisan.gov.in/",
+    "https://pmuy.gov.in/",
+    "https://scholarship.up.gov.in/",
+    "https://scholarship.up.gov.in/pdfs/go/OBC_Pre%20matrici%20Niyamawali%20(2016).pdf",
+    "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2086193&reg=48&lang=2"
+   ],
+   "group": "3-hindi-builder-SIMULATE_FAILURE"
+  },
+  {
+   "scenario": "4a-concurrent-builder-en",
+   "lang": "en",
+   "error": null,
+   "household_id": "2021a924e6",
+   "followups_asked": [
+    [
+     "ration_card",
+     "Do you have a ration card?"
+    ],
+    [
+     "land",
+     "Is the farmland in your family's name?"
+    ]
+   ],
+   "followup_answers": {
+    "ration_card": "eligible_household",
+    "land": "yes"
+   },
+   "seconds": 39.3,
+   "status": "failed",
+   "run_error": "BudgetExceeded: spend cap reached: $0.4614 of $0.45",
+   "cost_usd": 0.181633,
+   "neatlogs": {
+    "session_id": "2021a924e6",
+    "trace_ids": [
+     "f26e7f92c01357d7969673ff0dd3995f"
+    ]
+   },
+   "recovery_events": [],
+   "group": "4-three-concurrent"
+  },
+  {
+   "scenario": "4b-concurrent-typed-en",
+   "lang": "en",
+   "error": null,
+   "household_id": "df30875aaf",
+   "followups_asked": [
+    [
+     "house",
+     "Is your house pucca or kutcha?"
+    ],
+    [
+     "lpg",
+     "Does your home have an LPG gas connection?"
+    ]
+   ],
+   "followup_answers": {
+    "house": "kutcha",
+    "lpg": "no"
+   },
+   "seconds": 45.1,
+   "status": "failed",
+   "run_error": "RuntimeError: 1 scheme lookups failed (resume to retry): up_bocw: BudgetExceeded: spend cap reached: $0.4928 of $0.45",
+   "cost_usd": 0.207458,
+   "neatlogs": {
+    "session_id": "df30875aaf",
+    "trace_ids": [
+     "dbc896599795be0b097f18b9231887c6"
+    ]
+   },
+   "recovery_events": [
+    {
+     "t": 1791705355.979987,
+     "type": "recovered",
+     "scheme_id": "up_bocw",
+     "requested": "https://upbocw.in/",
+     "served_by": "https://www.myscheme.gov.in/",
+     "fell_back": true
+    }
+   ],
+   "group": "4-three-concurrent"
+  },
+  {
+   "scenario": "4c-concurrent-typed-hi",
+   "lang": "hi",
+   "error": null,
+   "household_id": "aa820aab3e",
+   "followups_asked": [
+    [
+     "income",
+     "पूरे परिवार की साल की कमाई कितनी है?"
+    ]
+   ],
+   "followup_answers": {
+    "income": "low"
+   },
+   "seconds": 32.6,
+   "status": "done",
+   "run_error": null,
+   "cost_usd": 0.118505,
+   "neatlogs": {
+    "session_id": "aa820aab3e",
+    "trace_ids": [
+     "8a345750c8713575224289c188bca376"
+    ]
+   },
+   "recovery_events": [
+    {
+     "t": 1791705338.366047,
+     "type": "recovered",
+     "scheme_id": "up_old_age_pension",
+     "requested": "https://samajkalyan.up.gov.in/",
+     "served_by": "https://sspy-up.gov.in/",
+     "fell_back": true
+    }
+   ],
+   "headline": {
+    "up_to": 146050,
+    "confirmed": 122050,
+    "after_checks": 24000
+   },
+   "confirmed": [
+    "PMAY-G (पूरा परिवार)",
+    "प्रधानमंत्री उज्ज्वला योजना (आप)",
+    "आयुष्मान वय वंदना योजना (आप)"
+   ],
+   "check_needed": [
+    "निराश्रित महिला पेंशन योजना (आप): income_limit",
+    "वृद्धावस्था पेंशन योजना (आप): income_limit",
+    "आयुष्मान भारत (PM-JAY) (पूरा परिवार): income_limit"
+   ],
+   "protection": [],
+   "links": [
+    "https://beneficiary.nha.gov.in/",
+    "https://mahilakalyan.up.nic.in/",
+    "https://pmayg.dord.gov.in/",
+    "https://pmuy.gov.in/",
+    "https://samajkalyan.up.gov.in/",
+    "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2074713&reg=48&lang=2",
+    "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2082288&reg=48&lang=2"
+   ],
+   "group": "4-three-concurrent"
+  }
+ ],
+ "resume_4ab": {
+  "spent_usd": 0.061396,
+  "runs": {
+   "4a-concurrent-builder-en": {
+    "status": "done",
+    "error": null,
+    "seconds_after_resume": 18.8,
+    "run_cost_usd_total": 0.182733,
+    "trace_ids": [
+     "f26e7f92c01357d7969673ff0dd3995f",
+     "28f03054bdf0a11cd098e6244f1b575d"
+    ],
+    "headline": {
+     "up_to": 6000,
+     "confirmed": 6000,
+     "after_checks": 0,
+     "one_time": 134050
+    },
+    "confirmed": [
+     "PM-KISAN (Father)",
+     "Mukhyamantri Kanya Sumangala Yojana (Daughter)",
+     "PM Fasal Bima Yojana (Father)",
+     "PM Shram Yogi Maandhan (Mother)",
+     "e-Shram card (Father)"
+    ],
+    "check_needed": [
+     "PMAY-G (Whole family): area, house",
+     "PM Ujjwala Yojana (Mother): income_limit, lpg",
+     "Ayushman Bharat (PM-JAY) (Whole family): income_limit",
+     "e-Shram card (Mother): income_limit"
+    ],
+    "protection": [
+     "PMSBY (Father)",
+     "PMJJBY (Mother)"
+    ],
+    "links": [
+     "https://beneficiary.nha.gov.in/",
+     "https://eshram.gov.in/faqs",
+     "https://financialservices.gov.in/pradhan-mantri-suraksha-bima-yojana-pmsby",
+     "https://jansuraksha.gov.in/",
+     "https://maandhan.in/",
+     "https://mksy.up.gov.in/",
+     "https://pmayg.dord.gov.in/",
+     "https://pmfby.gov.in/",
+     "https://pmfby.gov.in/pdf/Revamped%20Operational%20Guidelines_17th%20August%202020.pdf",
+     "https://pmkisan.gov.in/",
+     "https://pmuy.gov.in/",
+     "https://register.eshram.gov.in",
+     "https://www.pib.gov.in/PressNoteDetails.aspx?NoteId=154428&ModuleId=3&reg=3&lang=1",
+     "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2074713&reg=48&lang=2"
+    ]
+   },
+   "4b-concurrent-typed-en": {
+    "status": "done",
+    "error": null,
+    "seconds_after_resume": 46.4,
+    "run_cost_usd_total": 0.264479,
+    "trace_ids": [
+     "dbc896599795be0b097f18b9231887c6",
+     "83c01b7d25f3cd36d20ad44ae35929a2"
+    ],
+    "headline": {
+     "up_to": 12000,
+     "confirmed": 0,
+     "after_checks": 12000,
+     "one_time": 125000
+    },
+    "confirmed": [
+     "PMAY-G (Whole family)",
+     "PM Shram Yogi Maandhan (You)",
+     "e-Shram card (You)",
+     "Ayushman Vay Vandana (Father)"
+    ],
+    "check_needed": [
+     "UP Old Age Pension (Father): income_limit",
+     "UP Divyang Pension (Father): income_limit",
+     "PM Matru Vandana Yojana (Wife): income_limit",
+     "Ayushman Bharat (PM-JAY) (Whole family): income_limit",
+     "PM Ujjwala Yojana (Wife): income_limit"
+    ],
+    "protection": [
+     "PMJJBY (You)",
+     "PMSBY (You)"
+    ],
+    "links": [
+     "https://beneficiary.nha.gov.in/",
+     "https://divyangjan.upsdc.gov.in/",
+     "https://eshram.gov.in/faqs",
+     "https://financialservices.gov.in/pradhan-mantri-suraksha-bima-yojana-pmsby",
+     "https://jansuraksha.gov.in/",
+     "https://maandhan.in/",
+     "https://pmayg.dord.gov.in/",
+     "https://pmmvy.wcd.gov.in/",
+     "https://pmuy.gov.in/",
+     "https://register.eshram.gov.in",
+     "https://samajkalyan.up.gov.in/",
+     "https://wcd.gov.in/women/pradhan-mantri-matru-vandana-yojna",
+     "https://www.pib.gov.in/PressNoteDetails.aspx?NoteId=154428&ModuleId=3&reg=3&lang=1",
+     "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2074713&reg=48&lang=2",
+     "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2082288&reg=48&lang=2"
+    ]
+   }
+  }
+ }
+}

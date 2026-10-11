@@ -36,7 +36,7 @@ SCHEMES = [
         "name_hi": "आयुष्मान भारत (PM-JAY)", "name_en": "Ayushman Bharat PM-JAY",
         "hint": "Rs 5 lakh/family/yr cashless hospital cover for SECC-deprived / NFSA (Antyodaya, eligible household ration card) families; in UP also linked to ration cards.",
         "official_urls": ["https://beneficiary.nha.gov.in/", "https://nha.gov.in/PM-JAY"],
-        "fallback_urls": [],
+        "fallback_urls": ["https://www.pib.gov.in/PressReleasePage.aspx?PRID=2082288&reg=48&lang=2"],
         "aliases": ["ayushman_bharat", "ab_pmjay", "ayushman"],
     },
     {
@@ -44,7 +44,7 @@ SCHEMES = [
         "name_hi": "आयुष्मान वय वंदना (70+)", "name_en": "Ayushman Vay Vandana (PM-JAY 70+)",
         "hint": "Every citizen aged 70+ gets Rs 5 lakh/yr health cover regardless of income.",
         "official_urls": ["https://beneficiary.nha.gov.in/", "https://nha.gov.in/PM-JAY"],
-        "fallback_urls": [],
+        "fallback_urls": ["https://www.pib.gov.in/PressReleasePage.aspx?PRID=2082288&reg=48&lang=2"],
         "aliases": ["vay_vandana", "pmjay_70"],
     },
     {
@@ -269,6 +269,11 @@ PROTECTION = {
     "pmsby": {"premium_inr_per_year": 20, "cover_inr": 200000, "kind": "accident"},
     "pmjjby": {"premium_inr_per_year": 436, "cover_inr": 200000, "kind": "life"},
 }
+
+# Paid once (or in one-off stages), not every year: shown as one-time help, never added to "per year".
+ONE_TIME = {"pmay_g", "pmuy", "pmmvy", "up_kanya_sumangala", "up_shadi_anudan", "up_samuhik_vivah"}
+# In UP a person gets only one of these social pensions at a time.
+PENSIONS = {"up_old_age_pension", "up_widow_pension", "up_divyang_pension"}
 
 BY_ID = {s["id"]: s for s in SCHEMES}
 

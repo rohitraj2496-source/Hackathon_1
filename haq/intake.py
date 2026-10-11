@@ -239,9 +239,22 @@ def finalize(p: dict) -> dict:
     return p
 
 
+UNKNOWN = {
+    "income": lambda p: p.get("annual_family_income_inr") is None,
+    "ration_card": lambda p: p.get("ration_card") in (None, "unknown"),
+    "area": lambda p: p.get("area") in (None, "unknown"),
+    "house": lambda p: p.get("house_type") in (None, "unknown"),
+    "land": lambda p: p.get("land_acres") is None,
+    "lpg": lambda p: p.get("has_lpg_connection") is None,
+}
+
+
 def assumed_facts_for(scheme_id: str, profile: dict) -> list[str]:
-    """Assumed facts that could change this scheme's eligibility."""
-    return sorted({a["fact"] for a in profile.get("assumptions", []) if scheme_id in AFFECTS.get(a["fact"], ())})
+    """Facts that could change this scheme's eligibility and were assumed or are still unknown
+    (e.g. land for PM-KISAN when nobody said who owns land)."""
+    facts = {a["fact"] for a in profile.get("assumptions", []) if scheme_id in AFFECTS.get(a["fact"], ())}
+    facts |= {f for f, unknown in UNKNOWN.items() if scheme_id in AFFECTS.get(f, ()) and unknown(profile)}
+    return sorted(facts)
 
 
 def summarize_profile(p: dict) -> str:

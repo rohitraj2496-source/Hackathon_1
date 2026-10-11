@@ -9,7 +9,7 @@ import threading
 
 import neatlogs
 
-from . import catalog, state
+from . import catalog, intake, state
 from .config import FAST_MODEL
 from .llm import structured
 
@@ -47,9 +47,13 @@ def _member_label(member: str, lang: str) -> str | None:
     return (ROLE_LABELS.get(full) or ROLE_LABELS.get(key) or {}).get(lang)
 
 
-def _view(result: dict, lang: str, tr: dict | None) -> dict:
+def _view(result: dict, lang: str, tr: dict | None, profile: dict | None = None) -> dict:
     cards = []
     for i, c in enumerate(result["cards"]):
+        # facts still assumed/unknown for this family (also applied to results saved before this check existed)
+        check = list(dict.fromkeys((c.get("check_needed") or (["income_limit"] if c["verification"] == "likely" else []))
+                                   + (intake.assumed_facts_for(c["scheme_id"], profile) if profile else [])))
+        likely = bool(check)
         t = (tr or {}).get(i, {})
         protection = catalog.PROTECTION.get(c["scheme_id"])
         name = catalog.display_name(c["scheme_id"], lang) or (
@@ -63,25 +67,41 @@ def _view(result: dict, lang: str, tr: dict | None) -> dict:
             "documents": t.get("documents") or c["documents_hi"],
             "where_to_apply": t.get("where_to_apply") or c["where_to_apply_hi"],
             "annual_value_inr": c["annual_value_inr"],
-            "verification": c["verification"],
-            "check_needed": c.get("check_needed") or (["income_limit"] if c["verification"] == "likely" else []),
-            "counts_toward_total": c["counts_toward_total"] and not protection,
-            "counts_toward_likely_total": c.get("counts_toward_likely_total", False) and not protection,
+            "verification": "likely" if likely else "confirmed",
+            "check_needed": check,
+            "one_time": c["scheme_id"] in catalog.ONE_TIME,
+            "counts_toward_total": (counted := (c["counts_toward_total"] or c.get("counts_toward_likely_total", False))
+                                    and not protection and c["scheme_id"] not in catalog.ONE_TIME) and not likely,
+            "counts_toward_likely_total": counted and likely,
+            "one_time_value": c["annual_value_inr"] if (c["scheme_id"] in catalog.ONE_TIME and not c["already_receiving"]) else 0,
             "already_receiving": c["already_receiving"],
             "apply_url": catalog.display_link(c["apply_url"], c["scheme_id"]),
             "official_url": catalog.display_link(c["official_url"], c["scheme_id"]),
         })
-    # Recomputed from the cards so insurance is never in the total, also for results saved earlier.
+    # One social pension per person: count only the best one (confirmed first, then highest), note the rest.
+    by_member: dict[str, list] = {}
+    for c in cards:
+        if c["scheme_id"] in catalog.PENSIONS and (c["counts_toward_total"] or c["counts_toward_likely_total"]):
+            by_member.setdefault(c["member"], []).append(c)
+    for group in by_member.values():
+        if len(group) > 1:
+            group.sort(key=lambda c: (c["verification"] != "confirmed", -c["annual_value_inr"]))
+            for c in group[1:]:
+                c["counts_toward_total"] = c["counts_toward_likely_total"] = False
+                c["one_pension_note"] = True
+    # Recomputed from the cards so insurance and one-time help are never in the yearly total.
     confirmed = sum(c["annual_value_inr"] for c in cards if c["counts_toward_total"])
     likely = sum(c["annual_value_inr"] for c in cards if c["counts_toward_likely_total"])
     return {"lang": lang, "total_missing_inr_per_year": confirmed, "likely_extra_inr_per_year": likely,
             "owed_up_to_inr_per_year": confirmed + likely,
+            "one_time_inr": sum(c["one_time_value"] for c in cards),
             "summary": (tr or {}).get("summary") or result["summary_hi"], "cards": cards}
 
 
 def localized(hid: str, run_id: str, result: dict, lang: str) -> dict:
+    profile = (state.get(hid) or {}).get("profile")
     if lang != "en":
-        return _view(result, "hi", None)
+        return _view(result, "hi", None, profile)
     cached = (result.get("i18n") or {}).get("en")
     if cached is None:
         with _locks_guard:
@@ -95,7 +115,7 @@ def localized(hid: str, run_id: str, result: dict, lang: str) -> dict:
                 state.update_run(hid, run_id, lambda r: r["result"].setdefault("i18n", {}).update(en=cached))
     tr = {c["i"]: c for c in cached["cards"]}
     tr["summary"] = cached["summary"]
-    return _view(result, "en", tr)
+    return _view(result, "en", tr, profile)
 
 
 def _translate(hid: str, result: dict) -> dict:

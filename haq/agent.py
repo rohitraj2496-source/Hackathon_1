@@ -574,7 +574,8 @@ def write(profile: dict, research: dict, usage: Usage, hid: str) -> dict:
             likely = bool(check_needed)
             seed = catalog.BY_ID.get(rec["scheme_id"], {})
             # Insurance costs the family a premium: shown as protection, never added to money owed.
-            counts = rec["counts_toward_total"] and rec["scheme_id"] not in catalog.PROTECTION
+            counts = (rec["counts_toward_total"] and rec["scheme_id"] not in catalog.PROTECTION
+                      and rec["scheme_id"] not in catalog.ONE_TIME)
             already = rec["scheme_id"] in received
             cards.append({
                 "scheme_id": rec["scheme_id"],

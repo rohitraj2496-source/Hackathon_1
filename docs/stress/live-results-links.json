@@ -1,0 +1,170 @@
+[
+ {
+  "url": "https://beneficiary.nha.gov.in/",
+  "http": "OK",
+  "browser": null,
+  "verdict": "OK",
+  "detail": null
+ },
+ {
+  "url": "https://divyangjan.upsdc.gov.in/",
+  "http": "tls_error",
+  "browser": "OK",
+  "verdict": "OK",
+  "detail": "\u0926\u093f\u0935\u094d\u092f\u093e\u0902\u0917\u091c\u0928 \u0938\u0936\u0915\u094d\u0924\u0940\u0915\u0930\u0923 \u0935\u093f\u092d\u093e\u0917"
+ },
+ {
+  "url": "https://eshram.gov.in/",
+  "http": "OK",
+  "browser": null,
+  "verdict": "OK",
+  "detail": null
+ },
+ {
+  "url": "https://eshram.gov.in/faqs",
+  "http": "OK",
+  "browser": null,
+  "verdict": "OK",
+  "detail": null
+ },
+ {
+  "url": "https://financialservices.gov.in/pradhan-mantri-suraksha-bima-yojana-pmsby",
+  "http": "OK",
+  "browser": null,
+  "verdict": "OK",
+  "detail": null
+ },
+ {
+  "url": "https://jansuraksha.gov.in/",
+  "http": "tls_error",
+  "browser": "OK",
+  "verdict": "OK",
+  "detail": "Jan-Dhan Se Jan Suraksha"
+ },
+ {
+  "url": "https://maandhan.in/",
+  "http": "OK",
+  "browser": null,
+  "verdict": "OK",
+  "detail": null
+ },
+ {
+  "url": "https://mahilakalyan.up.nic.in/",
+  "http": "tls_error",
+  "browser": "OK",
+  "verdict": "OK",
+  "detail": "Child And Women Welfare"
+ },
+ {
+  "url": "https://mksy.up.gov.in/",
+  "http": "tls_error",
+  "browser": "OK",
+  "verdict": "OK",
+  "detail": "DEPARTMENT OF WOMEN & CHILD DEVELOPMENT"
+ },
+ {
+  "url": "https://pmayg.dord.gov.in/",
+  "http": "tls_error",
+  "browser": "OK",
+  "verdict": "OK",
+  "detail": "Home | Pradhan Mantri Awaas Yojana - Gramin | Ministry of Ru"
+ },
+ {
+  "url": "https://pmayg.dord.gov.in/netiayHome/Uploaded/Guidelines-English_Book_Final.pdf",
+  "http": "tls_error",
+  "browser": "OK",
+  "verdict": "OK",
+  "detail": ""
+ },
+ {
+  "url": "https://pmfby.gov.in/",
+  "http": "OK",
+  "browser": null,
+  "verdict": "OK",
+  "detail": null
+ },
+ {
+  "url": "https://pmfby.gov.in/pdf/Revamped%20Operational%20Guidelines_17th%20August%202020.pdf",
+  "http": "OK",
+  "browser": null,
+  "verdict": "OK",
+  "detail": null
+ },
+ {
+  "url": "https://pmfby.gov.in/pdf/Revised_Operational_Guidelines.pdf",
+  "http": "OK",
+  "browser": null,
+  "verdict": "OK",
+  "detail": null
+ },
+ {
+  "url": "https://pmkisan.gov.in/",
+  "http": "tls_error",
+  "browser": "OK",
+  "verdict": "OK",
+  "detail": "PM-Kisan Samman Nidhi"
+ },
+ {
+  "url": "https://pmuy.gov.in/",
+  "http": "redirect",
+  "browser": "OK",
+  "verdict": "OK",
+  "detail": "PMUY : Home"
+ },
+ {
+  "url": "https://register.eshram.gov.in",
+  "http": "OK",
+  "browser": null,
+  "verdict": "OK",
+  "detail": null
+ },
+ {
+  "url": "https://samajkalyan.up.gov.in/",
+  "http": "OK",
+  "browser": null,
+  "verdict": "OK",
+  "detail": null
+ },
+ {
+  "url": "https://scholarship.up.gov.in/",
+  "http": "tls_error",
+  "browser": "OK",
+  "verdict": "OK",
+  "detail": "Uttar Pradesh Scholarship Portal"
+ },
+ {
+  "url": "https://scholarship.up.gov.in/pdfs/go/OBC_Pre%20matrici%20Niyamawali%20(2016).pdf",
+  "http": "tls_error",
+  "browser": "OK",
+  "verdict": "OK",
+  "detail": ""
+ },
+ {
+  "url": "https://www.pib.gov.in/PressNoteDetails.aspx?NoteId=154428&ModuleId=3&reg=3&lang=1",
+  "http": "OK",
+  "browser": null,
+  "verdict": "OK",
+  "detail": null
+ },
+ {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2074713&reg=48&lang=2",
+  "http": "OK",
+  "browser": null,
+  "verdict": "OK",
+  "detail": null
+ },
+ {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2082288&reg=48&lang=2",
+  "http": "OK",
+  "browser": null,
+  "verdict": "OK",
+  "detail": null
+ },
+ {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2086193&reg=48&lang=2",
+  "http": "OK",
+  "browser": null,
+  "verdict": "OK",
+  "detail": null
+ }
+]
