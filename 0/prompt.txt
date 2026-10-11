@@ -1,0 +1,17 @@
+<pasted_content id="da97">
+Three polish fixes, then commit and push. No real API calls.
+1. Results headline: lead with the total including likely-eligible, kept honest. Hindi: "आपके परिवार का ₹X/साल तक का हक़ बाकी है" with a line below "₹A पक्का · ₹B जाँच के बाद". English: "Up to ₹X/year your family is owed" with "₹A confirmed · ₹B after checks". Read-aloud must say the same.
+2. In Hindi mode, show official Hindi scheme names where they exist (e.g. "निराश्रित महिला पेंशन योजना" for UP Destitute Women Pension) on cards AND the working checklist. Keep short acronyms like PM-KISAN, PMSBY, PMAY-G as is.
+3. Insurance schemes (PMSBY, PMJJBY) are costs to the family, not money owed: exclude them from the ₹ total and show them in a separate "सुरक्षा / Protection" section below the money cards, with premium and cover amount.
+Re-screenshot the results screen in both languages to confirm.
+</pasted_content id="da97">
+
+---
+
+<pasted_content id="da97">
+Three polish fixes, then commit and push. No real API calls.
+1. Results headline: lead with the total including likely-eligible, kept honest. Hindi: "आपके परिवार का ₹X/साल तक का हक़ बाकी है" with a line below "₹A पक्का · ₹B जाँच के बाद". English: "Up to ₹X/year your family is owed" with "₹A confirmed · ₹B after checks". Read-aloud must say the same.
+2. In Hindi mode, show official Hindi scheme names where they exist (e.g. "निराश्रित महिला पेंशन योजना" for UP Destitute Women Pension) on cards AND the working checklist. Keep short acronyms like PM-KISAN, PMSBY, PMAY-G as is.
+3. Insurance schemes (PMSBY, PMJJBY) are costs to the family, not money owed: exclude them from the ₹ total and show them in a separate "सुरक्षा / Protection" section below the money cards, with premium and cover amount.
+Re-screenshot the results screen in both languages to confirm.
+</pasted_content id="da97">
