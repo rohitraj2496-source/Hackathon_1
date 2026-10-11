@@ -1,0 +1,116 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4NWFHZ5P98PFY8EPC5BX5P7",
+  "session_id": "ea589cac-9458-4a9b-a0b6-65d04317dc8a",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-11T16:24:53.635986Z",
+  "branch": "main",
+  "checkpoints_count": 3,
+  "save_step_count": 3,
+  "files_touched": [
+    ".env.example",
+    "README.md",
+    "app.py",
+    "demo/recorded_runs.json",
+    "deploy/README.md",
+    "deploy/setup.sh",
+    "deploy/update.sh",
+    "haq/llm.py",
+    "haq/public.py",
+    "scripts/build_demo_data.py",
+    "scripts/live_test.py",
+    "scripts/screenshots.js",
+    "scripts/stress_ui.py",
+    "scripts/test_public.py",
+    "scripts/ui_stub_server.py",
+    "static/index.html"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-5-5",
+  "turn_id": "bd3ce3c50371",
+  "compact_transcript_start": 0,
+  "token_usage": {
+    "input_tokens": 822,
+    "cache_creation_tokens": 2127795,
+    "cache_read_tokens": 199335354,
+    "output_tokens": 533792,
+    "api_call_count": 403
+  },
+  "skill_events_version": 1,
+  "skill_events": [
+    {
+      "id": "claude-skill-toolu_01ChXEMpMgjP8XKqzVAgqeZN",
+      "event_type": "tool_invocation",
+      "skill": {
+        "name": "claude-api"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "skill_tool_use",
+        "confidence": "explicit"
+      },
+      "turn_id": "fea27c7c2a4d",
+      "transcript_anchor": {
+        "unit": "line",
+        "start": 51,
+        "end": 52,
+        "entry_ids": [
+          "e192278a-5327-47cd-a75f-a0413ced6345"
+        ],
+        "tool_use_id": "toolu_01ChXEMpMgjP8XKqzVAgqeZN"
+      },
+      "native": {
+        "tool_name": "Skill",
+        "tool_use_id": "toolu_01ChXEMpMgjP8XKqzVAgqeZN"
+      },
+      "collapse": {
+        "target": "tool_pair",
+        "label": "Skill: claude-api",
+        "default_collapsed": true
+      }
+    }
+  ],
+  "session_metrics": {
+    "turn_count": 21
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-11T16:24:52.393671Z",
+    "agent_lines": 7040,
+    "agent_removed": 60,
+    "human_added": 2,
+    "human_modified": 3,
+    "human_removed": 0,
+    "total_committed": 7045,
+    "total_lines_changed": 7105,
+    "agent_percentage": 99.92962702322308,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 101,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.json": 101
+      }
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 106,
+      "user_lines_removed": 3,
+      "agent_lines_added": 7045,
+      "agent_lines_removed": 62,
+      "user_added_per_file": {
+        ".claude/settings.json": 101,
+        "scripts/stress_ui.py": 3,
+        "static/index.html": 2
+      },
+      "user_removed_per_file": {
+        "scripts/stress_ui.py": 1,
+        "static/index.html": 2
+      }
+    }
+  ]
+}

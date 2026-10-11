@@ -1,0 +1,41 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4NWFHZ5P98PFY8EPC5BX5P7",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 3,
+  "files_touched": [
+    ".env.example",
+    "README.md",
+    "app.py",
+    "demo/recorded_runs.json",
+    "deploy/README.md",
+    "deploy/setup.sh",
+    "deploy/update.sh",
+    "haq/llm.py",
+    "haq/public.py",
+    "scripts/build_demo_data.py",
+    "scripts/live_test.py",
+    "scripts/screenshots.js",
+    "scripts/stress_ui.py",
+    "scripts/test_public.py",
+    "scripts/ui_stub_server.py",
+    "static/index.html"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 822,
+    "cache_creation_tokens": 2127795,
+    "cache_read_tokens": 199335354,
+    "output_tokens": 533792,
+    "api_call_count": 403
+  }
+}
