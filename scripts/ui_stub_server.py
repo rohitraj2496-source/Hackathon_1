@@ -39,7 +39,7 @@ def fake_run(hid, resume=True):
         time.sleep(pause / SPEED)
 
     ev("understood", members=3)
-    ev("planned", schemes=5)
+    ev("planned", schemes=4, protection=2)
     ev("checking", scheme_id="pm_kisan", from_cache=False)
     ev("recovered", scheme_id="pm_kisan", requested="https://pmkisan.gov.in/",
        served_by="https://www.myscheme.gov.in/schemes/pm-kisan", fell_back=True)

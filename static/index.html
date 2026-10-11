@@ -296,6 +296,7 @@ const T = {
     none: "अभी कोई पक्की योजना नहीं मिली।",
     ev: {
       understood: "आपका परिवार समझ लिया", planned: (n) => `${n} योजनाएँ जाँचनी हैं`,
+      plannedProtection: (n) => `+ ${n} बीमा (सुरक्षा) योजनाएँ, अलग से`,
       checking: (s) => `${s} की सरकारी वेबसाइट देख रहे हैं`, checkingCache: (s) => `${s} — पहले जाँचे गए सरकारी नियम`,
       confirmed: (s) => `${s} — मिल सकती है`, likely: (s) => `${s} — शायद, जाँच ज़रूरी`, not_eligible: (s) => `${s} — आपके लिए नहीं`,
       recovered: "वेबसाइट बंद थी — दूसरे सरकारी स्रोत से जाँचा ✓", retried: "वेबसाइट धीमी थी — दोबारा कोशिश करके जाँचा ✓",
@@ -337,6 +338,7 @@ const T = {
     none: "No confirmed schemes yet.",
     ev: {
       understood: "Understood your family", planned: (n) => `${n} schemes to check`,
+      plannedProtection: (n) => `+ ${n} insurance (protection) ${n === 1 ? "scheme" : "schemes"}, checked separately`,
       checking: (s) => `Checking ${s} official website`, checkingCache: (s) => `${s} — using official rules checked earlier`,
       confirmed: (s) => `${s} — eligible`, likely: (s) => `${s} — likely, check needed`, not_eligible: (s) => `${s} — not for your family`,
       recovered: "Website was down — verified from another official source ✓", retried: "Website was slow — retried and verified ✓",
@@ -587,7 +589,10 @@ function renderSteps(d) {
   const finished = ev.some(e => e.type === "done");
   for (const e of ev) {
     if (e.type === "understood") items.push(["✓", E.understood]);
-    else if (e.type === "planned") items.push(["✓", E.planned(e.schemes)]);
+    else if (e.type === "planned") {
+      items.push(["✓", E.planned(e.schemes)]);
+      if (e.protection) items.push(["🛡️", E.plannedProtection(e.protection), "sub"]);
+    }
     else if (e.type === "checking") {
       const out = doneSchemes.get(e.scheme_id);
       if (!out) items.push(["⏳", e.from_cache ? E.checkingCache(sname(e.scheme_id)) : E.checking(sname(e.scheme_id)), "", true]);

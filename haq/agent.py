@@ -650,7 +650,10 @@ def run(hid: str, resume: bool = True) -> dict:
                 cands = plan(profile, usage, hid)
                 state.update_run(hid, rid, lambda r: r.update(candidates=cands, stage="research",
                                                               usage=usage.snapshot()))
-                state.add_event(hid, rid, "planned", schemes=len({c["scheme_id"] for c in cands}))
+                planned = {c["scheme_id"] for c in cands}
+                prot = planned & set(catalog.PROTECTION)
+                # insurance costs the family a premium: counted separately from schemes that pay money
+                state.add_event(hid, rid, "planned", schemes=len(planned - prot), protection=len(prot))
             # RESEARCH + VERIFY + RECOVER (skip candidates finished before a crash)
             done = set(state.get(hid)["runs"][-1]["research"])
             todo = [c for c in cands if c["key"] not in done]
