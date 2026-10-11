@@ -188,7 +188,8 @@ def get_household(hid: str, lang: Lang = "hi"):
     return {"id": hid, "neatlogs_session_id": hid, "lang": h.get("lang", "hi"),
             "interview_done": h["interview"]["done"], "run": progress, "result": result,
             "running": hid in _running,
-            "schemes": {s["id"]: {"name": s["name_en"], "emoji": s["emoji"]} for s in catalog.SCHEMES}}
+            "schemes": {s["id"]: {"name": catalog.display_name(s["id"], lang) or s["name_en"], "emoji": s["emoji"]}
+                        for s in catalog.SCHEMES}}
 
 
 @app.post("/api/households/{hid}/run")

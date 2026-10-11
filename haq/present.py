@@ -47,18 +47,17 @@ def _member_label(member: str, lang: str) -> str | None:
     return (ROLE_LABELS.get(full) or ROLE_LABELS.get(key) or {}).get(lang)
 
 
-def _scheme_name(card: dict) -> str:
-    seed = catalog.BY_ID.get(card["scheme_id"])
-    return seed["name_en"] if seed else card.get("name_hi") or card["scheme_id"]
-
-
 def _view(result: dict, lang: str, tr: dict | None) -> dict:
     cards = []
     for i, c in enumerate(result["cards"]):
         t = (tr or {}).get(i, {})
+        protection = catalog.PROTECTION.get(c["scheme_id"])
+        name = catalog.display_name(c["scheme_id"], lang) or (
+            c["name_hi"] if lang == "hi" else (t.get("scheme_name") or c["name_hi"]))
         cards.append({
-            "scheme_id": c["scheme_id"], "emoji": c["emoji"],
-            "name": _scheme_name(c) if catalog.BY_ID.get(c["scheme_id"]) else (t.get("scheme_name") or c["name_hi"]),
+            "scheme_id": c["scheme_id"], "emoji": c["emoji"], "name": name,
+            "category": "protection" if protection else "money",
+            "protection": protection,
             "member": _member_label(c["member"], lang) or t.get("member") or c["member"],
             "benefit": t.get("benefit") or c["benefit_hi"],
             "documents": t.get("documents") or c["documents_hi"],
@@ -66,12 +65,16 @@ def _view(result: dict, lang: str, tr: dict | None) -> dict:
             "annual_value_inr": c["annual_value_inr"],
             "verification": c["verification"],
             "check_needed": c.get("check_needed") or (["income_limit"] if c["verification"] == "likely" else []),
-            "counts_toward_total": c["counts_toward_total"],
+            "counts_toward_total": c["counts_toward_total"] and not protection,
+            "counts_toward_likely_total": c.get("counts_toward_likely_total", False) and not protection,
             "already_receiving": c["already_receiving"],
             "apply_url": c["apply_url"], "official_url": c["official_url"],
         })
-    return {"lang": lang, "total_missing_inr_per_year": result["total_missing_inr_per_year"],
-            "likely_extra_inr_per_year": result.get("likely_extra_inr_per_year", 0),
+    # Recomputed from the cards so insurance is never in the total, also for results saved earlier.
+    confirmed = sum(c["annual_value_inr"] for c in cards if c["counts_toward_total"])
+    likely = sum(c["annual_value_inr"] for c in cards if c["counts_toward_likely_total"])
+    return {"lang": lang, "total_missing_inr_per_year": confirmed, "likely_extra_inr_per_year": likely,
+            "owed_up_to_inr_per_year": confirmed + likely,
             "summary": (tr or {}).get("summary") or result["summary_hi"], "cards": cards}
 
 

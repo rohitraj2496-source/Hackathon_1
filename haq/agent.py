@@ -573,6 +573,8 @@ def write(profile: dict, research: dict, usage: Usage, hid: str) -> dict:
                 intake.assumed_facts_for(rec["scheme_id"], profile)
             likely = bool(check_needed)
             seed = catalog.BY_ID.get(rec["scheme_id"], {})
+            # Insurance costs the family a premium: shown as protection, never added to money owed.
+            counts = rec["counts_toward_total"] and rec["scheme_id"] not in catalog.PROTECTION
             already = rec["scheme_id"] in received
             cards.append({
                 "scheme_id": rec["scheme_id"],
@@ -588,8 +590,8 @@ def write(profile: dict, research: dict, usage: Usage, hid: str) -> dict:
                 "label_hi": LIKELY_LABEL_HI if likely else "सरकारी स्रोत से पक्का",
                 "unconfirmed_rules": rec.get("unconfirmed_rules", []),
                 "check_needed": check_needed,
-                "counts_toward_total": rec["counts_toward_total"] and not already and not likely,
-                "counts_toward_likely_total": rec["counts_toward_total"] and not already and likely,
+                "counts_toward_total": counts and not already and not likely,
+                "counts_toward_likely_total": counts and not already and likely,
                 "already_receiving": already,
                 "documents_hi": rec["documents_hi"],
                 "where_to_apply_hi": rec["where_to_apply_hi"],
@@ -608,10 +610,11 @@ def write(profile: dict, research: dict, usage: Usage, hid: str) -> dict:
         summary = structured(
             usage, model=FAST_MODEL, effort="low", max_tokens=4000, schema=SUMMARY_SCHEMA,
             system="Write a warm spoken summary in very simple Hindi (Devanagari) for a non-literate family. "
-                   "3-5 short sentences, max 70 words. Say the total rupees per year they are missing, name the top "
-                   "2-3 schemes and for whom, and say to take the listed documents to the CSC / Jan Seva Kendra. "
-                   "Schemes with status 'likely' are NOT confirmed: say they are 'शायद मिल सकती है, आय सीमा की "
-                   "जाँच करवाएँ' and never add them to the confirmed total. "
+                   "3-5 short sentences, max 70 words. Start with: 'आपके परिवार का <confirmed + likely> प्रति साल "
+                   "तक का हक़ बाकी है, <confirmed> पक्का और <likely> जाँच के बाद.' Then name the top 2-3 schemes and "
+                   "for whom, and say to take the listed documents to the CSC / Jan Seva Kendra. Schemes with status "
+                   "'likely' still need a check (say 'जाँच ज़रूरी'). Insurance (PMSBY, PMJJBY) is protection the family "
+                   "pays a small premium for: never call it money they are owed. "
                    "Write numbers as words a Hindi speaker would say (e.g. 'बारह हज़ार रुपये'). No English.",
             user=json.dumps({"confirmed_total_inr_per_year": total, "likely_extra_inr_per_year": likely_total,
                              "schemes": brief}, ensure_ascii=False),

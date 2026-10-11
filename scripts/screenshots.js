@@ -94,7 +94,7 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
     if (more) await page.evaluate(() => document.querySelectorAll('#qOptions .option')[1].click());
 
     await page.waitForSelector('#s-work.on');
-    await page.waitForFunction(() => document.querySelectorAll('#steps .step').length >= 7, { timeout: 15000 });
+    await page.waitForFunction(() => document.querySelectorAll('#steps .step').length >= 8, { timeout: 15000 });
     await shot(page, `${lang}-05-working`);
 
     await fetch(`${BASE}/stub/release`, { method: 'POST' });

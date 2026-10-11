@@ -231,7 +231,48 @@ SCHEMES = [
     },
 ]
 
+# Names shown to families. Hindi uses the scheme's official Hindi name; well-known acronyms stay as they are.
+DISPLAY_NAMES = {
+    "pm_kisan": ("PM-KISAN", "PM-KISAN"),
+    "pmjay": ("आयुष्मान भारत (PM-JAY)", "Ayushman Bharat (PM-JAY)"),
+    "ayushman_vay_vandana": ("आयुष्मान वय वंदना योजना", "Ayushman Vay Vandana"),
+    "pmay_g": ("PMAY-G", "PMAY-G"),
+    "pmuy": ("प्रधानमंत्री उज्ज्वला योजना", "PM Ujjwala Yojana"),
+    "pmmvy": ("प्रधानमंत्री मातृ वंदना योजना", "PM Matru Vandana Yojana"),
+    "nfsa_ration": ("राष्ट्रीय खाद्य सुरक्षा योजना (राशन कार्ड)", "NFSA ration card"),
+    "pm_sym": ("प्रधानमंत्री श्रम योगी मान-धन योजना", "PM Shram Yogi Maandhan"),
+    "pm_kisan_maandhan": ("प्रधानमंत्री किसान मान-धन योजना", "PM Kisan Maandhan"),
+    "pmjjby": ("PMJJBY", "PMJJBY"),
+    "pmsby": ("PMSBY", "PMSBY"),
+    "eshram": ("ई-श्रम कार्ड", "e-Shram card"),
+    "pmfby": ("प्रधानमंत्री फसल बीमा योजना", "PM Fasal Bima Yojana"),
+    "pm_vishwakarma": ("पीएम विश्वकर्मा योजना", "PM Vishwakarma"),
+    "nsp_scholarship": ("राष्ट्रीय छात्रवृत्ति पोर्टल (NSP)", "National Scholarship Portal (NSP)"),
+    "up_old_age_pension": ("वृद्धावस्था पेंशन योजना", "UP Old Age Pension"),
+    "up_widow_pension": ("निराश्रित महिला पेंशन योजना", "UP Destitute Women Pension"),
+    "up_divyang_pension": ("दिव्यांग पेंशन योजना", "UP Divyang Pension"),
+    "up_kanya_sumangala": ("मुख्यमंत्री कन्या सुमंगला योजना", "Mukhyamantri Kanya Sumangala Yojana"),
+    "up_shadi_anudan": ("शादी अनुदान योजना", "Shadi Anudan Yojana"),
+    "up_samuhik_vivah": ("मुख्यमंत्री सामूहिक विवाह योजना", "Mukhyamantri Samuhik Vivah Yojana"),
+    "up_scholarship": ("पूर्वदशम एवं दशमोत्तर छात्रवृत्ति (उ.प्र.)", "UP Pre/Post-Matric Scholarship"),
+    "up_bocw": ("उ.प्र. भवन एवं अन्य सन्निर्माण कर्मकार कल्याण बोर्ड", "UP BOCW construction workers' welfare"),
+    "up_abhyudaya": ("मुख्यमंत्री अभ्युदय योजना", "Mukhyamantri Abhyudaya Yojana"),
+    "up_digishakti": ("स्वामी विवेकानंद युवा सशक्तिकरण योजना", "Swami Vivekanand Yuva Sashaktikaran (DigiShakti)"),
+}
+
+# Insurance the family pays a small premium for: shown as protection, never added to the money owed.
+# Premium and cover as published on jansuraksha.gov.in.
+PROTECTION = {
+    "pmsby": {"premium_inr_per_year": 20, "cover_inr": 200000, "kind": "accident"},
+    "pmjjby": {"premium_inr_per_year": 436, "cover_inr": 200000, "kind": "life"},
+}
+
 BY_ID = {s["id"]: s for s in SCHEMES}
+
+
+def display_name(scheme_id: str, lang: str) -> str | None:
+    names = DISPLAY_NAMES.get(scheme_id)
+    return (names[0] if lang == "hi" else names[1]) if names else None
 _ALIASES = {a: s["id"] for s in SCHEMES for a in s["aliases"]}
 
 

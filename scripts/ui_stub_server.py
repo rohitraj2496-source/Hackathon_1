@@ -35,7 +35,7 @@ def fake_run(hid, resume=True):
         time.sleep(pause)
 
     ev("understood", members=3)
-    ev("planned", schemes=4)
+    ev("planned", schemes=5)
     ev("checking", scheme_id="pm_kisan", from_cache=False)
     ev("recovered", scheme_id="pm_kisan", requested="https://pmkisan.gov.in/",
        served_by="https://www.myscheme.gov.in/schemes/pm-kisan", fell_back=True)
@@ -44,9 +44,11 @@ def fake_run(hid, resume=True):
     ev("scheme_done", scheme_id="up_widow_pension", outcome="likely")
     ev("checking", scheme_id="pmay_g", from_cache=False)
     ev("checking", scheme_id="pmsby", from_cache=True)
+    ev("checking", scheme_id="pmjjby", from_cache=True)
     release.wait(timeout=120)          # hold here so the working screen can be captured
     ev("scheme_done", scheme_id="pmay_g", outcome="likely")
     ev("scheme_done", scheme_id="pmsby", outcome="confirmed")
+    ev("scheme_done", scheme_id="pmjjby", outcome="confirmed")
     ev("writing")
 
     def card(sid, emoji, name, member, ben, val, ver, chk, docs, counts, where, url):
@@ -72,6 +74,8 @@ def fake_run(hid, resume=True):
             card("pmsby", "🦺", "PMSBY", "father", "सिर्फ़ ₹20 सालाना में ₹2 लाख का दुर्घटना बीमा।", 0, "confirmed", [],
                  ["आधार कार्ड", "बैंक खाता", "मोबाइल नंबर"], False, "अपने बैंक की शाखा में फ़ॉर्म भरें।",
                  "https://jansuraksha.gov.in/"),
+            card("pmjjby", "🛡️", "PMJJBY", "mother", "₹436 सालाना में ₹2 लाख का जीवन बीमा।", 0, "confirmed", [],
+                 ["आधार कार्ड", "बैंक खाता"], False, "अपने बैंक की शाखा में फ़ॉर्म भरें।", "https://jansuraksha.gov.in/"),
         ]}
     ev("done", pause=0)
     state.update_run(hid, rid, lambda r: r.update(result=result, status="done", stage="done"))
@@ -83,13 +87,15 @@ EN = {
     "benefit": ["₹6,000 every year in three instalments, straight to your bank account.",
                 "₹1,000 pension every month, straight to the bank.",
                 "₹1.2 lakh to help build a pucca house.",
-                "₹2 lakh accident cover for just ₹20 a year."],
+                "₹2 lakh accident cover for just ₹20 a year.",
+                "₹2 lakh life cover for ₹436 a year."],
     "docs": [["Aadhaar card", "Bank passbook", "Khatauni (land record)"],
              ["Aadhaar card", "Husband's death certificate", "Income certificate", "Bank passbook"],
              ["Aadhaar card", "Ration card", "Bank passbook"],
-             ["Aadhaar card", "Bank account", "Mobile number"]],
+             ["Aadhaar card", "Bank account", "Mobile number"],
+             ["Aadhaar card", "Bank account"]],
     "where": ["Apply at the nearest Common Service Centre (CSC) or block office."] * 3
-             + ["Fill the form at your bank branch."],
+             + ["Fill the form at your bank branch."] * 2,
 }
 
 

@@ -120,7 +120,17 @@
   .headline .l { font-size: 20px; opacity: .92; }
   .headline .amt { font-size: 52px; font-weight: 800; line-height: 1.05; margin: 6px 0; letter-spacing: -.02em; font-family: var(--font-en); }
   .headline .l2 { font-size: 20px; }
-  .headline .more { margin-top: 10px; font-size: 17px; background: rgba(255,255,255,.14); border-radius: 12px; padding: 8px 12px; }
+  .headline .amt .unit { font-size: 22px; font-weight: 700; margin-left: 4px; letter-spacing: 0; }
+  .headline .split { margin-top: 12px; font-size: 18px; font-weight: 600; background: rgba(255,255,255,.14);
+                     border-radius: 12px; padding: 8px 12px; }
+  .section-head { margin: 30px 4px 4px; }
+  .section-head h2 { margin: 0; font-size: 24px; }
+  .section-head p { margin: 4px 0 0; color: var(--muted); font-size: 16px; }
+  .cover { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0 6px; }
+  .cover .pay, .cover .get { border-radius: 12px; padding: 6px 12px; font-weight: 700; font-size: 18px; font-family: var(--font-en); }
+  html[lang="hi"] .cover .pay, html[lang="hi"] .cover .get { font-family: var(--font-hi); }
+  .cover .pay { background: var(--warn-soft); color: var(--warn); }
+  .cover .get { background: var(--accent-soft); color: var(--accent); }
   .headline .speak { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,.18); color: #fff; }
   .scheme { margin-top: 14px; padding: 18px; }
   .scheme-top { display: flex; gap: 12px; align-items: flex-start; }
@@ -220,10 +230,10 @@
   <section class="screen" id="s-results">
     <div class="headline">
       <button class="speak" id="sayHeadline" aria-label="read aloud">🔊</button>
-      <div class="l" data-t="missingA"></div>
-      <div class="amt" id="amt"></div>
-      <div class="l2" data-t="missingB"></div>
-      <div class="more hidden" id="more"></div>
+      <div class="l" id="headA"></div>
+      <div class="amt"><span id="amt"></span><span class="unit" id="amtUnit"></span></div>
+      <div class="l2" id="headB"></div>
+      <div class="split" id="split"></div>
     </div>
     <div id="cards"></div>
     <div class="bottom">
@@ -245,8 +255,11 @@ const T = {
     listening: "सुन रहा हूँ…", heardNothing: "सुनाई नहीं दिया — फिर से दबाइए", noMic: "इस ब्राउज़र में माइक नहीं चलता — नीचे लिखिए",
     whoLives: "घर में कौन-कौन है? छूकर जोड़िए", income: "परिवार की कमाई",
     working: "आपकी योजनाएँ ढूँढ रहे हैं…", retry: "फिर से कोशिश करें",
-    missingA: "आपका परिवार हर साल", missingB: "नहीं ले रहा है",
-    moreIf: (x) => `+ ${x} तक और, जाँच के बाद`,
+    headA: "आपके परिवार का", unit: "/साल तक", headB: "का हक़ बाकी है",
+    split: (a, b) => b ? `${a} पक्का · ${b} जाँच के बाद` : `${a} पक्का`,
+    protection: "सुरक्षा", protectionNote: "बीमा: आप छोटा प्रीमियम भरते हैं, मुसीबत में परिवार को पैसा मिलता है। यह ऊपर की रकम में नहीं जुड़ा।",
+    premium: (x) => `आप भरें: ${x}/साल`, cover: (x, kind) => `${kind === "life" ? "जीवन बीमा" : "दुर्घटना बीमा"}: ${x}`,
+    sayProtection: (c, pay, get) => `${c.name}. ${c.member} के लिए. ${pay}. ${get}. ${c.benefit}. आवेदन: ${c.where_to_apply}`,
     ask: "🎤 कुछ पूछना है?", newFamily: "नया परिवार", step: (i, n) => `सवाल ${i} / ${n}`,
     confirmed: "✓ पक्का (सरकारी स्रोत)", check: "जाँच ज़रूरी:", have: "पहले से मिल रही",
     perYear: "/ साल", whereApply: "कहाँ आवेदन करें", openSite: "वेबसाइट खोलें →", source: "सरकारी स्रोत ↗",
@@ -263,7 +276,7 @@ const T = {
     checks: { income_limit: "आय सीमा", income: "परिवार की कमाई", ration_card: "राशन कार्ड", area: "गाँव या शहर",
               house: "घर कच्चा या पक्का", land: "ज़मीन किसके नाम", lpg: "गैस कनेक्शन", age: "उम्र", disability: "विकलांगता प्रमाण पत्र" },
     sayCard: (c, money, check) => `${c.name}. ${c.member} के लिए. ${money ? money + ' हर साल. ' : ''}${check}${c.benefit}. ज़रूरी कागज़: ${c.documents.join(', ')}. आवेदन: ${c.where_to_apply}`,
-    sayHeadline: (x) => `आपका परिवार हर साल ${x} नहीं ले रहा है.`,
+    sayHeadline: (x, a, b) => `आपके परिवार का ${x} प्रति साल तक का हक़ बाकी है. ${b ? `${a} पक्का, ${b} जाँच के बाद.` : `${a} पक्का.`}`,
   },
   en: {
     promise: "Government schemes your family is owed",
@@ -273,8 +286,11 @@ const T = {
     listening: "Listening…", heardNothing: "Didn't catch that — tap again", noMic: "Mic not available in this browser — type below",
     whoLives: "Who lives in your home? Tap to add", income: "Family income",
     working: "Finding your schemes…", retry: "Try again",
-    missingA: "Your family is missing", missingB: "every year",
-    moreIf: (x) => `+ up to ${x} more once checked`,
+    headA: "Up to", unit: "/year", headB: "your family is owed",
+    split: (a, b) => b ? `${a} confirmed · ${b} after checks` : `${a} confirmed`,
+    protection: "Protection", protectionNote: "Insurance: you pay a small premium, your family gets money if something happens. Not counted in the amount above.",
+    premium: (x) => `You pay: ${x}/year`, cover: (x, kind) => `${kind === "life" ? "Life cover" : "Accident cover"}: ${x}`,
+    sayProtection: (c, pay, get) => `${c.name}. For ${c.member}. ${pay}. ${get}. ${c.benefit}. Apply: ${c.where_to_apply}`,
     ask: "🎤 Have a question?", newFamily: "New family", step: (i, n) => `Question ${i} of ${n}`,
     confirmed: "✓ Confirmed (official source)", check: "Check needed:", have: "Already receiving",
     perYear: "/ year", whereApply: "Where to apply", openSite: "Open website →", source: "Official source ↗",
@@ -291,7 +307,7 @@ const T = {
     checks: { income_limit: "income limit", income: "family income", ration_card: "ration card", area: "village or town",
               house: "house type", land: "land ownership", lpg: "gas connection", age: "age", disability: "disability certificate" },
     sayCard: (c, money, check) => `${c.name}. For ${c.member}. ${money ? money + ' every year. ' : ''}${check}${c.benefit}. Documents: ${c.documents.join(', ')}. Apply: ${c.where_to_apply}`,
-    sayHeadline: (x) => `Your family is missing ${x} every year.`,
+    sayHeadline: (x, a, b) => `Up to ${x} a year your family is owed. ${b ? `${a} confirmed, ${b} after checks.` : `${a} confirmed.`}`,
   },
 };
 const ROLES = [
@@ -525,15 +541,34 @@ $("retry").onclick = async () => { await api(`/api/households/${hid}/run`, {}); 
 const rupee = (n) => "₹" + Number(n || 0).toLocaleString("en-IN");
 function docIcon(t) { const m = DOC_ICONS.find(([re]) => re.test(t)); return m ? m[1] : "📄"; }
 function checkText(c) { return c.check_needed.map(k => L().checks[k] || k).join(", "); }
-function headlineSpeech(r) { return L().sayHeadline(rupee(r.total_missing_inr_per_year)) + " " + r.summary; }
+const lakh = (n) => n >= 100000 ? `₹${(n / 100000).toLocaleString("en-IN")} ${lang === "en" ? "lakh" : "लाख"}` : rupee(n);
+function totals(r) {
+  const a = r.total_missing_inr_per_year || 0, b = r.likely_extra_inr_per_year || 0;
+  return { a, b, x: r.owed_up_to_inr_per_year ?? a + b };
+}
+// Read-aloud says exactly what the headline shows.
+function headlineSpeech(r) { const t = totals(r); return L().sayHeadline(rupee(t.x), rupee(t.a), t.b ? rupee(t.b) : ""); }
 function renderResults(r, say) {
   lastResult = r; show("s-results");
-  $("amt").textContent = rupee(r.total_missing_inr_per_year);
-  const more = r.likely_extra_inr_per_year || 0;
-  $("more").classList.toggle("hidden", !more); $("more").textContent = more ? L().moreIf(rupee(more)) : "";
+  const t = totals(r);
+  $("headA").textContent = L().headA; $("headB").textContent = L().headB;
+  $("amt").textContent = rupee(t.x); $("amtUnit").textContent = L().unit;
+  $("split").textContent = L().split(rupee(t.a), t.b ? rupee(t.b) : "");
   const box = $("cards"); box.innerHTML = "";
-  if (!r.cards.length) { const p = document.createElement("div"); p.className = "card scheme"; p.textContent = L().none; box.appendChild(p); }
-  r.cards.forEach(c => {
+  const money = r.cards.filter(c => c.category !== "protection"), protection = r.cards.filter(c => c.category === "protection");
+  if (!money.length) { const p = document.createElement("div"); p.className = "card scheme"; p.textContent = L().none; box.appendChild(p); }
+  money.forEach(c => box.appendChild(schemeCard(c)));
+  if (protection.length) {
+    const head = document.createElement("div"); head.className = "section-head";
+    const h = document.createElement("h2"); h.textContent = "🛡️ " + L().protection;
+    const p = document.createElement("p"); p.textContent = L().protectionNote;
+    head.append(h, p); box.appendChild(head);
+    protection.forEach(c => box.appendChild(schemeCard(c)));
+  }
+  $("answer").classList.add("hidden");
+  if (say) speak(headlineSpeech(r));
+}
+function schemeCard(c) {
     const el = document.createElement("article"); el.className = "card scheme";
     const top = document.createElement("div"); top.className = "scheme-top";
     const em = document.createElement("div"); em.className = "emoji"; em.textContent = c.emoji;
@@ -541,8 +576,17 @@ function renderResults(r, say) {
     const h3 = document.createElement("h3"); h3.textContent = c.name;
     const who = document.createElement("div"); who.className = "who"; who.textContent = `${L().forWho} ${c.member}`;
     head.append(h3, who); top.append(em, head); el.appendChild(top);
-    const money = c.annual_value_inr ? `${rupee(c.annual_value_inr)} ${L().perYear}` : "";
+    const prot = c.category === "protection" && c.protection;
+    const money = !prot && c.annual_value_inr ? `${rupee(c.annual_value_inr)} ${L().perYear}` : "";
     if (money) { const m = document.createElement("div"); m.className = "money" + (c.counts_toward_total ? "" : " soft"); m.textContent = money; el.appendChild(m); }
+    let pay = "", get = "";
+    if (prot) {
+      pay = L().premium(rupee(prot.premium_inr_per_year)); get = L().cover(lakh(prot.cover_inr), prot.kind);
+      const cv = document.createElement("div"); cv.className = "cover";
+      const a = document.createElement("span"); a.className = "pay"; a.textContent = pay;
+      const b = document.createElement("span"); b.className = "get"; b.textContent = get;
+      cv.append(a, b); el.appendChild(cv);
+    }
     const badge = document.createElement("div");
     if (c.already_receiving) { badge.className = "badge have"; badge.textContent = L().have; }
     else if (c.verification === "confirmed") { badge.className = "badge ok"; badge.textContent = L().confirmed; }
@@ -567,11 +611,9 @@ function renderResults(r, say) {
     ap.onclick = () => where.classList.toggle("hidden");
     const src = document.createElement("a"); src.className = "src"; src.href = c.official_url; src.target = "_blank"; src.rel = "noopener";
     src.textContent = L().source; el.appendChild(src);
-    say.onclick = () => speak(L().sayCard(c, money, c.verification === "confirmed" ? "" : `${L().check} ${checkText(c)}. `));
-    box.appendChild(el);
-  });
-  $("answer").classList.add("hidden");
-  if (say) speak(headlineSpeech(r));
+    say.onclick = () => speak(prot ? L().sayProtection(c, pay, get)
+                                   : L().sayCard(c, money, c.verification === "confirmed" ? "" : `${L().check} ${checkText(c)}. `));
+    return el;
 }
 $("sayHeadline").onclick = () => lastResult && speak(headlineSpeech(lastResult));
 $("askBtn").onclick = () => listen(async (text) => {
