@@ -93,7 +93,7 @@ Thirteen links still fail Python's strict TLS check. They are all missing an int
 | A long text was sent to the model in full | Text is capped at 3,000 characters on the server |
 | 25 concurrent sessions took about 33 s each, because the state file was re-parsed on every poll | The state is parsed once per process. Sessions now take 17–23 s |
 
-**Final run:** last complete run 65/65 scenarios clean, 0 issues, 25/25 concurrent sessions (17.5–22.9 s). A re-run covering the new one-time and pension display is pending and will be added here.
+**Final run** (after all Phase 2 display fixes): 65 of 65 scenarios clean, 25 of 25 concurrent sessions completed (20.9–25.8 s each). The run logged 3 console errors, all `net::ERR_INTERNET_DISCONNECTED` on the Google Fonts stylesheet, during a brief network drop on the test machine. Re-running the affected scenarios (the dead-button sweeps, both languages) gave 0 issues. UI screenshots were refreshed, and the layout check found 15 of 15 screens clean with 0 console errors.
 
 ## Phase 2 — Real API (hard cap $2)
 

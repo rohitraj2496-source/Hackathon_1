@@ -1,6 +1,28 @@
 {
- "seconds": 557,
- "issues": [],
+ "seconds": 1242,
+ "issues": [
+  {
+   "scenario": "dead-buttons-s-builder-en",
+   "kind": "console-error",
+   "detail": [
+    "Failed to load resource: net::ERR_INTERNET_DISCONNECTED"
+   ]
+  },
+  {
+   "scenario": "dead-buttons-s-builder-en",
+   "kind": "console-error",
+   "detail": [
+    "Failed to load resource: net::ERR_INTERNET_DISCONNECTED"
+   ]
+  },
+  {
+   "scenario": "dead-buttons-s-builder-en",
+   "kind": "console-error",
+   "detail": [
+    "Failed to load resource: net::ERR_INTERNET_DISCONNECTED"
+   ]
+  }
+ ],
  "passed": [
   "input-empty-hi-360",
   "input-gibberish-hi-360",
@@ -66,7 +88,7 @@
   "offline-hi",
   "slow-3g-en",
   "offline-en",
-  "concurrent-25: 25/25 completed; time min/max 17.5s/22.9s"
+  "concurrent-25: 25/25 completed; time min/max 20.9s/25.8s"
  ],
- "concurrency": "25/25 completed; time min/max 17.5s/22.9s"
+ "concurrency": "25/25 completed; time min/max 20.9s/25.8s"
 }
