@@ -135,6 +135,14 @@ def submit_intake(hid: str, body: Intake):
             "members": len(profile["members"])}
 
 
+@app.get("/api/households/{hid}/followups")
+def get_followups(hid: str, lang: Lang = "hi"):
+    """The pending follow-ups in another language (when the family switches language mid-way)."""
+    h = _get(hid)
+    pending = h["interview"].get("followups", [])
+    return {"followups": [f for f in intake.pick_followups(h["profile"], lang) if f["id"] in pending]}
+
+
 @app.post("/api/households/{hid}/answers")
 def submit_answers(hid: str, body: Answers):
     """Tap answers to the follow-ups; then start the run."""

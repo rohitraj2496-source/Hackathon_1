@@ -2,346 +2,602 @@
 <html lang="hi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>हक़ — आपकी सरकारी योजनाएँ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F4EFE4">
+<title>Haq हक़</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #fbf7f0; --surface: #ffffff; --ink: #1d1b16; --muted: #5d574b; --line: #e6dfd2;
-    --accent: #d2551b; --accent-ink: #ffffff; --ok: #1f7a4d; --ok-bg: #e5f4ec; --warn-bg: #fff3d6;
-    --money: #0f5c38; --shadow: 0 2px 10px rgba(40, 30, 10, .08);
+    --bg: #F4EFE4; --surface: #FFFDF8; --ink: #1B1A17; --muted: #6B665C; --line: #E3DCCD;
+    --accent: #1F5E3B; --accent-soft: #E3EEE6; --accent-ink: #FFFFFF;
+    --warn: #B4503A; --warn-soft: #F6E3DD;
+    --amber: #8A5A12; --amber-soft: #FBEBC8;
+    --radius: 22px; --shadow: 0 1px 2px rgba(27, 26, 23, .06), 0 6px 18px rgba(27, 26, 23, .06);
+    --font-en: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-hi: "Kohinoor Devanagari", "Noto Sans Devanagari", "Mangal", "Nirmala UI", system-ui, sans-serif;
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #15130f; --surface: #211e18; --ink: #f4efe6; --muted: #b9b0a0; --line: #3a352c;
-      --accent: #ff7a3d; --accent-ink: #1a0d05; --ok: #5fd39a; --ok-bg: #173327; --warn-bg: #3a2f12;
-      --money: #7be3ad; --shadow: none;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #15130f; --surface: #211e18; --ink: #f4efe6; --muted: #b9b0a0; --line: #3a352c;
-    --accent: #ff7a3d; --accent-ink: #1a0d05; --ok: #5fd39a; --ok-bg: #173327; --warn-bg: #3a2f12;
-    --money: #7be3ad; --shadow: none;
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink);
-         font-family: "Noto Sans Devanagari", system-ui, sans-serif; font-size: 22px; line-height: 1.5; }
-  main { max-width: 680px; margin: 0 auto; padding: 16px 16px 120px; }
-  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  h1 { font-size: 40px; margin: 8px 0; font-weight: 800; }
-  h1 small { display: block; font-size: 18px; font-weight: 400; color: var(--muted); }
-  button { font: inherit; cursor: pointer; }
-  .ghost { background: none; border: 2px solid var(--line); color: var(--ink); border-radius: 14px; padding: 8px 14px; font-size: 18px; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body { font-family: var(--font-hi); font-size: 19px; line-height: 1.45; min-height: 100dvh; }
+  html[lang="en"] body { font-family: var(--font-en); }
+  button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; }
+  a { color: inherit; }
+  .app { max-width: 480px; margin: 0 auto; padding: 12px 16px calc(32px + env(safe-area-inset-bottom)); }
 
-  .bubble { background: var(--surface); border: 2px solid var(--line); border-radius: 22px; padding: 18px 20px;
-            margin: 14px 0; box-shadow: var(--shadow); font-size: 26px; font-weight: 600; }
-  .bubble .speak { float: right; margin-left: 8px; }
-  .you { background: var(--warn-bg); font-weight: 400; font-size: 22px; text-align: right; }
+  /* top bar */
+  .top { display: flex; align-items: center; justify-content: space-between; min-height: 48px; }
+  .mini-mark { font-weight: 800; font-size: 20px; letter-spacing: -.01em; visibility: hidden; }
+  .mini-mark.on { visibility: visible; }
+  .toggle { display: flex; background: var(--surface); border: 1.5px solid var(--line); border-radius: 999px; padding: 3px; }
+  .toggle button { min-width: 48px; min-height: 40px; padding: 0 12px; border-radius: 999px; font-weight: 700; font-size: 16px; color: var(--muted); }
+  .toggle button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+  .toggle.hidden { visibility: hidden; }
 
-  .mic-wrap { display: flex; flex-direction: column; align-items: center; margin: 22px 0 8px; }
-  #mic { width: 150px; height: 150px; border-radius: 50%; border: none; background: var(--accent);
-         color: var(--accent-ink); font-size: 64px; box-shadow: 0 6px 20px rgba(210, 85, 27, .35); }
-  #mic.listening { animation: pulse 1.1s infinite; }
-  @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
-  .mic-label { margin-top: 10px; color: var(--muted); font-size: 20px; text-align: center; }
-
-  form { display: flex; gap: 10px; margin-top: 14px; }
-  input[type=text] { flex: 1; min-width: 0; font: inherit; font-size: 22px; padding: 14px 16px; border-radius: 16px;
-                     border: 2px solid var(--line); background: var(--surface); color: var(--ink); }
-  form button { border: none; background: var(--ink); color: var(--bg); border-radius: 16px; padding: 0 20px; font-size: 22px; }
-
-  .progress { background: var(--surface); border: 2px dashed var(--line); border-radius: 22px; padding: 18px 20px; margin: 18px 0; }
-  .bar { height: 16px; background: var(--line); border-radius: 10px; overflow: hidden; margin-top: 10px; }
-  .bar > div { height: 100%; background: var(--accent); width: 0; transition: width .4s; }
-
-  .total { background: var(--ok-bg); border-radius: 26px; padding: 22px; margin: 20px 0; text-align: center; }
-  .total .lbl { font-size: 22px; }
-  .total .amt { font-size: 56px; font-weight: 800; color: var(--money); line-height: 1.15; }
-  .total .sub { font-size: 20px; color: var(--muted); }
-
-  .card { background: var(--surface); border: 2px solid var(--line); border-radius: 24px; padding: 18px 18px 14px;
-          margin: 16px 0; box-shadow: var(--shadow); }
-  .card .top { display: flex; gap: 14px; align-items: flex-start; }
-  .card .icon { font-size: 54px; line-height: 1; }
-  .card h3 { margin: 0; font-size: 26px; line-height: 1.3; }
-  .card .who { color: var(--muted); font-size: 20px; }
-  .card .money { font-size: 30px; font-weight: 800; color: var(--money); margin: 10px 0 4px; }
-  .card .benefit { font-size: 20px; }
-  .card .row { margin-top: 12px; font-size: 20px; }
-  .card .row b { display: block; font-size: 18px; color: var(--muted); font-weight: 600; }
-  .card ul { margin: 4px 0 0; padding-left: 24px; }
-  .card .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
-  .card a, .card .actions button { display: inline-block; border-radius: 14px; padding: 10px 14px; font-size: 18px;
-            text-decoration: none; border: 2px solid var(--line); color: var(--ink); background: none; }
-  .card a.official { border-color: var(--ok); color: var(--ok); font-weight: 600; }
-  .likely { display: block; margin: 10px 0 0; padding: 8px 12px; border-radius: 12px; background: var(--warn-bg);
-            font-size: 19px; font-weight: 600; }
-  .likely small { display: block; font-weight: 400; font-size: 15px; color: var(--muted); }
-  .tag { display: inline-block; font-size: 15px; padding: 2px 10px; border-radius: 10px; background: var(--warn-bg); margin-top: 6px; }
+  .screen { display: none; animation: in .25s ease; }
+  .screen.on { display: block; }
+  @keyframes in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   .hidden { display: none !important; }
-  .muted { color: var(--muted); font-size: 18px; }
+
+  /* language screen */
+  .lang-screen { min-height: 78dvh; display: flex; flex-direction: column; justify-content: center; gap: 18px; text-align: center; }
+  .wordmark { font-family: var(--font-en); font-weight: 800; font-size: 56px; letter-spacing: -.03em; line-height: 1; }
+  .wordmark span { font-family: var(--font-hi); font-weight: 700; color: var(--accent); margin-left: 10px; }
+  .big-choice { display: block; width: 100%; min-height: 84px; border-radius: var(--radius); background: var(--surface);
+                border: 2px solid var(--line); font-size: 30px; font-weight: 700; box-shadow: var(--shadow); }
+  .big-choice:active { transform: scale(.98); }
+  .big-choice.hi { font-family: var(--font-hi); }
+  .big-choice.en { font-family: var(--font-en); }
+
+  /* start */
+  .start { min-height: 78dvh; display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 8px; }
+  .promise { font-size: 22px; color: var(--muted); margin: 10px 0 0; max-width: 22ch; }
+  .prompt { font-size: 26px; font-weight: 700; margin: 34px 0 18px; }
+  .mic { width: 168px; height: 168px; border-radius: 50%; background: var(--accent); color: var(--accent-ink);
+         font-size: 68px; box-shadow: 0 10px 30px rgba(31, 94, 59, .35); position: relative; }
+  .mic:active { transform: scale(.97); }
+  .mic.listening::after { content: ""; position: absolute; inset: -10px; border-radius: 50%; border: 4px solid var(--accent);
+                          animation: ring 1.2s infinite; }
+  @keyframes ring { from { opacity: .7; transform: scale(1); } to { opacity: 0; transform: scale(1.25); } }
+  .heard { min-height: 28px; margin-top: 16px; color: var(--muted); font-size: 18px; max-width: 30ch; }
+  .link-btn { margin-top: 18px; min-height: 56px; padding: 0 22px; border-radius: 999px; border: 2px solid var(--ink);
+              font-weight: 700; font-size: 20px; }
+  .text-btn { margin-top: 10px; min-height: 48px; color: var(--muted); text-decoration: underline; font-size: 17px; }
+
+  /* generic */
+  h2 { font-size: 26px; line-height: 1.25; margin: 8px 0 18px; }
+  .card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; }
+  .primary { width: 100%; min-height: 64px; border-radius: 18px; background: var(--accent); color: var(--accent-ink);
+             font-weight: 700; font-size: 22px; margin-top: 18px; }
+  .primary:disabled { opacity: .45; }
+  .ghost { min-height: 52px; padding: 0 18px; border-radius: 16px; border: 2px solid var(--line); background: var(--surface); font-weight: 600; }
+  textarea { width: 100%; min-height: 160px; font: inherit; font-size: 20px; padding: 16px; border-radius: 18px;
+             border: 2px solid var(--line); background: var(--surface); color: var(--ink); resize: vertical; }
+  textarea:focus { outline: 3px solid var(--accent-soft); border-color: var(--accent); }
+  .speak { width: 48px; height: 48px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: 22px; flex: none; }
+
+  /* builder */
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip { min-height: 56px; padding: 0 16px; border-radius: 16px; background: var(--surface); border: 2px solid var(--line);
+          font-size: 19px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+  .chip .e { font-size: 24px; }
+  .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .section-label { font-size: 17px; font-weight: 700; color: var(--muted); margin: 22px 0 10px; }
+  .member { margin-top: 12px; padding: 14px; }
+  .member-head { display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 21px; margin-bottom: 10px; }
+  .member-head .x { width: 44px; height: 44px; border-radius: 50%; background: var(--warn-soft); color: var(--warn); font-size: 22px; }
+  .member .chip { min-height: 48px; font-size: 17px; padding: 0 12px; }
+
+  /* follow-up */
+  .q-step { color: var(--muted); font-weight: 600; font-size: 16px; }
+  .q-row { display: flex; gap: 12px; align-items: flex-start; }
+  .q-row h2 { flex: 1; margin-top: 4px; }
+  .options { display: grid; gap: 12px; }
+  .option { min-height: 72px; border-radius: 18px; background: var(--surface); border: 2px solid var(--line); font-size: 22px;
+            font-weight: 700; box-shadow: var(--shadow); padding: 0 16px; }
+  .option:active { background: var(--accent); color: var(--accent-ink); }
+
+  /* working */
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .step { display: flex; gap: 12px; align-items: flex-start; background: var(--surface); border-radius: 16px; padding: 14px 16px;
+          box-shadow: var(--shadow); font-size: 18px; animation: in .25s ease; }
+  .step .i { width: 26px; flex: none; text-align: center; font-size: 20px; line-height: 1.35; }
+  .step.warn { background: var(--warn-soft); color: var(--warn); font-weight: 600; }
+  .step.sub { margin-left: 24px; }
+  .spin { display: inline-block; animation: spin 1.2s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* results */
+  .headline { background: var(--accent); color: var(--accent-ink); border-radius: 26px; padding: 22px 20px; position: relative; }
+  .headline .l { font-size: 20px; opacity: .92; }
+  .headline .amt { font-size: 52px; font-weight: 800; line-height: 1.05; margin: 6px 0; letter-spacing: -.02em; font-family: var(--font-en); }
+  .headline .l2 { font-size: 20px; }
+  .headline .more { margin-top: 10px; font-size: 17px; background: rgba(255,255,255,.14); border-radius: 12px; padding: 8px 12px; }
+  .headline .speak { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,.18); color: #fff; }
+  .scheme { margin-top: 14px; padding: 18px; }
+  .scheme-top { display: flex; gap: 12px; align-items: flex-start; }
+  .scheme .emoji { font-size: 46px; line-height: 1; }
+  .scheme h3 { margin: 2px 0 4px; font-size: 21px; line-height: 1.25; font-family: var(--font-en); }
+  .scheme .who { color: var(--muted); font-size: 17px; }
+  .scheme .money { font-size: 28px; font-weight: 800; color: var(--accent); margin: 12px 0 6px; font-family: var(--font-en); }
+  .scheme .money.soft { color: var(--amber); }
+  .badge { display: inline-flex; gap: 6px; align-items: center; border-radius: 999px; padding: 6px 12px; font-size: 15px; font-weight: 700; margin: 4px 0 8px; }
+  .badge.ok { background: var(--accent-soft); color: var(--accent); }
+  .badge.check { background: var(--amber-soft); color: var(--amber); border-radius: 14px; }
+  .badge.have { background: var(--line); color: var(--muted); }
+  .benefit { font-size: 18px; }
+  .docs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .doc { display: inline-flex; gap: 6px; align-items: center; background: var(--bg); border-radius: 12px; padding: 6px 10px; font-size: 15px; }
+  .doc .e { font-size: 18px; }
+  .actions { display: flex; gap: 10px; align-items: center; margin-top: 14px; }
+  .apply { flex: 1; min-height: 54px; border-radius: 16px; background: var(--ink); color: var(--bg); font-weight: 700; font-size: 18px; }
+  .where { margin-top: 10px; font-size: 17px; background: var(--bg); border-radius: 14px; padding: 12px; }
+  .where a { display: inline-block; margin-top: 8px; font-weight: 700; color: var(--accent); }
+  .src { display: inline-block; margin-top: 10px; font-size: 14px; color: var(--muted); }
+  .bottom { display: grid; gap: 10px; margin-top: 22px; }
+  .answer { margin-top: 14px; }
+  .err { color: var(--warn); font-weight: 600; margin-top: 12px; }
+  @media (max-width: 360px) { .wordmark { font-size: 46px; } .headline .amt { font-size: 42px; } .mic { width: 148px; height: 148px; } }
 </style>
 </head>
 <body>
-<main>
-  <header>
-    <h1>हक़ <small>आपके परिवार की सरकारी योजनाएँ</small></h1>
-    <button class="ghost" id="restart" title="नया परिवार">🔄 नया</button>
-  </header>
+<div class="app">
+  <div class="top">
+    <div class="mini-mark" id="miniMark">Haq <span style="font-family:var(--font-hi);color:var(--accent)">हक़</span></div>
+    <div class="toggle hidden" id="toggle" role="group" aria-label="Language">
+      <button data-lang="hi" aria-pressed="false">हिं</button>
+      <button data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </div>
 
-  <div id="chat"></div>
-
-  <section id="progress" class="progress hidden" aria-live="polite">
-    <div id="progressText">🔎 सरकारी वेबसाइटों पर जाँच हो रही है…</div>
-    <div class="bar"><div id="barFill"></div></div>
-    <div class="muted" id="progressSub"></div>
+  <!-- 0. language -->
+  <section class="screen" id="s-lang">
+    <div class="lang-screen">
+      <div class="wordmark">Haq<span>हक़</span></div>
+      <button class="big-choice hi" data-pick="hi">हिंदी</button>
+      <button class="big-choice en" data-pick="en">English</button>
+    </div>
   </section>
 
-  <section id="results" class="hidden">
-    <div class="total">
-      <div class="lbl">आपका परिवार हर साल इतना पैसा नहीं ले रहा:</div>
-      <div class="amt" id="totalAmt">₹0</div>
-      <div class="sub" id="totalSub"></div>
-      <div class="sub hidden" id="likelySub"></div>
-      <button class="ghost" id="speakSummary" style="margin-top:12px">🔊 फिर से सुनें</button>
+  <!-- 1. start -->
+  <section class="screen" id="s-start">
+    <div class="start">
+      <div class="wordmark">Haq<span>हक़</span></div>
+      <p class="promise" data-t="promise"></p>
+      <div class="prompt" data-t="tell"></div>
+      <button class="mic" id="mic" aria-label="mic">🎤</button>
+      <div class="heard" id="heard"></div>
+      <button class="link-btn" id="toBuilder" data-t="orTap"></button>
+      <button class="text-btn" id="toType" data-t="orType"></button>
+      <div class="err hidden" id="startErr"></div>
+    </div>
+  </section>
+
+  <!-- 1b. type -->
+  <section class="screen" id="s-type">
+    <h2 data-t="tell"></h2>
+    <textarea id="typeBox"></textarea>
+    <button class="primary" id="typeGo" data-t="continue"></button>
+    <button class="text-btn" data-back="s-start" data-t="back"></button>
+  </section>
+
+  <!-- 1c. builder -->
+  <section class="screen" id="s-builder">
+    <h2 data-t="whoLives"></h2>
+    <div class="chips" id="roleChips"></div>
+    <div id="members"></div>
+    <div class="section-label" data-t="income"></div>
+    <div class="chips" id="incomeChips"></div>
+    <button class="primary" id="builderGo" data-t="continue" disabled></button>
+    <button class="text-btn" data-back="s-start" data-t="back"></button>
+  </section>
+
+  <!-- 1d. follow-up -->
+  <section class="screen" id="s-follow">
+    <div class="q-step" id="qStep"></div>
+    <div class="q-row"><h2 id="qText"></h2><button class="speak" id="qSpeak" aria-label="read aloud">🔊</button></div>
+    <div class="options" id="qOptions"></div>
+  </section>
+
+  <!-- 2. working -->
+  <section class="screen" id="s-work">
+    <h2 data-t="working"></h2>
+    <ul class="steps" id="steps"></ul>
+    <div class="err hidden" id="workErr"></div>
+    <button class="primary hidden" id="retry" data-t="retry"></button>
+  </section>
+
+  <!-- 3. results -->
+  <section class="screen" id="s-results">
+    <div class="headline">
+      <button class="speak" id="sayHeadline" aria-label="read aloud">🔊</button>
+      <div class="l" data-t="missingA"></div>
+      <div class="amt" id="amt"></div>
+      <div class="l2" data-t="missingB"></div>
+      <div class="more hidden" id="more"></div>
     </div>
     <div id="cards"></div>
+    <div class="bottom">
+      <button class="ghost" id="askBtn" data-t="ask"></button>
+      <div class="card answer hidden" id="answer"></div>
+      <button class="text-btn" id="restart" data-t="newFamily"></button>
+    </div>
   </section>
-
-  <div class="mic-wrap">
-    <button id="mic" aria-label="बोलने के लिए दबाएँ">🎤</button>
-    <div class="mic-label" id="micLabel">दबाएँ और बोलें</div>
-  </div>
-  <form id="textForm">
-    <input id="textInput" type="text" placeholder="या यहाँ लिखें…" autocomplete="off">
-    <button type="submit" aria-label="भेजें">➤</button>
-  </form>
-</main>
+</div>
 
 <script>
-const $ = (id) => document.getElementById(id);
+// ---------------------------------------------------------------- text
+const T = {
+  hi: {
+    promise: "सरकारी योजनाएँ जो आपके परिवार का हक़ हैं",
+    tell: "अपने परिवार के बारे में बताइए",
+    tellSpeak: "अपने परिवार के बारे में बताइए। कौन-कौन है, क्या काम करते हैं।",
+    orTap: "या छूकर बताइए 👆", orType: "लिखकर बताइए", continue: "आगे बढ़ें", back: "← वापस",
+    listening: "सुन रहा हूँ…", heardNothing: "सुनाई नहीं दिया — फिर से दबाइए", noMic: "इस ब्राउज़र में माइक नहीं चलता — नीचे लिखिए",
+    whoLives: "घर में कौन-कौन है? छूकर जोड़िए", income: "परिवार की कमाई",
+    working: "आपकी योजनाएँ ढूँढ रहे हैं…", retry: "फिर से कोशिश करें",
+    missingA: "आपका परिवार हर साल", missingB: "नहीं ले रहा है",
+    moreIf: (x) => `+ ${x} तक और, जाँच के बाद`,
+    ask: "🎤 कुछ पूछना है?", newFamily: "नया परिवार", step: (i, n) => `सवाल ${i} / ${n}`,
+    confirmed: "✓ पक्का (सरकारी स्रोत)", check: "जाँच ज़रूरी:", have: "पहले से मिल रही",
+    perYear: "/ साल", whereApply: "कहाँ आवेदन करें", openSite: "वेबसाइट खोलें →", source: "सरकारी स्रोत ↗",
+    forWho: "किसके लिए:", docs: "ज़रूरी कागज़:", err: "माफ़ कीजिए, कुछ गड़बड़ हुई। फिर से कोशिश करें।",
+    none: "अभी कोई पक्की योजना नहीं मिली।",
+    ev: {
+      understood: "आपका परिवार समझ लिया", planned: (n) => `${n} योजनाएँ जाँचनी हैं`,
+      checking: (s) => `${s} की सरकारी वेबसाइट देख रहे हैं`, checkingCache: (s) => `${s} — पहले जाँचे गए सरकारी नियम`,
+      confirmed: (s) => `${s} — मिल सकती है`, likely: (s) => `${s} — शायद, जाँच ज़रूरी`, not_eligible: (s) => `${s} — आपके लिए नहीं`,
+      recovered: "वेबसाइट बंद थी — दूसरे सरकारी स्रोत से जाँचा ✓", retried: "वेबसाइट धीमी थी — दोबारा कोशिश करके जाँचा ✓",
+      source_failed: "वेबसाइट नहीं खुली — दूसरा सरकारी स्रोत देख रहे हैं",
+      writing: "नतीजे तैयार कर रहे हैं", done: "हो गया",
+    },
+    checks: { income_limit: "आय सीमा", income: "परिवार की कमाई", ration_card: "राशन कार्ड", area: "गाँव या शहर",
+              house: "घर कच्चा या पक्का", land: "ज़मीन किसके नाम", lpg: "गैस कनेक्शन", age: "उम्र", disability: "विकलांगता प्रमाण पत्र" },
+    sayCard: (c, money, check) => `${c.name}. ${c.member} के लिए. ${money ? money + ' हर साल. ' : ''}${check}${c.benefit}. ज़रूरी कागज़: ${c.documents.join(', ')}. आवेदन: ${c.where_to_apply}`,
+    sayHeadline: (x) => `आपका परिवार हर साल ${x} नहीं ले रहा है.`,
+  },
+  en: {
+    promise: "Government schemes your family is owed",
+    tell: "Tell us about your family",
+    tellSpeak: "Tell us about your family. Who lives with you, and what work do they do?",
+    orTap: "Or tap to tell us 👆", orType: "Type instead", continue: "Continue", back: "← Back",
+    listening: "Listening…", heardNothing: "Didn't catch that — tap again", noMic: "Mic not available in this browser — type below",
+    whoLives: "Who lives in your home? Tap to add", income: "Family income",
+    working: "Finding your schemes…", retry: "Try again",
+    missingA: "Your family is missing", missingB: "every year",
+    moreIf: (x) => `+ up to ${x} more once checked`,
+    ask: "🎤 Have a question?", newFamily: "New family", step: (i, n) => `Question ${i} of ${n}`,
+    confirmed: "✓ Confirmed (official source)", check: "Check needed:", have: "Already receiving",
+    perYear: "/ year", whereApply: "Where to apply", openSite: "Open website →", source: "Official source ↗",
+    forWho: "For:", docs: "Documents:", err: "Sorry, something went wrong. Please try again.",
+    none: "No confirmed schemes yet.",
+    ev: {
+      understood: "Understood your family", planned: (n) => `${n} schemes to check`,
+      checking: (s) => `Checking ${s} official website`, checkingCache: (s) => `${s} — using official rules checked earlier`,
+      confirmed: (s) => `${s} — eligible`, likely: (s) => `${s} — likely, check needed`, not_eligible: (s) => `${s} — not for your family`,
+      recovered: "Website was down — verified from another official source ✓", retried: "Website was slow — retried and verified ✓",
+      source_failed: "Website didn't open — trying another official source",
+      writing: "Preparing your results", done: "Done",
+    },
+    checks: { income_limit: "income limit", income: "family income", ration_card: "ration card", area: "village or town",
+              house: "house type", land: "land ownership", lpg: "gas connection", age: "age", disability: "disability certificate" },
+    sayCard: (c, money, check) => `${c.name}. For ${c.member}. ${money ? money + ' every year. ' : ''}${check}${c.benefit}. Documents: ${c.documents.join(', ')}. Apply: ${c.where_to_apply}`,
+    sayHeadline: (x) => `Your family is missing ${x} every year.`,
+  },
+};
+const ROLES = [
+  ["father", "👨", { hi: "पापा", en: "Father" }], ["mother", "👩", { hi: "माँ", en: "Mother" }],
+  ["grandfather", "👴", { hi: "दादा", en: "Grandfather" }], ["grandmother", "👵", { hi: "दादी", en: "Grandmother" }],
+  ["son", "👦", { hi: "बेटा", en: "Son" }], ["daughter", "👧", { hi: "बेटी", en: "Daughter" }],
+];
+const TAGS = [
+  ["farmer", "🌾", { hi: "किसान", en: "Farmer" }], ["labourer", "🧱", { hi: "मज़दूर", en: "Labourer" }],
+  ["student", "🎓", { hi: "पढ़ाई", en: "Student" }], ["widow", "👩‍🦳", { hi: "विधवा", en: "Widow" }],
+  ["disabled", "♿", { hi: "विकलांग", en: "Disabled" }],
+];
+const INCOME = [["low", { hi: "कम", en: "Low" }], ["medium", { hi: "मध्यम", en: "Medium" }], ["high", { hi: "ज़्यादा", en: "High" }]];
+const DOC_ICONS = [
+  [/aadhaar|aadhar|आधार/i, "🪪"], [/bank|पासबुक|बैंक|khata|खाता/i, "🏦"], [/ration|राशन/i, "🍚"],
+  [/income|आय/i, "💰"], [/photo|फोटो|फ़ोटो/i, "📷"], [/land|khatauni|खतौनी|ज़मीन|जमीन|भूमि/i, "📜"],
+  [/death|मृत्यु/i, "🕊️"], [/disab|विकलांग|दिव्यांग/i, "♿"], [/caste|जाति/i, "📄"],
+  [/residen|domicile|निवास/i, "🏠"], [/birth|जन्म/i, "👶"], [/mobile|मोबाइल|phone/i, "📱"],
+  [/school|marksheet|विद्यालय|अंकपत्र|admission|प्रवेश/i, "🎓"],
+];
+
+// ---------------------------------------------------------------- state
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
   set(k, v) { try { localStorage.setItem(k, v); } catch {} },
   del(k) { try { localStorage.removeItem(k); } catch {} },
 };
+let lang = store.get("haq_lang");
 let hid = store.get("haq_hid");
-let pollTimer = null;
-let lastSpokenStage = null;
-let busy = false;
+let schemes = {};
+let followups = [], qIndex = 0, answers = {};
+let builder = { members: [], income: null };
+let pollTimer = null, lastResult = null, current = "s-lang";
+const $ = (id) => document.getElementById(id);
+const L = () => T[lang || "hi"];
 
-// ---------- Speech output (Hindi) ----------
-let hindiVoice = null;
-function pickVoice() {
-  const voices = speechSynthesis.getVoices();
-  hindiVoice = voices.find(v => v.lang === "hi-IN") || voices.find(v => v.lang.startsWith("hi")) || null;
-}
-if ("speechSynthesis" in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+// ---------------------------------------------------------------- speech
+let voices = [];
+function loadVoices() { voices = ("speechSynthesis" in window) ? speechSynthesis.getVoices() : []; }
+if ("speechSynthesis" in window) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
 function speak(text) {
   if (!("speechSynthesis" in window) || !text) return;
   speechSynthesis.cancel();
+  const code = lang === "en" ? "en-IN" : "hi-IN";
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = "hi-IN"; u.rate = 0.9;
-  if (hindiVoice) u.voice = hindiVoice;
+  u.lang = code; u.rate = lang === "en" ? 0.95 : 0.9;
+  const v = voices.find(v => v.lang === code) || voices.find(v => v.lang.startsWith(lang === "en" ? "en" : "hi"));
+  if (v) u.voice = v;
   speechSynthesis.speak(u);
 }
-
-// ---------- Speech input (Hindi) ----------
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let rec = null;
-if (SR) {
-  rec = new SR();
-  rec.lang = "hi-IN"; rec.interimResults = false; rec.maxAlternatives = 1;
-  rec.onresult = (e) => send(e.results[0][0].transcript);
-  rec.onend = () => { $("mic").classList.remove("listening"); $("micLabel").textContent = "दबाएँ और बोलें"; };
-  rec.onerror = () => { $("micLabel").textContent = "सुनाई नहीं दिया — फिर दबाएँ या नीचे लिखें"; };
-} else {
-  $("micLabel").textContent = "इस ब्राउज़र में माइक नहीं चलता — नीचे लिखें";
-}
-$("mic").onclick = () => {
-  if (!rec) { $("textInput").focus(); return; }
+function listen(onText) {
+  if (!SR) { $("heard").textContent = L().noMic; show("s-type"); return; }
   speechSynthesis.cancel();
-  try { rec.start(); $("mic").classList.add("listening"); $("micLabel").textContent = "सुन रहा हूँ…"; } catch {}
-};
-$("textForm").onsubmit = (e) => {
-  e.preventDefault();
-  const t = $("textInput").value.trim();
-  if (t) { $("textInput").value = ""; send(t); }
-};
+  const rec = new SR();
+  rec.lang = lang === "en" ? "en-IN" : "hi-IN";
+  rec.interimResults = true; rec.maxAlternatives = 1;
+  let finalText = "";
+  $("mic").classList.add("listening"); $("heard").textContent = L().listening;
+  rec.onresult = (e) => {
+    let interim = "";
+    for (const r of e.results) { if (r.isFinal) finalText += r[0].transcript; else interim += r[0].transcript; }
+    $("heard").textContent = (finalText + " " + interim).trim() || L().listening;
+  };
+  rec.onerror = () => { $("heard").textContent = L().heardNothing; };
+  rec.onend = () => {
+    $("mic").classList.remove("listening");
+    if (finalText.trim()) onText(finalText.trim()); else if ($("heard").textContent === L().listening) $("heard").textContent = L().heardNothing;
+  };
+  try { rec.start(); } catch { $("mic").classList.remove("listening"); }
+}
 
-// ---------- Chat ----------
-function bubble(text, who = "haq") {
-  const d = document.createElement("div");
-  d.className = "bubble" + (who === "you" ? " you" : "");
-  if (who === "haq") {
-    const b = document.createElement("button");
-    b.className = "ghost speak"; b.textContent = "🔊"; b.title = "सुनें"; b.onclick = () => speak(text);
-    d.appendChild(b);
+// ---------------------------------------------------------------- screens + language
+function show(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.toggle("on", s.id === id));
+  current = id;
+  $("miniMark").classList.toggle("on", !["s-lang", "s-start"].includes(id));
+  $("toggle").classList.toggle("hidden", id === "s-lang");
+  window.scrollTo(0, 0);
+}
+function applyLang() {
+  document.documentElement.lang = lang || "hi";
+  document.querySelectorAll("[data-t]").forEach(el => { const v = L()[el.dataset.t]; if (typeof v === "string") el.textContent = v; });
+  document.querySelectorAll("#toggle button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  $("typeBox").placeholder = L().tellSpeak;
+  renderBuilder();
+}
+async function setLang(l) {
+  lang = l; store.set("haq_lang", l); applyLang();
+  if (current === "s-follow" && hid) {
+    try { followups = (await api(`/api/households/${hid}/followups?lang=${lang}`)).followups; renderQuestion(); } catch {}
   }
-  d.appendChild(document.createTextNode(text));
-  $("chat").appendChild(d);
-  d.scrollIntoView({ behavior: "smooth", block: "end" });
+  if (current === "s-results" && hid) { await refresh(); }
+  if (current === "s-work" && lastPoll) renderSteps(lastPoll);
 }
-function showLast(messages, n = 2) {
-  $("chat").innerHTML = "";
-  messages.slice(-n).forEach(m => bubble(m.text, m.role === "user" ? "you" : "haq"));
-}
+document.querySelectorAll("[data-pick]").forEach(b => b.onclick = () => { setLang(b.dataset.pick); show("s-start"); speak(L().tellSpeak); });
+document.querySelectorAll("#toggle button").forEach(b => b.onclick = () => setLang(b.dataset.lang));
+document.querySelectorAll("[data-back]").forEach(b => b.onclick = () => show(b.dataset.back));
 
+// ---------------------------------------------------------------- api
 async function api(path, body) {
-  const r = await fetch(path, { method: body === undefined ? "GET" : "POST",
-    headers: { "Content-Type": "application/json" }, body: body === undefined ? undefined : JSON.stringify(body) });
+  const r = await fetch(path, { method: body === undefined ? "GET" : "POST", headers: { "Content-Type": "application/json" },
+                                body: body === undefined ? undefined : JSON.stringify(body) });
   if (!r.ok) throw new Error(await r.text());
   return r.json();
 }
-
-async function start() {
-  const d = await api("/api/households", {});
-  hid = d.id; store.set("haq_hid", hid);
-  $("chat").innerHTML = ""; bubble(d.question_hi); speak(d.question_hi);
+async function ensureHousehold() {
+  if (hid) return hid;
+  hid = (await api("/api/households", { lang })).id; store.set("haq_hid", hid); return hid;
 }
 
-async function send(text) {
-  if (busy) return;
-  busy = true;
-  bubble(text, "you");
-  const thinking = document.createElement("div");
-  thinking.className = "muted"; thinking.textContent = "⏳ …"; $("chat").appendChild(thinking);
+// ---------------------------------------------------------------- intake
+async function submitIntake(payload) {
+  $("startErr").classList.add("hidden");
   try {
-    const d = await api(`/api/households/${hid}/answer`, { text });
-    thinking.remove();
-    bubble(d.question_hi); speak(d.question_hi);
-    // interview just finished, or a follow-up changed the profile -> a run is starting
-    if (d.rerun || (d.done && $("results").classList.contains("hidden"))) startPolling();
+    await ensureHousehold();
+    const r = await api(`/api/households/${hid}/intake`, { lang, ...payload });
+    followups = r.followups; qIndex = 0; answers = {};
+    if (followups.length) { show("s-follow"); renderQuestion(true); } else startWorking();
   } catch (e) {
-    thinking.remove();
-    const msg = "माफ़ कीजिए, कुछ गड़बड़ हुई। फिर से बोलें।";
-    bubble(msg); speak(msg);
-  } finally { busy = false; }
+    show("s-start"); $("startErr").textContent = L().err; $("startErr").classList.remove("hidden"); speak(L().err);
+  }
+}
+$("mic").onclick = () => listen(text => submitIntake({ text }));
+$("toType").onclick = () => { show("s-type"); $("typeBox").focus(); };
+$("typeGo").onclick = () => { const t = $("typeBox").value.trim(); if (t) submitIntake({ text: t }); };
+$("toBuilder").onclick = () => { show("s-builder"); speak(L().whoLives); };
+
+function chip(emoji, label, pressed, onClick) {
+  const b = document.createElement("button");
+  b.className = "chip"; b.setAttribute("aria-pressed", String(!!pressed));
+  if (emoji) { const e = document.createElement("span"); e.className = "e"; e.textContent = emoji; b.appendChild(e); }
+  b.appendChild(document.createTextNode(label)); b.onclick = onClick; return b;
+}
+function renderBuilder() {
+  const rc = $("roleChips"); rc.innerHTML = "";
+  ROLES.forEach(([role, e, lab]) => rc.appendChild(chip(e, "+ " + lab[lang || "hi"], false, () => {
+    builder.members.push({ role, tags: [] }); renderBuilder();
+  })));
+  const box = $("members"); box.innerHTML = "";
+  builder.members.forEach((m, i) => {
+    const [, e, lab] = ROLES.find(r => r[0] === m.role);
+    const card = document.createElement("div"); card.className = "card member";
+    const head = document.createElement("div"); head.className = "member-head";
+    head.textContent = `${e} ${lab[lang || "hi"]}`;
+    const x = document.createElement("button"); x.className = "x"; x.textContent = "×"; x.setAttribute("aria-label", "remove");
+    x.onclick = () => { builder.members.splice(i, 1); renderBuilder(); };
+    head.appendChild(x); card.appendChild(head);
+    const tags = document.createElement("div"); tags.className = "chips";
+    TAGS.filter(([t]) => t !== "widow" || ["mother", "grandmother"].includes(m.role)).forEach(([t, te, tl]) =>
+      tags.appendChild(chip(te, tl[lang || "hi"], m.tags.includes(t), () => {
+        m.tags = m.tags.includes(t) ? m.tags.filter(x => x !== t) : [...m.tags, t]; renderBuilder();
+      })));
+    card.appendChild(tags); box.appendChild(card);
+  });
+  const ic = $("incomeChips"); ic.innerHTML = "";
+  INCOME.forEach(([v, lab]) => ic.appendChild(chip(null, lab[lang || "hi"], builder.income === v, () => {
+    builder.income = builder.income === v ? null : v; renderBuilder();
+  })));
+  $("builderGo").disabled = builder.members.length === 0;
+}
+$("builderGo").onclick = () => submitIntake({ builder });
+
+// ---------------------------------------------------------------- follow-ups (tap only, max 2)
+function renderQuestion(say) {
+  const q = followups[qIndex]; if (!q) return;
+  $("qStep").textContent = L().step(qIndex + 1, followups.length);
+  $("qText").textContent = q.question;
+  const box = $("qOptions"); box.innerHTML = "";
+  q.options.forEach(o => {
+    const b = document.createElement("button"); b.className = "option"; b.textContent = o.label;
+    b.onclick = () => answer(q.id, o.value); box.appendChild(b);
+  });
+  if (say) speak(q.question + " " + q.options.map(o => o.label).join(", "));
+}
+$("qSpeak").onclick = () => { const q = followups[qIndex]; if (q) speak(q.question + " " + q.options.map(o => o.label).join(", ")); };
+async function answer(id, value) {
+  answers[id] = value; qIndex++;
+  if (qIndex < followups.length) { renderQuestion(true); return; }
+  try { await api(`/api/households/${hid}/answers`, { lang, answers }); startWorking(); }
+  catch { $("qText").textContent = L().err; }
 }
 
-// ---------- Progress + results ----------
-function startPolling() {
-  clearInterval(pollTimer);
-  $("progress").classList.remove("hidden");
-  pollTimer = setInterval(poll, 2500);
-  poll();
+// ---------------------------------------------------------------- working (live checklist)
+let lastPoll = null, spokeWorking = false;
+function startWorking() {
+  show("s-work"); $("steps").innerHTML = ""; $("workErr").classList.add("hidden"); $("retry").classList.add("hidden");
+  if (!spokeWorking) { speak(L().working); spokeWorking = true; }
+  clearInterval(pollTimer); pollTimer = setInterval(poll, 1500); poll();
+}
+const sname = (id) => (schemes[id] && schemes[id].name) || id;
+function renderSteps(d) {
+  const ev = (d.run && d.run.events) || [];
+  const E = L().ev, items = [];
+  const doneSchemes = new Map(ev.filter(e => e.type === "scheme_done").map(e => [e.scheme_id, e.outcome]));
+  const finished = ev.some(e => e.type === "done");
+  for (const e of ev) {
+    if (e.type === "understood") items.push(["✓", E.understood]);
+    else if (e.type === "planned") items.push(["✓", E.planned(e.schemes)]);
+    else if (e.type === "checking") {
+      const out = doneSchemes.get(e.scheme_id);
+      if (!out) items.push(["⏳", e.from_cache ? E.checkingCache(sname(e.scheme_id)) : E.checking(sname(e.scheme_id)), "", true]);
+      else items.push([out === "confirmed" ? "✓" : out === "likely" ? "⚠️" : "–", E[out](sname(e.scheme_id))]);
+    }
+    else if (e.type === "recovered") items.push(["⚠️", e.fell_back ? E.recovered : E.retried, "warn sub"]);
+    else if (e.type === "source_failed") items.push(["⚠️", E.source_failed, "warn sub"]);
+    else if (e.type === "writing") items.push([finished ? "✓" : "⏳", E.writing, "", !finished]);
+  }
+  if (!ev.length) items.push(["⏳", E.understood, "", true]);
+  const ul = $("steps"); ul.innerHTML = "";
+  items.forEach(([icon, text, cls, spinning]) => {
+    const li = document.createElement("li"); li.className = "step " + (cls || "");
+    const i = document.createElement("span"); i.className = "i";
+    if (spinning) { const s = document.createElement("span"); s.className = "spin"; s.textContent = "⏳"; i.appendChild(s); } else i.textContent = icon;
+    const t = document.createElement("span"); t.textContent = text;
+    li.append(i, t); ul.appendChild(li);
+  });
 }
 async function poll() {
-  let d;
-  try { d = await api(`/api/households/${hid}`); } catch { return; }
-  const run = d.run;
-  if (!run) return;
-  if (run.status === "done" && d.result) {
-    clearInterval(pollTimer);
-    $("progress").classList.add("hidden");
-    render(d.result, true);
-    return;
-  }
-  if (run.status === "failed" && !d.running) {
-    clearInterval(pollTimer);
-    $("progressText").textContent = "⚠️ जाँच बीच में रुक गई। फिर से कोशिश करें।";
-    const b = document.createElement("button"); b.className = "ghost"; b.textContent = "🔁 फिर से";
-    b.onclick = async () => { b.remove(); await api(`/api/households/${hid}/run`, {}); startPolling(); };
-    $("progress").appendChild(b);
-    return;
-  }
-  const pct = run.total ? Math.round(100 * run.done / run.total) : 5;
-  $("barFill").style.width = pct + "%";
-  const stageText = {
-    plan: "📝 आपके परिवार के लिए योजनाएँ चुन रहे हैं…",
-    research: `🔎 सरकारी वेबसाइटों पर जाँच: ${run.done} / ${run.total}`,
-    write: "✍️ नतीजे तैयार हो रहे हैं…",
-  }[run.stage] || "⏳ …";
-  $("progressText").textContent = stageText;
-  $("progressSub").textContent = run.verified || run.likely ? `✅ ${run.verified} योजनाएँ पक्की हुईं` +
-    (run.likely ? ` · ⚠️ ${run.likely} शायद` : "") +
-    (run.recoveries ? ` · 🔁 ${run.recoveries} बार दूसरी सरकारी साइट से जाँचा` : "") : "";
-  if (run.stage !== lastSpokenStage) {
-    lastSpokenStage = run.stage;
-    if (run.stage === "research") speak("अब मैं सरकारी वेबसाइटों पर आपकी योजनाएँ जाँच रहा हूँ। थोड़ा इंतज़ार करें।");
+  let d; try { d = await api(`/api/households/${hid}?lang=${lang}`); } catch { return; }
+  lastPoll = d; schemes = d.schemes || schemes; renderSteps(d);
+  if (d.run && d.run.status === "done" && d.result) { clearInterval(pollTimer); setTimeout(() => renderResults(d.result, true), 600); }
+  else if (d.run && d.run.status === "failed" && !d.running) {
+    clearInterval(pollTimer); $("workErr").textContent = L().err; $("workErr").classList.remove("hidden"); $("retry").classList.remove("hidden");
   }
 }
+$("retry").onclick = async () => { await api(`/api/households/${hid}/run`, {}); startWorking(); };
 
+// ---------------------------------------------------------------- results
 const rupee = (n) => "₹" + Number(n || 0).toLocaleString("en-IN");
-let lastSummary = "";
-function render(result, speakIt) {
-  $("results").classList.remove("hidden");
-  $("totalAmt").textContent = rupee(result.total_missing_inr_per_year) + " / साल";
-  const extra = result.cards.filter(c => !c.counts_toward_total && !c.already_receiving).length;
-  $("totalSub").textContent = `${result.cards.length} योजनाएँ मिलीं` + (extra ? ` · ${extra} बीमा/इलाज वाली योजनाएँ अलग से` : "");
-  const lk = result.likely_extra_inr_per_year || 0;
-  $("likelySub").classList.toggle("hidden", !lk);
-  $("likelySub").textContent = lk ? `+ ${rupee(lk)} / साल शायद और (आय सीमा की पुष्टि बाकी)` : "";
-  lastSummary = result.summary_hi;
+function docIcon(t) { const m = DOC_ICONS.find(([re]) => re.test(t)); return m ? m[1] : "📄"; }
+function checkText(c) { return c.check_needed.map(k => L().checks[k] || k).join(", "); }
+function headlineSpeech(r) { return L().sayHeadline(rupee(r.total_missing_inr_per_year)) + " " + r.summary; }
+function renderResults(r, say) {
+  lastResult = r; show("s-results");
+  $("amt").textContent = rupee(r.total_missing_inr_per_year);
+  const more = r.likely_extra_inr_per_year || 0;
+  $("more").classList.toggle("hidden", !more); $("more").textContent = more ? L().moreIf(rupee(more)) : "";
   const box = $("cards"); box.innerHTML = "";
-  for (const c of result.cards) {
-    const el = document.createElement("article");
-    el.className = "card";
-    const money = c.counts_toward_total ? `${rupee(c.annual_value_inr)} / साल` : "";
-    el.innerHTML = `
-      <div class="top"><div class="icon" aria-hidden="true"></div>
-        <div><h3></h3><div class="who"></div>${c.already_receiving ? '<span class="tag">पहले से मिल रही</span>' : ""}</div></div>
-      ${money ? `<div class="money">${money}</div>` : ""}
-      ${c.verification === "likely" ? `<div class="likely"></div>` : ""}
-      <div class="benefit"></div>
-      <div class="row"><b>📄 ज़रूरी कागज़</b><ul></ul></div>
-      <div class="row"><b>📍 कहाँ आवेदन करें</b><span class="where"></span></div>
-      <div class="actions">
-        <button class="say">🔊 सुनें</button>
-        <a class="official" target="_blank" rel="noopener">✅ सरकारी स्रोत</a>
-        <a class="apply" target="_blank" rel="noopener">📝 आवेदन</a>
-      </div>`;
-    el.querySelector(".icon").textContent = c.emoji;
-    el.querySelector("h3").textContent = c.name_hi;
-    el.querySelector(".who").textContent = "👤 " + c.member;
-    el.querySelector(".benefit").textContent = c.benefit_hi;
-    if (c.verification === "likely") {
-      const lb = el.querySelector(".likely");
-      lb.textContent = "⚠️ " + c.label_hi;
-      const en = document.createElement("small"); en.textContent = c.label_en; lb.appendChild(en);
-      if (c.annual_value_inr) el.querySelector(".top").insertAdjacentHTML("afterend",
-        `<div class="money" style="opacity:.6">${rupee(c.annual_value_inr)} / साल ?</div>`);
+  if (!r.cards.length) { const p = document.createElement("div"); p.className = "card scheme"; p.textContent = L().none; box.appendChild(p); }
+  r.cards.forEach(c => {
+    const el = document.createElement("article"); el.className = "card scheme";
+    const top = document.createElement("div"); top.className = "scheme-top";
+    const em = document.createElement("div"); em.className = "emoji"; em.textContent = c.emoji;
+    const head = document.createElement("div"); head.style.flex = "1";
+    const h3 = document.createElement("h3"); h3.textContent = c.name;
+    const who = document.createElement("div"); who.className = "who"; who.textContent = `${L().forWho} ${c.member}`;
+    head.append(h3, who); top.append(em, head); el.appendChild(top);
+    const money = c.annual_value_inr ? `${rupee(c.annual_value_inr)} ${L().perYear}` : "";
+    if (money) { const m = document.createElement("div"); m.className = "money" + (c.counts_toward_total ? "" : " soft"); m.textContent = money; el.appendChild(m); }
+    const badge = document.createElement("div");
+    if (c.already_receiving) { badge.className = "badge have"; badge.textContent = L().have; }
+    else if (c.verification === "confirmed") { badge.className = "badge ok"; badge.textContent = L().confirmed; }
+    else { badge.className = "badge check"; badge.textContent = `⚠️ ${L().check} ${checkText(c)}`; }
+    el.appendChild(badge);
+    const ben = document.createElement("div"); ben.className = "benefit"; ben.textContent = c.benefit; el.appendChild(ben);
+    if (c.documents.length) {
+      const docs = document.createElement("div"); docs.className = "docs"; docs.setAttribute("aria-label", L().docs);
+      c.documents.forEach(t => { const d = document.createElement("span"); d.className = "doc";
+        const e = document.createElement("span"); e.className = "e"; e.textContent = docIcon(t); d.append(e, document.createTextNode(t)); docs.appendChild(d); });
+      el.appendChild(docs);
     }
-    const ul = el.querySelector("ul");
-    c.documents_hi.forEach(doc => { const li = document.createElement("li"); li.textContent = doc; ul.appendChild(li); });
-    el.querySelector(".where").textContent = c.where_to_apply_hi;
-    const off = el.querySelector(".official"); off.href = c.official_url; off.title = c.official_url;
-    const ap = el.querySelector(".apply");
-    if (c.apply_url && c.apply_url.startsWith("http")) ap.href = c.apply_url; else ap.remove();
-    el.querySelector(".say").onclick = () => speak(
-      `${c.name_hi}. ${c.member} के लिए. ${c.verification === "likely" ? c.label_hi + ". " : ""}${c.benefit_hi}. ज़रूरी कागज़: ${c.documents_hi.join(", ")}. आवेदन: ${c.where_to_apply_hi}`);
+    const actions = document.createElement("div"); actions.className = "actions";
+    const ap = document.createElement("button"); ap.className = "apply"; ap.textContent = "📍 " + L().whereApply;
+    const say = document.createElement("button"); say.className = "speak"; say.textContent = "🔊"; say.setAttribute("aria-label", "read aloud");
+    actions.append(ap, say); el.appendChild(actions);
+    const where = document.createElement("div"); where.className = "where hidden";
+    where.appendChild(document.createTextNode(c.where_to_apply));
+    const url = /^https?:/.test(c.apply_url || "") ? c.apply_url : c.official_url;
+    if (url) { where.appendChild(document.createElement("br")); const a = document.createElement("a"); a.href = url; a.target = "_blank"; a.rel = "noopener"; a.textContent = L().openSite; where.appendChild(a); }
+    el.appendChild(where);
+    ap.onclick = () => where.classList.toggle("hidden");
+    const src = document.createElement("a"); src.className = "src"; src.href = c.official_url; src.target = "_blank"; src.rel = "noopener";
+    src.textContent = L().source; el.appendChild(src);
+    say.onclick = () => speak(L().sayCard(c, money, c.verification === "confirmed" ? "" : `${L().check} ${checkText(c)}. `));
     box.appendChild(el);
-  }
-  if (speakIt) speak(result.summary_hi);
+  });
+  $("answer").classList.add("hidden");
+  if (say) speak(headlineSpeech(r));
 }
-$("speakSummary").onclick = () => speak(lastSummary);
-
+$("sayHeadline").onclick = () => lastResult && speak(headlineSpeech(lastResult));
+$("askBtn").onclick = () => listen(async (text) => {
+  try {
+    const r = await api(`/api/households/${hid}/ask`, { lang, text });
+    $("answer").textContent = r.answer; $("answer").classList.remove("hidden"); speak(r.answer);
+    if (r.rerun) setTimeout(startWorking, 2500);
+  } catch { $("answer").textContent = L().err; $("answer").classList.remove("hidden"); }
+});
 $("restart").onclick = () => {
-  clearInterval(pollTimer); store.del("haq_hid"); hid = null;
-  $("results").classList.add("hidden"); $("progress").classList.add("hidden"); lastSpokenStage = null;
-  start();
+  clearInterval(pollTimer); store.del("haq_hid"); hid = null; builder = { members: [], income: null };
+  spokeWorking = false; $("heard").textContent = ""; $("typeBox").value = ""; renderBuilder(); show("s-start");
 };
 
-// ---------- Boot: resume a returning family ----------
+// ---------------------------------------------------------------- boot
+async function refresh() {
+  const d = await api(`/api/households/${hid}?lang=${lang}`);
+  schemes = d.schemes || schemes;
+  if (d.result) renderResults(d.result, false);
+  return d;
+}
 (async function boot() {
+  if (!lang) { applyLang(); show("s-lang"); return; }   // first visit: choose language (Hindi if they skip)
+  applyLang();
   if (hid) {
     try {
-      const d = await api(`/api/households/${hid}`);
-      showLast(d.interview.messages);
-      if (d.result && d.run && d.run.status === "done") {
-        render(d.result, false);
-        const msg = "आपका स्वागत है! आपके नतीजे नीचे हैं। कोई सवाल हो तो माइक दबाकर पूछें।";
-        bubble(msg);
-      } else if (d.run) {
-        if (d.run.status !== "done" && !d.running) await api(`/api/households/${hid}/run`, {});
-        startPolling();
-      }
-      return;
-    } catch { store.del("haq_hid"); }
+      const d = await api(`/api/households/${hid}?lang=${lang}`);
+      schemes = d.schemes || {};
+      if (d.result) { renderResults(d.result, false); return; }
+      if (d.interview_done) { if (!d.running && d.run && d.run.status !== "done") await api(`/api/households/${hid}/run`, {}); startWorking(); return; }
+    } catch { store.del("haq_hid"); hid = null; }
   }
-  await start();
+  show("s-start");
 })();
+// Nothing chosen? Continue in Hindi after a short wait.
+setTimeout(() => { if (!lang && current === "s-lang") { setLang("hi"); show("s-start"); } }, 12000);
 </script>
 </body>
 </html>
