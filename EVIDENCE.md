@@ -143,6 +143,68 @@ The evidence for these is the baseline token profile (results file `20261010-160
 The baseline results are in [`52fbe91`](https://github.com/rohitraj2496-source/Hackathon_1/commit/52fbe910c6e9f955cdfec25a8a5a588bf5b71f45)
 and the after results are in [`5faa21b`](https://github.com/rohitraj2496-source/Hackathon_1/commit/5faa21b80b556584c0ff75e33bd81aa31445e22c).
 
+## Business plan (made with cfo.ai)
+
+The plan is a 24-month forecast, from Nov 2026 (month 1) to Oct 2028 (month 24), built in cfo.ai. Every number below is read from the exported workbooks in [`docs/businessplan/`](docs/businessplan/) (see its [README](docs/businessplan/README.md)). All three scenarios start with ₹25,00,000 of cash.
+
+**Business rule.** Citizens never pay (the citizen price is ₹0) and Haq never takes a cut of any benefit (the benefit commission rate is 0, marked "hard business rule"). Haq is paid by CSC operators, CSR programmes and employers.
+
+### Scenarios
+
+| | Main | Conservative | Growth |
+|---|---|---|---|
+| Sustained break-even month | **Month 16 (Feb 2028)** | **None within 24 months** (cash first goes negative in month 11, Sep 2027) | **Month 10 (Aug 2027)** |
+| Minimum cash | ₹8,10,268 (month 11) | **−₹24,67,217** | ₹14,00,843 |
+| Additional funding needed | ₹0 | **₹24,67,217** | ₹0 |
+| Funding needed to keep a ₹10 lakh safety reserve | ₹1,89,732 | **₹34,67,217** | ₹0 |
+| Extra CSC acquisition spend (above the marketing budget) | ₹12,27,536 | ₹50,000 | ₹1,22,10,692 |
+| CSC growth / churn per month | 20% / 5% | 10% / 7% | 30% / 3% |
+| CSR district contracts by month 24 | 8 | 4 (half-sized) | 16 |
+| Employer workers by month 24 | 50,000 | 25,000 | 1,00,000 |
+| AI cost reaches ₹4 per check from | month 10 | month 25 (outside the forecast, so it stays at ₹10) | month 6 |
+
+### Gross margin per check (unit economics by customer type)
+
+In this table, a "check" is one family search. "Margin" is the contribution after AI cost, hosting (₹0.01 per check) and the 2% collection fee.
+
+| Customer | Price | Revenue per check | Margin at ₹20 AI cost (**measured**, uncached) | Margin at ₹10 AI cost (**measured**, cached) | Margin at ₹4 AI cost (**target**, not measured) |
+|---|---|---|---|---|---|
+| **CSC** operator | ₹1,499/month for 100 checks, then ₹15 per extra check | ₹18.74 (at 80 checks a month) | **−8.7%** (−₹1.64) | 44.6% (₹8.36), CAC payback 3.0 months | 76.7% (₹14.36), CAC payback 1.7 months |
+| **CSR** district | ₹5,00,000 per district per year for 25,000 checks | ₹20.00 | **−2.0%** (−₹0.40) | 48.0% (₹9.60) | 78.0% (₹15.60) |
+| **Employer** | ₹50 per worker per year (1 check per worker) | ₹50.00 | 58.0% (₹29) | 78.0% (₹39) | 90.0% (₹45) |
+
+- **CSC price used:** ₹1,499 per month in **all three scenarios**. This was checked in the exports: CSC revenue ÷ operators = ₹1,499 in every month of every scenario. The plan assumes 80 checks per operator against 100 included, so no extra-check revenue is booked.
+- **CSC break-even AI cost:** CSC is profitable only while the AI cost stays below ₹18.35 per check on average, or ₹14.68 with the full check allowance used.
+- **Break-even month by AI cost (Main):**
+  - At ₹4: month 16, 13 or 5.
+  - At ₹10: month 24, 17 or 11.
+  - At **₹20: never** within the forecast.
+  - The three values in each row are for 100 / 300 / 1,000 of a second driver, which the export does not name.
+
+### Where the per-check costs come from
+
+**₹20 per check (uncached) and ₹10 per check (cached) are MEASURED** from neatlogs-traced runs, and the plan marks them MEASURED. **₹4 per check is a TARGET**, not yet measured.
+
+The runs recorded in this repo, converted at ₹88/$:
+
+| Run | Cost | neatlogs trace / session |
+|---|---|---|
+| One-person family, uncached | **₹21.2** | session `0d677a7b06` |
+| One-person family, cached | **₹9.8** and **₹10.4** | sessions `cca0218304`; trace `8a345750c8713575224289c188bca376` |
+| Three-member families, cached | ₹21.4 to ₹21.6 (8-household average ₹20.8) | traces `7ad95bd365bfdb0f4c49652228f19c2d`, `86f478b4537648b5e25dd329456e6391` |
+| Three-member family, uncached | **₹40.2** | trace `28204345122d65f99265fd532cb580c2` |
+
+So ₹20 and ₹10 match **one-person** households. Multi-member families cost about twice as much (see the risks below).
+
+### Key risky assumptions
+
+1. **AI cost falls to ₹4 per check from month 10.** This is a target. At the measured ₹20 the plan never breaks even, and CSC and CSR checks lose money. The Conservative case, which stays at ₹10, needs ₹24.7 lakh of extra funding.
+2. **₹20 and ₹10 are per one-person household.** The measured three-member families cost ₹21 (cached) to ₹40 (uncached). The plan sheet also notes these numbers are user-reported and not independently audited.
+3. **100% annual renewal** for CSR and employer contracts, paid **upfront with no collection delay**.
+4. **CSC growth of 20% a month gross with 5% churn**, from 50 operators at launch (month 4) to 818 by month 24. Growth needs ₹1.22 crore of extra acquisition spend at ₹2,000 per operator.
+5. **CSR contracts at ₹5 lakh per district per year**, used fully (25,000 checks), ramping from 1 to 8 districts. **Employer contracts** grow from 10,000 to 50,000 workers at ₹50 per worker. None of these are signed.
+6. **A lean team.** One developer from month 1, a field lead from month 6, and founder pay from month 7. The whole ₹50,000 monthly marketing budget is assumed to offset CSC acquisition cost.
+
 ## 5. Caveats
 
 - **Expected answers are unchecked.** Every expected answer is still marked `needs_human_check: true` and has not
