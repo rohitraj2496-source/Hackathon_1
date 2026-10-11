@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4N0RCCSARYM3NPRGTQWCR5B",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 7,
+  "files_touched": [
+    "TEST_REPORT.md",
+    "haq/agent.py",
+    "haq/catalog.py",
+    "haq/fetcher.py",
+    "haq/intake.py",
+    "haq/present.py",
+    "scripts/ui_stub_server.py",
+    "static/index.html"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 652,
+    "cache_creation_tokens": 1213086,
+    "cache_read_tokens": 131442341,
+    "output_tokens": 416711,
+    "api_call_count": 320
+  }
+}
