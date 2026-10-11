@@ -551,6 +551,9 @@ $("qSpeak").onclick = () => { const q = followups[qIndex]; if (q) speak(q.questi
 async function answer(id, value) {
   if (answers[id] !== undefined || busy) return;      // a second tap on the same question is ignored
   answers[id] = value; qIndex++;
+  // skip a question an earlier answer made irrelevant (e.g. house type after "town")
+  while (qIndex < followups.length && Object.entries(followups[qIndex].skip_if || {})
+           .some(([q, vals]) => vals.includes(answers[q]))) qIndex++;
   if (qIndex < followups.length) { renderQuestion(true); return; }
   busy = true;
   try { await api(`/api/households/${hid}/answers`, { lang, answers }); startWorking(); }

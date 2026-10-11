@@ -191,11 +191,77 @@ def _unknowns(p: dict) -> list[str]:
     return out
 
 
+# Ranking weights for follow-up questions: first-year money per scheme (yearly amount, or the one-time grant),
+# from official amounts in the catalog notes and from test-run research where amounts vary. Used only to decide
+# which questions are worth asking; never shown to families.
+VALUE_INR = {
+    "pm_kisan": 6000, "pmay_g": 120000, "pmuy": 2050, "pmmvy": 5000, "up_kanya_sumangala": 25000,
+    "up_old_age_pension": 12000, "up_widow_pension": 12000, "up_divyang_pension": 12000,
+    "up_scholarship": 2250, "up_shadi_anudan": 20000, "nfsa_ration_per_person": 1550,
+}
+
+
+def _girls(p):
+    return [m for m in p["members"] if m.get("gender") == "female" and (m.get("age") or 0) <= 21
+            and m.get("relation") in ("daughter", "granddaughter", "beti", "sister")]
+
+
+def _money_at_stake(p: dict) -> dict[str, int]:
+    """First-year ₹ of each scheme that plausibly fits this family (0 if it clearly cannot)."""
+    ms = p["members"]
+    pensions = sum(1 for m in ms if (m.get("age") or 0) >= 60 or m.get("is_widow")
+                   or (m.get("disability_percent") or 0) >= 40)   # one pension per person
+    return {
+        "pm_kisan": VALUE_INR["pm_kisan"] if _has_farmer(p) else 0,
+        "pmay_g": VALUE_INR["pmay_g"] if p.get("area") != "urban" and p.get("house_type") != "pucca" else 0,
+        "pmuy": VALUE_INR["pmuy"] if _has_adult_woman(p) and p.get("has_lpg_connection") is not True else 0,
+        "nfsa_ration": VALUE_INR["nfsa_ration_per_person"] * max(len(ms), 1)
+        if p.get("ration_card") not in ("eligible_household", "antyodaya") else 0,
+        "pensions": VALUE_INR["up_old_age_pension"] * pensions,
+        "up_kanya_sumangala": VALUE_INR["up_kanya_sumangala"] if _girls(p) else 0,
+        "up_scholarship": VALUE_INR["up_scholarship"] * sum(1 for m in ms if m.get("is_student")),
+    }
+
+
+# Which profile facts must be known to move each scheme from "check needed" to confirmed.
+GATES = {
+    "pm_kisan": {"land"}, "pmay_g": {"area", "house"}, "pmuy": {"lpg", "ration_card"},
+    "nfsa_ration": {"ration_card", "area", "income"}, "pensions": {"income"},
+    "up_kanya_sumangala": {"income"}, "up_scholarship": {"income"},
+}
+
+
+def rank_followups(profile: dict) -> list[tuple[list[str], int]]:
+    """All sets of at most MAX_FOLLOWUPS unknown facts, by the ₹ they would move to confirmed
+    (a scheme counts only if every unknown fact gating it is in the set). Best first; ties ask fewer
+    questions, then follow the fixed fact order so the result is deterministic."""
+    from itertools import combinations
+    unknown = _unknowns(profile)
+    stake = _money_at_stake(profile)
+    order = {f: i for i, f in enumerate(["income", "ration_card", "land", "area", "house", "lpg"])}
+    options = []
+    for k in range(1, MAX_FOLLOWUPS + 1):
+        for combo in combinations(sorted(unknown, key=order.get), k):
+            chosen = set(combo)
+            value = sum(v for s, v in stake.items() if v and (GATES[s] & set(unknown)) and (GATES[s] & set(unknown)) <= chosen)
+            options.append((list(combo), value))
+    options.sort(key=lambda o: (-o[1], len(o[0]), [order[f] for f in o[0]]))
+    return options
+
+
 def pick_followups(profile: dict, lang: str) -> list[dict]:
+    """At most 2 tap questions: the set that confirms the most money for this family."""
     lang = lang if lang in LANGS else "hi"
-    return [{"id": k, "question": QUESTIONS[k]["q"][lang],
-             "options": [{"value": o["value"], "label": o[lang]} for o in QUESTIONS[k]["options"]]}
-            for k in _unknowns(profile)[:MAX_FOLLOWUPS]]
+    ranked = rank_followups(profile)
+    if not ranked or ranked[0][1] == 0:
+        return []                       # nothing worth asking: unknowns become safe assumptions
+    facts, value = ranked[0]
+    # house type only matters for rural housing: skip it if the family just said they live in a town
+    skip = {"house": {"area": ["urban"]}}
+    return [{"id": k, "question": QUESTIONS[k]["q"][lang], "unlocks_inr": value,
+             "options": [{"value": o["value"], "label": o[lang]} for o in QUESTIONS[k]["options"]],
+             **({"skip_if": skip[k]} if k in skip and len(facts) > 1 else {})}
+            for k in facts]
 
 
 def apply_answer(p: dict, qid: str, value: str) -> None:
