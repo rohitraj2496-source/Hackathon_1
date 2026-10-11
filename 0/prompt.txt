@@ -1,0 +1,1 @@
+Good morning. Check git status and git log, and tell me in 3 lines: what was last committed, whether the UI redesign + language choice + fewer-questions changes were finished, and if anything is uncommitted. Don't run evals or live API calls.
